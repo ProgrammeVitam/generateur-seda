@@ -1,0 +1,10 @@
+*/target
+*/.*
+scanner/output.zip
+scanner/manifest.xml
+seda/output.zip
+seda/manifest.xml
+.project
+.settings
+**/*.class
+scripts/build

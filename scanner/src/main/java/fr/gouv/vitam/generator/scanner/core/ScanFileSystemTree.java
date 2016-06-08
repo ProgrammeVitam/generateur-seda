@@ -24,37 +24,52 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
+package fr.gouv.vitam.generator.scanner.core;
 
-package fr.gouv.culture.archivesdefrance.seda.v2;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.stream.XMLStreamException;
+
+import fr.gouv.vitam.common.exception.VitamException;
+
 
 /**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
+ * 
  */
+public class ScanFileSystemTree {
 
-@XmlRootElement(name = "BinaryDataObject")
-public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
-    @XmlTransient 
-    private String workingFilename;
 
+    private String baseDir;
+    private String configFile;
+    private String outputFile;
+    private String playbookFile;
     /**
-     * @return the workingFilename
-     */ 
-    public String getWorkingFilename() {
-        return workingFilename;
-    }
-
-    /**
-     * @param workingFilename the workingFilename to set
-     *
-     * @return this
+     * Default Constructor 
+     * @param baseDir : root of the path that has to be scanned
+     * @param configFile : JSON file containing the global parameter of the ArchiveTransferRequest 
+     * @param playbookFile
+     * @param outputFile : xml outputfile
      */
-    public BinaryDataObjectTypeRoot setWorkingFilename(String workingFilename) {
-        this.workingFilename = workingFilename;
-        return this;
+
+    public ScanFileSystemTree(String baseDir, String configFile,String playbookFile, String outputFile) {
+        this.baseDir = baseDir;
+        this.configFile = configFile;
+        this.outputFile = outputFile;
+        this.playbookFile = playbookFile;
     }
-    
+    /**
+     * Scan the filesystem
+     */
+    public void scan() throws IOException, XMLStreamException, VitamException {
+        FileSystem  f = FileSystems.getDefault(); //NOSONAR : The default FileSystem don't have to be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
+        Path p = f.getPath(baseDir);
+        ScanFS sfs = new ScanFS(configFile, playbookFile,outputFile);
+        Files.walkFileTree(p, sfs);
+        sfs.endScan();
+    }
 
 }

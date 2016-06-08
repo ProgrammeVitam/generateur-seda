@@ -24,37 +24,7 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
-
-package fr.gouv.culture.archivesdefrance.seda.v2;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 /**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
+ * 
  */
-
-@XmlRootElement(name = "BinaryDataObject")
-public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
-    @XmlTransient 
-    private String workingFilename;
-
-    /**
-     * @return the workingFilename
-     */ 
-    public String getWorkingFilename() {
-        return workingFilename;
-    }
-
-    /**
-     * @param workingFilename the workingFilename to set
-     *
-     * @return this
-     */
-    public BinaryDataObjectTypeRoot setWorkingFilename(String workingFilename) {
-        this.workingFilename = workingFilename;
-        return this;
-    }
-    
-
-}
+package fr.gouv.vitam.generator.seda.module;

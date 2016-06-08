@@ -5,11 +5,23 @@
     <artifactId>parent</artifactId>
     <version>${vitam.generator.version}</version>
   </parent>
-  <artifactId>common</artifactId>
+  <artifactId>scheduler</artifactId>
   <dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>fr.gouv.vitam</groupId>
+			<artifactId>common-public</artifactId>
+		</dependency>
+                <dependency>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpmime</artifactId>
+                </dependency>
   </dependencies>
 </project>

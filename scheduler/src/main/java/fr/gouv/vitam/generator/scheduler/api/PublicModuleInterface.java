@@ -25,36 +25,11 @@
  * accept its terms.
  */
 
-package fr.gouv.culture.archivesdefrance.seda.v2;
+package fr.gouv.vitam.generator.scheduler.api;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-/**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
+/** 
+ * It is a SPI where all implementations are discovered via the ServiceLoader pattern
  */
-
-@XmlRootElement(name = "BinaryDataObject")
-public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
-    @XmlTransient 
-    private String workingFilename;
-
-    /**
-     * @return the workingFilename
-     */ 
-    public String getWorkingFilename() {
-        return workingFilename;
-    }
-
-    /**
-     * @param workingFilename the workingFilename to set
-     *
-     * @return this
-     */
-    public BinaryDataObjectTypeRoot setWorkingFilename(String workingFilename) {
-        this.workingFilename = workingFilename;
-        return this;
-    }
-    
+public interface PublicModuleInterface extends ModuleInterface {
 
 }

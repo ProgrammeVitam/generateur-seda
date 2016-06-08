@@ -25,36 +25,40 @@
  * accept its terms.
  */
 
-package fr.gouv.culture.archivesdefrance.seda.v2;
+package fr.gouv.vitam.generator.scheduler.core;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 /**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
+ * A playbook (like in Ansible) is a list (ordered) of tasks
  */
+public class Playbook {
 
-@XmlRootElement(name = "BinaryDataObject")
-public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
-    @XmlTransient 
-    private String workingFilename;
-
+    private String name;
+    @JsonProperty("tasks")
+    private List<Task> tasks;
+    
     /**
-     * @return the workingFilename
-     */ 
-    public String getWorkingFilename() {
-        return workingFilename;
-    }
-
-    /**
-     * @param workingFilename the workingFilename to set
-     *
-     * @return this
+     * Default Constructor
      */
-    public BinaryDataObjectTypeRoot setWorkingFilename(String workingFilename) {
-        this.workingFilename = workingFilename;
-        return this;
+    public Playbook() {
+        this.tasks = new ArrayList<>();
     }
     
+    /**
+     * 
+     * @return tasks
+     */
+    public List<Task> getTasks() {
+        return tasks;
+    }
 
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 }

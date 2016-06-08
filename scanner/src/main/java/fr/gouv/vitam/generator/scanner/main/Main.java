@@ -24,37 +24,31 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
+package fr.gouv.vitam.generator.scanner.main;
 
-package fr.gouv.culture.archivesdefrance.seda.v2;
+import java.io.IOException;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.stream.XMLStreamException;
+
+import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.generator.scanner.core.ScanFileSystemTree;
 
 /**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
+ * Main class
  */
 
-@XmlRootElement(name = "BinaryDataObject")
-public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
-    @XmlTransient 
-    private String workingFilename;
-
-    /**
-     * @return the workingFilename
-     */ 
-    public String getWorkingFilename() {
-        return workingFilename;
-    }
-
-    /**
-     * @param workingFilename the workingFilename to set
-     *
-     * @return this
-     */
-    public BinaryDataObjectTypeRoot setWorkingFilename(String workingFilename) {
-        this.workingFilename = workingFilename;
-        return this;
-    }
+public class Main {
     
-
+    private Main(){
+    }
+    /**
+     * Entry point
+     * @param args
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws VitamException
+     */
+    public static void main(String[] args) throws IOException,XMLStreamException,VitamException{
+            new ScanFileSystemTree(args[0], args[1], args[2],args[3]).scan();
+    }
 }

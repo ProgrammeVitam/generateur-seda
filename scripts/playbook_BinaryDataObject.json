@@ -1,0 +1,31 @@
+{
+	"name" : "Playbook Binary Data Object",
+	"tasks":[
+		{ 
+		  "name" : "Create Binary Data Object",
+		  "module" : "binaryDataObjectConstructor",
+		  "parameters" :{ "file" : "@@file@@"} ,
+		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@"}
+		},
+		{ 
+		  "name" : "Calcul Digest du fichier",
+		  "module" : "digest",
+		  "parameters" :{ "binarydataobject" : "@@binarydataobject@@", "digest.algorithm": "SHA512"} ,
+		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@"}
+		},
+		{ 
+		  "name" : "Appel à siegfried",
+		  "module" : "siegfried",
+		  "parameters" :{ "binarydataobject" : "@@binarydataobject@@" ,"siegfriedURL" : "http://localhost:5138"} ,
+		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@"}
+		},
+		{ 
+		  "name" : "Recupération des statistiques du fichier",
+		  "module" : "writeBinaryDataObject",
+		  "parameters" :{"binarydataobject" : "@@binarydataobject@@","dataobjectgroupID" : "@@dataobjectgroupID@@","archivetransfergenerator" : "@@archivetransfergenerator@@" } ,
+		  "registeredParameters": {}
+		}
+	]
+
+}
+

@@ -8,7 +8,9 @@ public class ScanFileSystemTreeImplTest {
     public void scan() {
         ClassLoader classLoader = getClass().getClassLoader();
         String basedir = classLoader.getResource("sip1").getFile();
-        ScanFileSystemTreeImpl s = new ScanFileSystemTreeImpl(basedir,basedir+".json","output.xml");
+        String configFile = basedir+".json";
+        String playbookFile = classLoader.getResource("playbook_binary.json").getFile();;
+        ScanFileSystemTree s = new ScanFileSystemTree(basedir,configFile,playbookFile,"output.zip");
         try {
             s.scan();
         }catch (Exception e){

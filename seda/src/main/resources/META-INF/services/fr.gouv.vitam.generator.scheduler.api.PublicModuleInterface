@@ -1,0 +1,4 @@
+fr.gouv.vitam.generator.seda.module.BinaryDataObjectConstructorModule
+fr.gouv.vitam.generator.seda.module.DigestModule
+fr.gouv.vitam.generator.seda.module.SiegfriedModule
+fr.gouv.vitam.generator.seda.module.WriteBinaryDataObjectModule

@@ -25,36 +25,27 @@
  * accept its terms.
  */
 
-package fr.gouv.culture.archivesdefrance.seda.v2;
+package fr.gouv.vitam.generator.scheduler.api;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import fr.gouv.vitam.common.exception.VitamException;
 
 /**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
+ * High level interface for the Module of the Scheduler Engine 
+ * 
  */
 
-@XmlRootElement(name = "BinaryDataObject")
-public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
-    @XmlTransient 
-    private String workingFilename;
+public interface ModuleInterface {
 
     /**
-     * @return the workingFilename
-     */ 
-    public String getWorkingFilename() {
-        return workingFilename;
-    }
-
-    /**
-     * @param workingFilename the workingFilename to set
-     *
-     * @return this
+     * Execute the module
+     * @param parameters (Entry parameter of the module)
+     * @return a ParameterMap representing the returnvalue of the module
      */
-    public BinaryDataObjectTypeRoot setWorkingFilename(String workingFilename) {
-        this.workingFilename = workingFilename;
-        return this;
-    }
-    
+    public ParameterMap execute(ParameterMap parameters) throws VitamException;
 
+    /**
+     * Return the moduleID which is the reference of the module
+     * @return module
+     */
+    public String getModuleId();
 }

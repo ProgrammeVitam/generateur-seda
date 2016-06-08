@@ -1,0 +1,19 @@
+{
+	"name" : "Playbook Binary Data Object",
+	"tasks":[
+		{ 
+		  "name" : "Calcul Digest du fichier",
+		  "module" : "digest",
+		  "parameters" :{ "file" : "@@file@@"} ,
+		  "registeredParameters": {"file.digest.algorithm" : "@@file.digest.algorithm@@", "file.digest.value" : "@@file.digest.value@@"}
+		},
+		{ 
+		  "name" : "Recupération des statistiques du fichier",
+		  "module" : "stat",
+		  "parameters" :{ "file" : "@@file@@"} ,
+		  "registeredParameters": {"file.length" : "@@file.length@@" ,"file.mtime" : "@@file.mtime@@"}
+		}
+	]
+
+}
+
