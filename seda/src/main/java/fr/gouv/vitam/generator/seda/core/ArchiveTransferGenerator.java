@@ -33,7 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
@@ -91,7 +91,7 @@ public class ArchiveTransferGenerator {
         ParametersChecker.checkParameter("xmlname cannot be null", zipFileName);
         XMLOutputFactory output = XMLOutputFactory.newInstance();
         dataObjectGroupUsedMap = new DataObjectGroupUsedMap();
-        mapArchiveUnit = new HashMap<>();
+        mapArchiveUnit = new LinkedHashMap<>();
         try {
             FileOutputStream fos = new FileOutputStream(SEDA_FILENAME);
             this.writer = output.createXMLStreamWriter(fos, ENCODING);
