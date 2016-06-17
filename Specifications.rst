@@ -14,8 +14,10 @@ Nous partirons sur un premier version dite PP qui implémentera les spécificati
 Entrant de cet outil 
 --------------------
 Sous Windows, l'archiviste a préparé un arborescence avec le formalisme suivant :
+
 * L'arborescence des répertoire représente les relations entre les archive units et les data-object groups
-   + Du fait de la réprésentation arborescente des systèmes d'exploitations, on se limitera à un arbre (et non un DAG dans le cadre général) pour les relations entre archive unit et data-object group
+ 
+  + Du fait de la réprésentation arborescente des systèmes d'exploitations, on se limitera à un arbre (et non un DAG dans le cadre général) pour les relations entre archive unit et data-object group
 
 * Dans l'arborescence, on peut trouver des répertoires :
 
@@ -50,41 +52,46 @@ Example d'arborescence
 
 Arborescence sources
 ^^^^^^^^^^^^^^^^^^^^
-Répertoire : /A
-Fichier    : /A/a1
-Fichier    : /A/a2
-Répertoire : /A/B
-Fichier    : /A/B/b1
-Répertoire : /A/__C__
-Fichier    : /A/__C__/c1
-Fichier    : /A/__C__/c2
-Répertoire : /A/D
-Répertoire : /A/D/E
+:: 
+
+  Répertoire : /A
+  Fichier    : /A/a1
+  Fichier    : /A/a2
+  Répertoire : /A/B
+  Fichier    : /A/B/b1
+  Répertoire : /A/__C__
+  Fichier    : /A/__C__/c1
+  Fichier    : /A/__C__/c2
+  Répertoire : /A/D
+  Répertoire : /A/D/E
 
 SEDA (sans les DataObject)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-ArchiveUnit     : A (racine)
-ArchiveUnit     : a1 (père : A )
-DataObjectGroup : dog_a1 (père:  a1), contient le BinaryDataObject a1
-ArchiveUnit     : a2 (père : A )
-DataObjectGroup : dog_a2 (père:  a2), contient le BinaryDataObject a2
-ArchiveUnit     : B (père : A)
-ArchiveUnit     : b1 (père : B)
-DataObjectGroup : dog_b1 (père:  b1), contient le BinaryDataObject b1
-ArchiveUnit     : C (père : A)
-DataObjectGroup : dog_C (père:  C), contient les BinaryDataObject c1 et c2
-ArchiveUnit     : D (père : A)
-ArchiveUnit     : E (père : D)
+
+::
+
+  ArchiveUnit     : A (racine)
+  ArchiveUnit     : a1 (père : A )
+  DataObjectGroup : dog_a1 (père:  a1), contient le BinaryDataObject a1
+  ArchiveUnit     : a2 (père : A )
+  DataObjectGroup : dog_a2 (père:  a2), contient le BinaryDataObject a2
+  ArchiveUnit     : B (père : A)
+  ArchiveUnit     : b1 (père : B)
+  DataObjectGroup : dog_b1 (père:  b1), contient le BinaryDataObject b1
+  ArchiveUnit     : C (père : A)
+  DataObjectGroup : dog_C (père:  C), contient les BinaryDataObject c1 et c2
+  ArchiveUnit     : D (père : A)
+  ArchiveUnit     : E (père : D)
 
 
 Sortant de l'outil
 ------------------
 
 Un fichier ZIP (pkZIP) avec les fichiers suivants : 
-
  * Un fichier SEDA généré qui est valide par rapport au schéma SEDA 2.0 (MENODA)
-   (A valider) L'encodage du fichier de sortie doit être en UTF-8
-   (Souhait) Les PO souhaitent avoir un affichage des archive Unit dans l'ordre du parcours en profondeur de l'arborescence
+ 
+   + (A valider) L'encodage du fichier de sortie doit être en UTF-8
+   + (Souhait) Les PO souhaitent avoir un affichage des archive Unit dans l'ordre du parcours en profondeur de l'arborescence
  * Un répertoire Content qui contient l'ensemble des BinaryDataObject décrits dans le fichier SEDA. Chaque fichier a pour nom son ID dans le bordereau Seda
 
 
@@ -92,25 +99,24 @@ Couverture du SEDA
 ------------------
 
 Dans le fichier SEDA, les Champs suivants sont gérés 
-* ArchiveUnit : Comment,MessageIdentifier,ArchivalAgreement,CodeListVersions,ArchivalAgency.Identifier,TransferringAgency.Identifier sont gérables par un fichier json fourni en paramètre
-* DataObjectPackage.BinaryDataObject 
-
-  + DataObjectGroupId : généré programmatiquement
-  + DataObjectVersion : fixé arbitrairement à DataObjectVersion0
-  + Uri : Content/<ID du Binary DataObject>
-  + MessageDigest : Fourni l'empreinte en SHA-512
-  + Size : Fourni la taille du fichier
-  + FormatIdentification : si le module Siegfried est activé, on positionne les 3 champs FormatLitteral,MimeType,FormatId
-  + FileInfo : FileName et LastModified (mtime du fichier)
-
-* DataObjectPackage.Management : élément vide
-* DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content : 
-  + DescriptionLevel : File s'il y a un DOG comme fils , RecordGrp sinon
-  + Title : Nom du fichier ou répertoire
-  + Description : un champ de debug pour l'instant
-  + TransactedDate : Pour les archiveUnit ayant un DOG, le mtime du dernier fichier chargé dans le DOG . Quelle est la bonne valeur quand il y a plus d'un fichier par DOG
-
-
+ * ArchiveUnit : Comment,MessageIdentifier,ArchivalAgreement,CodeListVersions,ArchivalAgency.Identifier,TransferringAgency.Identifier sont gérables par un fichier json fourni en paramètre
+ * DataObjectPackage.BinaryDataObject 
+ 
+   + DataObjectGroupId : généré programmatiquement
+   + DataObjectVersion : fixé arbitrairement à DataObjectVersion0
+   + Uri : Content/<ID du Binary DataObject>
+   + MessageDigest : Fourni l'empreinte en SHA-512
+   + Size : Fourni la taille du fichier
+   + FormatIdentification : si le module Siegfried est activé, on positionne les 3 champs FormatLitteral,MimeType,FormatId
+   + FileInfo : FileName et LastModified (mtime du fichier)
+ * DataObjectPackage.Management : élément vide
+ * DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content :
+ 
+   + DescriptionLevel : File s'il y a un DOG comme fils , RecordGrp sinon
+   + Title : Nom du fichier ou répertoire
+   + Description : un champ de debug pour l'instant
+   + TransactedDate : Pour les archiveUnit ayant un DOG, le mtime du dernier fichier chargé dans le DOG . Quelle est la bonne valeur quand il y a plus d'un fichier par DOG
+  
 Interface de l'outil
 --------------------
 
