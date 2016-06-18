@@ -35,11 +35,15 @@ import fr.gouv.vitam.generator.scanner.core.ScanFileSystemTree;
 
 /**
  * Main class
+ * TODO Main class for what ? 
+ * Instead of Main, maybe something like SedaGenerator ?
+ * TODO missing package-info.java
  */
 
 public class Main {
     
     private Main(){
+        // Empty constructor
     }
     /**
      * Entry point
@@ -49,6 +53,7 @@ public class Main {
      * @throws VitamException
      */
     public static void main(String[] args) throws IOException,XMLStreamException,VitamException{
+        //TODO check arguments and number of arguments
             new ScanFileSystemTree(args[0], args[1], args[2],args[3]).scan();
     }
 }

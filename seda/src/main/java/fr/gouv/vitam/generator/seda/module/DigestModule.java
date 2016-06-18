@@ -69,10 +69,12 @@ public class DigestModule implements PublicModuleInterface {
             DigestType digestType = DigestType.valueOf((String)parameters.get("digest.algorithm"));
             MessageDigestBinaryObjectType mdbot = new MessageDigestBinaryObjectType();
             mdbot.setAlgorithm(digestType.getName());
+            // BaseXx contient Base64
             mdbot.setValue(Base64.getEncoder().encodeToString(Digest.digest(f, digestType).digest()));
+            // Hexa serait plus correct, non ? fonction native de Digest et supporté par SEDA (et par Vitam du coup)
             bdotr.setMessageDigest(mdbot);
         } catch (IOException e) {
-            throw new VitamBinaryDataObjectException("IO Exception on the file" + f.toString(),e);
+            throw new VitamBinaryDataObjectException("IO Exception on the file" + f.toString(), e);
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;

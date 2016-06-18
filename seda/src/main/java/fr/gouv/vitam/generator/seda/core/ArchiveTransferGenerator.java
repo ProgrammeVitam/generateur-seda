@@ -73,12 +73,17 @@ public class ArchiveTransferGenerator {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGenerator.class);
     private static final String SEDA_NAMESPACE = "fr:gouv:culture:archivesdefrance:seda:v2.0";
+    // TODO use fr.gouv.vitam.common.CharsetUtils.UTF_8 or fr.gouv.vitam.common.CharsetUtils.UTF8 (Charset)
     private static final String ENCODING = "UTF-8";
     private static final String SEDA_FILENAME = "manifest.xml";
+    // TODO final
     private ZipFileWriter zipFile;
     private JsonNode globalParameters;
+    // TODO final
     private DataObjectGroupUsedMap dataObjectGroupUsedMap;
+    // TODO final
     private Map<String, ArchiveUnitTypeRoot> mapArchiveUnit;
+    // TODO final
     private XMLStreamWriter writer;
 
 
@@ -86,6 +91,7 @@ public class ArchiveTransferGenerator {
      * 
      * @param zipFileName : name of the Zip file that will be created
      * @throws VitamSedaException
+     * TODO pour chaque méthode utilisant checkParameter: ajouter dans la JavaDoc @throws IllegalArgumentException et les noms des arguments vérifiés
      */
     public ArchiveTransferGenerator(String zipFileName) throws VitamSedaException {
         ParametersChecker.checkParameter("xmlname cannot be null", zipFileName);
@@ -93,6 +99,7 @@ public class ArchiveTransferGenerator {
         dataObjectGroupUsedMap = new DataObjectGroupUsedMap();
         mapArchiveUnit = new HashMap<>();
         try {
+            // TODO où est écrit le fichier ?
             FileOutputStream fos = new FileOutputStream(SEDA_FILENAME);
             this.writer = output.createXMLStreamWriter(fos, ENCODING);
         } catch (IOException | XMLStreamException e) {
@@ -101,6 +108,7 @@ public class ArchiveTransferGenerator {
         try{
             zipFile = new ZipFileWriter(zipFileName);
         }catch (FileNotFoundException e){
+            // FIXME zipFile is null => zipFileName
             throw new VitamSedaException("Error on writing to" + zipFile, e);
         }
     }
@@ -110,6 +118,7 @@ public class ArchiveTransferGenerator {
      * 
      * @param headerfile
      * @throws XMLStreamException
+     * TODO missing second exception
      */
 
     public void generateHeader(String headerfile) throws XMLStreamException, VitamSedaException {
@@ -126,7 +135,7 @@ public class ArchiveTransferGenerator {
         try {
             globalParameters = JsonHandler.getFromFile(new File(headerfile));
         } catch (InvalidParseOperationException e) {
-            throw new VitamSedaException("Error on header file" + headerfile,e);
+            throw new VitamSedaException("Error on header file" + headerfile, e);
         }
 
         getJSONArgument2XML("Comment");
@@ -184,7 +193,7 @@ public class ArchiveTransferGenerator {
      * @param id : id of the ArchiveUnit
      * @param date : Date to be set
      */
-    public void setTransactedDate(String id,Date date){
+    public void setTransactedDate(String id, Date date){
         ParametersChecker.checkParameter("id cannot be null", id);
         ParametersChecker.checkParameter("id must be a valid ArchiveUnit ID", mapArchiveUnit.get(id));
         ArchiveUnitTypeRoot autr = mapArchiveUnit.get(id);
@@ -235,7 +244,7 @@ public class ArchiveTransferGenerator {
         dort.setId(XMLWriterUtils.getNextID());
         dort.setDataObjectGroupReferenceId(dataobjectGroupSonID);
         autrFather.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference().add(dort);
-        // When an ArchiveUnit has a DataObjectGroup, it ia at the Level FILE
+        // When an ArchiveUnit has a DataObjectGroup, it is at the Level FILE
         for (DescriptiveMetadataContentType dmct: autrFather.getContent()){
             autrFather.getContent().remove(dmct);
             dmct.setDescriptionLevel(LevelType.FILE);
@@ -249,6 +258,7 @@ public class ArchiveTransferGenerator {
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
      * Management Metadata
      * 
+     * TODO not the correct exception
      * @throws XMLStreamException
      */
     public void writeDescriptiveMetadata() throws VitamSedaException {
@@ -281,10 +291,11 @@ public class ArchiveTransferGenerator {
      * Write the end of the document (close DataObjectPackage, write ArchivalAgency and Transferring Agency)
      * 
      * @throws XMLStreamException
+     * TODO missing exception
      */
 
-    public void closeDocument() throws XMLStreamException,VitamSedaException {
-        // DataObjectPackage
+    public void closeDocument() throws XMLStreamException, VitamSedaException {
+        // DataObjectPackage closing
         writer.writeEndElement();
         getJSONArgument2XML("ArchivalAgency", new ArchivalAgencyTypeRoot());
         getJSONArgument2XML("TransferringAgency", new TransferringAgencyTypeRoot());
@@ -326,6 +337,7 @@ public class ArchiveTransferGenerator {
         CodeListVersionsTypeRoot clvt = new CodeListVersionsTypeRoot();
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> result = mapper.convertValue(jsonNode, Map.class);
+        // TODO use entrySet (getKey, getValue)
         for (String key : result.keySet()) {
             CodeType ct = new CodeType();
             Object value = result.get(key);

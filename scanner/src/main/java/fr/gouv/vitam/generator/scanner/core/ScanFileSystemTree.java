@@ -38,11 +38,12 @@ import fr.gouv.vitam.common.exception.VitamException;
 
 
 /**
- * 
+ * TODO
  */
+// TODO implements AutoCloseable
 public class ScanFileSystemTree {
 
-
+    // TODO all final
     private String baseDir;
     private String configFile;
     private String outputFile;
@@ -56,6 +57,7 @@ public class ScanFileSystemTree {
      */
 
     public ScanFileSystemTree(String baseDir, String configFile,String playbookFile, String outputFile) {
+        // null check ?
         this.baseDir = baseDir;
         this.configFile = configFile;
         this.outputFile = outputFile;
@@ -65,10 +67,11 @@ public class ScanFileSystemTree {
      * Scan the filesystem
      */
     public void scan() throws IOException, XMLStreamException, VitamException {
-        FileSystem  f = FileSystems.getDefault(); //NOSONAR : The default FileSystem don't have to be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
+        FileSystem  f = FileSystems.getDefault(); //NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
         Path p = f.getPath(baseDir);
         ScanFS sfs = new ScanFS(configFile, playbookFile,outputFile);
         Files.walkFileTree(p, sfs);
+        // TODO in close of AutoCloseable
         sfs.endScan();
     }
 

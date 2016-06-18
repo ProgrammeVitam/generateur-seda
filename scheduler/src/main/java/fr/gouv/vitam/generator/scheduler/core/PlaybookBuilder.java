@@ -48,11 +48,13 @@ public class PlaybookBuilder {
 
 
     private PlaybookBuilder(){  
+        // Empty constructor
     }
     /**
      * Constructs a Playbook from a JSON File
      * @param jsonFile 
      * @return
+     * TODO return what ?
      * @throws VitamSchedulerException
      */
     
@@ -63,7 +65,8 @@ public class PlaybookBuilder {
         try{
             playbook = objectMapper.readValue(jsonFile, Playbook.class);
         }catch(IOException e){
-            throw new VitamSchedulerException("",e);       
+            // Empty message ? so only exception
+            throw new VitamSchedulerException("", e);       
         }
         return playbook;
     }
@@ -72,6 +75,7 @@ public class PlaybookBuilder {
      * Constructs a Playbook from a JSON File
      * @param file
      * @return
+     * TODO return what ?
      * @throws VitamSchedulerException
      */
     public static Playbook getPlaybook(String file) throws VitamSchedulerException{

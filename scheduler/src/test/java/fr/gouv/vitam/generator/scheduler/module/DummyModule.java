@@ -45,6 +45,7 @@ import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
  */
 public class DummyModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "dummy";
+    // Unused
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(DummyModule.class);
 
     @Override
