@@ -40,7 +40,7 @@ Sous Windows, l'archiviste a préparé un arborescence avec le formalisme suivan
 	- L'archive Unit Virtual a le champ DescriptionLevel à Item (A valider)
 	- L'archive Unit Virtual a le champ transactedDate à Modification time du fichier (Non Implémenté)
 	- Un fichier vide est ignoré en logguant la présence de ce fichier vide mais il ne s'agit que d'un warning (non bloquant) (A valider)
-	
+    - Un fichier caché (au sens attribut Windows) est ignoré (Non implémenté)	
 * Dans l'arborescence, on peut trouver des fichiers :
 
   - Le nom manifest.json est un nom reservé pour ultérieurement et sera ignoré comme BinaryDataObject
