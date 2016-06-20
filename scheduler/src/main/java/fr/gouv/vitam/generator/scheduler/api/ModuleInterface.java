@@ -40,7 +40,7 @@ public interface ModuleInterface {
      * Execute the module
      * @param parameters (Entry parameter of the module)
      * @return a ParameterMap representing the returnvalue of the module
-     * TODO missing exception
+     * @throws VitamException
      */
     public ParameterMap execute(ParameterMap parameters) throws VitamException;
 

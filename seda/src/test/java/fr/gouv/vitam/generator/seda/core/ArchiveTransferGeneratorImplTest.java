@@ -63,9 +63,9 @@ public class ArchiveTransferGeneratorImplTest {
     @Test
     public void correctSeda() {
         try{
-            // FORMAT (sur tous les fichiers)
+            // TODO FORMAT (sur tous les fichiers)
         
-        // Helper dans PropertiesUtils
+        // TODO Helper dans PropertiesUtils
         ClassLoader classLoader = getClass().getClassLoader();
         String headerPath = classLoader.getResource("sip1.json").getFile();
         ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(OUTPUT_FILE);
@@ -86,7 +86,7 @@ public class ArchiveTransferGeneratorImplTest {
         atgi.writeManagementMetadata();
         atgi.closeDocument();
         }catch(VitamException|XMLStreamException e){
-            // Un logger ?
+            // TODO Un logger ?
             e.printStackTrace();
             fail("Should not have an exception");
         }
@@ -114,10 +114,9 @@ public class ArchiveTransferGeneratorImplTest {
         pm.put("file", filename);
         pm.put("dataobjectgroupID", dataObjectGroupID);
         pm.put("archivetransfergenerator", atgi);
-        Playbook pb=null;
         ClassLoader classLoader = getClass().getClassLoader();
         String jsonFile = classLoader.getResource("playbook_BinaryDataObject.json").getFile();
-        pb = PlaybookBuilder.getPlaybook(jsonFile);
+        Playbook pb = PlaybookBuilder.getPlaybook(jsonFile);
         SchedulerEngine se = new SchedulerEngine();
         se.execute(pb, pm);
         return atgi;

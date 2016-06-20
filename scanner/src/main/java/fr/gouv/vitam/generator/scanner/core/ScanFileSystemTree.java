@@ -34,20 +34,20 @@ import java.nio.file.Path;
 
 import javax.xml.stream.XMLStreamException;
 
+import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.VitamException;
 
 
 /**
- * TODO
+ * Scan a FileSystem
  */
 // TODO implements AutoCloseable
 public class ScanFileSystemTree {
 
-    // TODO all final
-    private String baseDir;
-    private String configFile;
-    private String outputFile;
-    private String playbookFile;
+    private final String baseDir;
+    private final String configFile;
+    private final String outputFile;
+    private final String playbookFile;
     /**
      * Default Constructor 
      * @param baseDir : root of the path that has to be scanned
@@ -57,7 +57,10 @@ public class ScanFileSystemTree {
      */
 
     public ScanFileSystemTree(String baseDir, String configFile,String playbookFile, String outputFile) {
-        // null check ?
+        ParametersChecker.checkParameter("baseDir cannot be null", baseDir);
+        ParametersChecker.checkParameter("configFile cannot be null", configFile);
+        ParametersChecker.checkParameter("outputFile cannot be null", outputFile);
+        ParametersChecker.checkParameter("playbookFile cannot be null", playbookFile);
         this.baseDir = baseDir;
         this.configFile = configFile;
         this.outputFile = outputFile;

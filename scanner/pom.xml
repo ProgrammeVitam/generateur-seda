@@ -21,6 +21,10 @@
 			<artifactId>scheduler</artifactId>
 			<version>${vitam.generator.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>fr.gouv.vitam</groupId>
+			<artifactId>common-public</artifactId>
+		</dependency>
   </dependencies>
 	<build>
 		<plugins>

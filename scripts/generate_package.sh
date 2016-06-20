@@ -1,4 +1,5 @@
 CURRENTDIR=$(dirname $0)
+rm -Rf $CURRENTDIR/build
 mkdir $CURRENTDIR/build
 mkdir $CURRENTDIR/build/conf
 mkdir $CURRENTDIR/build/lib

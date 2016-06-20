@@ -56,13 +56,13 @@ public class SiegfriedModuleTest {
     
     
     @Test
-    public void SiegfriedOK() {
+    public void siegfriedOK() {
         mockSiegfried(SIEGFRIED_OK);
     }
 
 
     @Test
-    public void SiegfriedNoInformation() {
+    public void siegfriedNoInformation() {
         mockSiegfried(SIEGFRIED_NO_FORMAT_INFORMATION);
     }
    

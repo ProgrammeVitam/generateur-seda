@@ -54,7 +54,7 @@ public class PlaybookImportTest {
             String jsonFile = classLoader.getResource("task_playbook.json").getFile();
             Playbook pb = PlaybookBuilder.getPlaybook(jsonFile);
         }catch(VitamSchedulerException e){
-            // Logger
+            // TODO Logger
             e.printStackTrace();
             fail(e.getMessage());
         }

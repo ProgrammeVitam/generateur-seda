@@ -139,8 +139,7 @@ public class Task {
 
 
     /**
-     * @param moduleID the moduleID to set
-     *
+     * @param module the moduleID to set
      * @return this
      */
     public Task setModule(String module) {

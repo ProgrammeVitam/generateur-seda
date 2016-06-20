@@ -34,7 +34,7 @@ public class SchedulerEngineTest {
             ParameterMap fin=se.execute(pb,initial);
             se.printStatistics();
         }catch(VitamException e){
-            // Logger
+            // TODO Logger
             e.printStackTrace();
             fail(e.getMessage());
         }        

@@ -38,9 +38,8 @@ public class Playbook {
 
     // Never initialized ?
     private String name;
-    // TODO final
     @JsonProperty("tasks")
-    private List<Task> tasks;
+    private final List<Task> tasks;
     
     /**
      * Default Constructor

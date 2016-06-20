@@ -57,6 +57,7 @@ import fr.gouv.culture.archivesdefrance.seda.v2.LevelType;
 import fr.gouv.culture.archivesdefrance.seda.v2.OrganizationWithIdType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TransferringAgencyTypeRoot;
+import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.json.JsonHandler;
@@ -73,24 +74,20 @@ public class ArchiveTransferGenerator {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGenerator.class);
     private static final String SEDA_NAMESPACE = "fr:gouv:culture:archivesdefrance:seda:v2.0";
-    // TODO use fr.gouv.vitam.common.CharsetUtils.UTF_8 or fr.gouv.vitam.common.CharsetUtils.UTF8 (Charset)
-    private static final String ENCODING = "UTF-8";
+    private static final String ENCODING = CharsetUtils.UTF_8;
     private static final String SEDA_FILENAME = "manifest.xml";
-    // TODO final
-    private ZipFileWriter zipFile;
+    private final ZipFileWriter zipFile;
     private JsonNode globalParameters;
-    // TODO final
-    private DataObjectGroupUsedMap dataObjectGroupUsedMap;
-    // TODO final
-    private Map<String, ArchiveUnitTypeRoot> mapArchiveUnit;
-    // TODO final
-    private XMLStreamWriter writer;
+    private final DataObjectGroupUsedMap dataObjectGroupUsedMap;
+    private final Map<String, ArchiveUnitTypeRoot> mapArchiveUnit;
+    private final XMLStreamWriter writer;
 
 
     /**
      * 
      * @param zipFileName : name of the Zip file that will be created
      * @throws VitamSedaException
+     * @throws IllegalArgumentException if zipFileName is null
      * TODO pour chaque méthode utilisant checkParameter: ajouter dans la JavaDoc @throws IllegalArgumentException et les noms des arguments vérifiés
      */
     public ArchiveTransferGenerator(String zipFileName) throws VitamSedaException {
@@ -108,8 +105,8 @@ public class ArchiveTransferGenerator {
         try{
             zipFile = new ZipFileWriter(zipFileName);
         }catch (FileNotFoundException e){
-            // FIXME zipFile is null => zipFileName
-            throw new VitamSedaException("Error on writing to" + zipFile, e);
+
+            throw new VitamSedaException("Error on writing to" + zipFileName, e);
         }
     }
 
@@ -118,7 +115,8 @@ public class ArchiveTransferGenerator {
      * 
      * @param headerfile
      * @throws XMLStreamException
-     * TODO missing second exception
+     * @throws VitamSedaException
+     * @throws IllegalArgumentException if headerfile is null
      */
 
     public void generateHeader(String headerfile) throws XMLStreamException, VitamSedaException {
@@ -167,6 +165,7 @@ public class ArchiveTransferGenerator {
      * @param title
      * @param description
      * @return the XML:ID of the archive Unit
+     * @throws IllegalArgumentException if title or description is null
      */
 
     public String addArchiveUnit(String title, String description) {
@@ -192,6 +191,7 @@ public class ArchiveTransferGenerator {
      * Set transactedDate to the ArchiveUnit Descriptive Metadata
      * @param id : id of the ArchiveUnit
      * @param date : Date to be set
+     * @throws IllegalArgumentException if id is null or isn't a valid ArchiveUnit Id
      */
     public void setTransactedDate(String id, Date date){
         ParametersChecker.checkParameter("id cannot be null", id);
@@ -208,6 +208,7 @@ public class ArchiveTransferGenerator {
      * Remove an ArchiveUnit from the collection . 
      * It doesn't destroy the relation with other ArchiveUnits
      * @param id
+     * @throws IllegalArgumentException if id is null
      */
     public void removeArchiveUnit(String id) {
         ParametersChecker.checkParameter("id cannot be null", id);
@@ -219,6 +220,7 @@ public class ArchiveTransferGenerator {
      * 
      * @param archiveUnitFatherID
      * @param archiveUnitSonID
+     * @throws IllegalArgumentException if archiveUnitFatherID or archiveUnitSonID are null
      */
     public void addArchiveUnit2ArchiveUnitReference(String archiveUnitFatherID, String archiveUnitSonID) {
         ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", archiveUnitFatherID);
@@ -235,6 +237,7 @@ public class ArchiveTransferGenerator {
      * 
      * @param archiveUnitFatherID
      * @param dataobjectGroupSonID
+     * @throws IllegalArgumentException if archiveUnitFatherID or dataobjectGroupSonID are null
      */
     public void addArchiveUnit2DataObjectGroupReference(String archiveUnitFatherID, String dataobjectGroupSonID) {
         ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", archiveUnitFatherID);
@@ -257,9 +260,7 @@ public class ArchiveTransferGenerator {
     /**
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
      * Management Metadata
-     * 
-     * TODO not the correct exception
-     * @throws XMLStreamException
+     * @throws VitamSedaException
      */
     public void writeDescriptiveMetadata() throws VitamSedaException {
         try{
@@ -291,7 +292,7 @@ public class ArchiveTransferGenerator {
      * Write the end of the document (close DataObjectPackage, write ArchivalAgency and Transferring Agency)
      * 
      * @throws XMLStreamException
-     * TODO missing exception
+     * @throws VitamSedaException
      */
 
     public void closeDocument() throws XMLStreamException, VitamSedaException {

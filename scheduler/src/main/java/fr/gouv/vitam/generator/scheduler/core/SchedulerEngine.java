@@ -28,6 +28,7 @@ package fr.gouv.vitam.generator.scheduler.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,7 +81,7 @@ public class SchedulerEngine {
      * @param playbook
      * @param initialParameters
      * @return the ParameterMaps of the playbook at the end of the execution 
-     * TODO missing exception
+     * @throws VitamException
      */
     public ParameterMap execute(Playbook playbook, ParameterMap initialParameters) throws VitamException{
         ParameterMap pm = initialParameters;
@@ -92,22 +93,21 @@ public class SchedulerEngine {
 
     /**
      * Templating of the ParameterMap
-     * @param templateParameters
-     * @param valuesParameters
-     * @return
-     * TODO return what ?
+     * @param templateParameters : a template parameter map with @@ @@ pattern 
+     * @param valuesParameters : the values to valuate the template
+     * @return the valuated ParameterMap
      */
     private ParameterMap substitute(ParameterMap templateParameters, ParameterMap valuesParameters) {
         ParameterMap pm = new ParameterMap();
         Pattern pattern = Pattern.compile("^@@(.*)@@$");
         // Prefer entrySet
-        for (String s : templateParameters.keySet()) {
-            String value = (String) templateParameters.get(s);
+        for (Entry<String,Object> entry : templateParameters.entrySet()) {
+            String value = (String) entry.getValue();
             Matcher matcher = pattern.matcher(value);
             if (matcher.find()) {
-                pm.put(s, valuesParameters.get(matcher.group(1)));
+                pm.put(entry.getKey(), valuesParameters.get(matcher.group(1)));
             } else {
-                pm.put(s, value);
+                pm.put(entry.getKey(), value);
             }
         }
         return pm;

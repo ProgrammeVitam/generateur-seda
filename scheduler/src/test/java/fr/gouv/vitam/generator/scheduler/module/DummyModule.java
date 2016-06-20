@@ -35,8 +35,6 @@
 package fr.gouv.vitam.generator.scheduler.module;
 
 import fr.gouv.vitam.common.exception.VitamException;
-import fr.gouv.vitam.common.logging.VitamLogger;
-import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
 
@@ -45,9 +43,7 @@ import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
  */
 public class DummyModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "dummy";
-    // Unused
-    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(DummyModule.class);
-
+    
     @Override
     public String getModuleId() {
         return MODULE_NAME;

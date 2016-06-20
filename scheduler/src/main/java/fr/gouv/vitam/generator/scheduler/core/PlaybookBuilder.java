@@ -66,16 +66,15 @@ public class PlaybookBuilder {
             playbook = objectMapper.readValue(jsonFile, Playbook.class);
         }catch(IOException e){
             // Empty message ? so only exception
-            throw new VitamSchedulerException("", e);       
+            throw new VitamSchedulerException("Can't load the Playbook Definition", e);       
         }
         return playbook;
     }
     
     /**
      * Constructs a Playbook from a JSON File
-     * @param file
-     * @return
-     * TODO return what ?
+     * @param file : the file which contains the playbook definition
+     * @return Playbook object constructed by the file 
      * @throws VitamSchedulerException
      */
     public static Playbook getPlaybook(String file) throws VitamSchedulerException{

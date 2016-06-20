@@ -56,8 +56,7 @@ public class DataObjectGroupUsedMap {
      * Test if the given id is an existing DataObjectGroup
      * 
      * @param id
-     * @return
-     * TODO return what ? True if what ? False if what ?
+     * @return true if the give id is an existing DataObjectGroup
      */
     public boolean existsDataObjectGroup(String id) {
         ParametersChecker.checkParameter("id cannot be null", id);

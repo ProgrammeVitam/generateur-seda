@@ -52,6 +52,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.FormatIdentificationType;
+import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.json.JsonHandler;
@@ -104,8 +105,7 @@ public class SiegfriedModule implements PublicModuleInterface {
             if (formatLitteral != null && formatLitteral.length() >0){
                 format.setFormatLitteral(formatLitteral);
             }
-        }catch(ClientProtocolException e){
-            throw new VitamSedaException("Error on the HTTP client sent to siegfried",e);
+        
         } catch (InvalidParseOperationException e) {
             throw new VitamSedaException("Error on the Json got from Siegfried",e);
         } catch (IOException e) {
@@ -116,25 +116,29 @@ public class SiegfriedModule implements PublicModuleInterface {
         return returnPM;
     }
         
-    private String callSiegfried(String siegfriedURL , File file) throws ClientProtocolException,IOException{
+    private String callSiegfried(String siegfriedURL , File file) throws VitamSedaException,IOException{
         CloseableHttpClient httpclient;
-        // Always true unless in test mode where we inject with reflexion a mocked object
+        String returnSiegfriedValue = null;
         if (testhttpclient != null){
             httpclient = testhttpclient;
         }else{
             httpclient = HttpClients.createDefault();
         }
-        HttpPost post = new HttpPost(siegfriedURL + "/identify");
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.addBinaryBody("file", file);
-        HttpEntity entity = builder.build();
-        post.setEntity(entity);
-        HttpResponse response = httpclient.execute(post);
-        // TODO CharsetUtils et utiliser Charset plutôt que String
-        String s= EntityUtils.toString(response.getEntity(), "UTF-8");
-        // TODO try finally pour close une fois alloué
-        httpclient.close();
-        return s;
+
+        try{
+            HttpPost post = new HttpPost(siegfriedURL + "/identify");
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.addBinaryBody("file", file);
+            HttpEntity entity = builder.build();
+            post.setEntity(entity);
+            HttpResponse response = httpclient.execute(post);
+            returnSiegfriedValue= EntityUtils.toString(response.getEntity(), CharsetUtils.UTF8);
+        }catch(ClientProtocolException e){
+            throw new VitamSedaException("Error on the HTTP client sent to siegfried",e);
+        }finally{
+            httpclient.close();
+        }
+        return returnSiegfriedValue;
     }
     
 }

@@ -29,6 +29,7 @@ package fr.gouv.vitam.generator.seda.helper;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -44,7 +45,7 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 public class XMLWriterUtils {
 
-    private static int sequenceID = 0;
+    private static AtomicInteger sequenceID = new AtomicInteger();
 
     private XMLWriterUtils(){
         // Empty constructor
@@ -71,9 +72,8 @@ public class XMLWriterUtils {
      */
 
     public static String getNextID() {
-        // TODO to ensure multi-threading issue: AtomicInteger
-        sequenceID += 1;
-        return "ID" + sequenceID;
+        sequenceID.incrementAndGet();
+        return "ID" + sequenceID.get();
     }
 
 
@@ -141,10 +141,10 @@ public class XMLWriterUtils {
     /**
      * Convert a Date to XMLGregorianCalendar Object
      * @param date
-     * @return
-     * TODO return what ?
+     * @return the XMLGregorianCalendar associated to the date parameter
      * Suggestion: LocalDateTime (LocalDateUtil)
      * @throws VitamSedaException
+     * @throws IllegalArgumentException if the date parameter is null
      */
     public static XMLGregorianCalendar getXMLGregorianCalendar(Date date) throws VitamSedaException{
         ParametersChecker.checkParameter("date cannot be null",date);

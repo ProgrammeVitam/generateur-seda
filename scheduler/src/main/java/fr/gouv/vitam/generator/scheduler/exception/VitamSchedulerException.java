@@ -46,13 +46,6 @@ public class VitamSchedulerException extends VitamException {
      */
     private static final long serialVersionUID = 2132471137074618125L;
 
-    /**
-     * 
-     */
-    // Same as other, empty exception not useful
-    public VitamSchedulerException() {
-        super();
-    }
 
     /**
      * @param message

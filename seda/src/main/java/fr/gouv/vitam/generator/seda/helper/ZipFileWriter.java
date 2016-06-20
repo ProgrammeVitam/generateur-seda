@@ -38,8 +38,7 @@ import java.util.zip.ZipOutputStream;
  * A class which helps to write a zip
  */
 public class ZipFileWriter {
-    // TODO final
-    private ZipOutputStream zos;
+    private final ZipOutputStream zos;
     private static final int BUFFERSIZE = 64 * 1024;
 
     /**
