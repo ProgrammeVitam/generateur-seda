@@ -36,7 +36,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Playbook {
 
+    // Never initialized ?
     private String name;
+    // TODO final
     @JsonProperty("tasks")
     private List<Task> tasks;
     

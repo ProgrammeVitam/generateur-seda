@@ -49,6 +49,7 @@ public class VitamSchedulerException extends VitamException {
     /**
      * 
      */
+    // Same as other, empty exception not useful
     public VitamSchedulerException() {
         super();
     }

@@ -49,23 +49,29 @@ import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 /**
- * 
+ * TODO
  */
 class ScanFS extends SimpleFileVisitor<Path> {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ScanFS.class);
+    // TODO Défini plusieurs fois => un common ?
     private static final String MANIFEST_NAME = "manifest.json";
 
+    // TODO final
     private ArchiveTransferGenerator atgi;
     // null when the current directory is an ArchiveUnit and id of the current DataobjectGroup if the directory is an
     // DataobjectGroup
     private String dataObjectGroupOfCurrentDirectory;
+    // TODO final
     private HashMap<String, String> mapArchiveUnitPath2Id;
+    // TODO final
     private SchedulerEngine schedulerEngine;
+    // TODO final
     private Playbook playbookBinary;
 
     public ScanFS(String configFile, String playbookBinaryFile,String outputFile) throws VitamException {
         super();
+        // Null check ?
         this.atgi = new ArchiveTransferGenerator(outputFile);
         this.schedulerEngine = new SchedulerEngine();
         this.playbookBinary = PlaybookBuilder.getPlaybook(playbookBinaryFile);

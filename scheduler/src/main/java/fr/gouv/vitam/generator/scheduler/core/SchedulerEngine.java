@@ -42,6 +42,12 @@ import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
  *  SchedulerEngine
  */
 public class SchedulerEngine {
+    /*
+     * TODO either choose static or not static
+     * For instance:
+     * - static: all static final and already allocated and build from a static { } step but not in constructor
+     * - non static: all non static but final and then in constructor
+     */
     private static Map<String,PublicModuleInterface> modulesList = null;
     private ServiceLoader<PublicModuleInterface> moduleLoader = ServiceLoader.load(PublicModuleInterface.class);
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(SchedulerEngine.class);
@@ -74,6 +80,7 @@ public class SchedulerEngine {
      * @param playbook
      * @param initialParameters
      * @return the ParameterMaps of the playbook at the end of the execution 
+     * TODO missing exception
      */
     public ParameterMap execute(Playbook playbook, ParameterMap initialParameters) throws VitamException{
         ParameterMap pm = initialParameters;
@@ -88,10 +95,12 @@ public class SchedulerEngine {
      * @param templateParameters
      * @param valuesParameters
      * @return
+     * TODO return what ?
      */
     private ParameterMap substitute(ParameterMap templateParameters, ParameterMap valuesParameters) {
         ParameterMap pm = new ParameterMap();
         Pattern pattern = Pattern.compile("^@@(.*)@@$");
+        // Prefer entrySet
         for (String s : templateParameters.keySet()) {
             String value = (String) templateParameters.get(s);
             Matcher matcher = pattern.matcher(value);

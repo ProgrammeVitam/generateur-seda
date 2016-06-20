@@ -39,12 +39,12 @@ import fr.gouv.vitam.generator.seda.core.DataObjectGroupUsedMap;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 /**
- * Write the binaryDataObject structure to XML and the binaryfile to the ZIP file
- * Input: 
- * - binarydataobject (BinaryDataObjectTypeRoot) : the ready to write binaryDataObject Jaxb POJO 
- * - dataobjectgroupID (String) : the dataobjectgroupID to which the binaryDataObject belongs
- * - archivetransfergenerator (ArchiveTransferGenerator) : the object which has the pointer to XML and ZIP file
- * Output:
+ * Write the binaryDataObject structure to XML and the binaryfile to the ZIP file<br>
+ * Input: <br>
+ * - binarydataobject (BinaryDataObjectTypeRoot) : the ready to write binaryDataObject Jaxb POJO<br> 
+ * - dataobjectgroupID (String) : the dataobjectgroupID to which the binaryDataObject belongs<br>
+ * - archivetransfergenerator (ArchiveTransferGenerator) : the object which has the pointer to XML and ZIP file<br>
+ * Output:<br>
  * - binarydataobject (BinaryDataObjectTypeRoot)
  */
 

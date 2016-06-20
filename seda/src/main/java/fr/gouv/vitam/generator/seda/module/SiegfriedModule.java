@@ -62,10 +62,11 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 /**
  * Module interacting with Siegfried (http://www.itforarchivists.com/siegfried)
- * Input : 
- * - siegfriedURL (String) : URL to siegfried (without the /identify)
- * - binarydataobject (BinaryDataObjectTypeRoot)
- * Output
+ * <br>
+ * Input :<br> 
+ * - siegfriedURL (String) : URL to siegfried (without the /identify)<br>
+ * - binarydataobject (BinaryDataObjectTypeRoot)<br>
+ * Output<br>
  * - binarydataobject (BinaryDataObjectTypeRoot)
  */
 public class SiegfriedModule implements PublicModuleInterface {
@@ -129,7 +130,9 @@ public class SiegfriedModule implements PublicModuleInterface {
         HttpEntity entity = builder.build();
         post.setEntity(entity);
         HttpResponse response = httpclient.execute(post);
+        // TODO CharsetUtils et utiliser Charset plutôt que String
         String s= EntityUtils.toString(response.getEntity(), "UTF-8");
+        // TODO try finally pour close une fois alloué
         httpclient.close();
         return s;
     }

@@ -63,9 +63,9 @@ public class ArchiveTransferGeneratorImplTest {
     @Test
     public void correctSeda() {
         try{
-
+            // FORMAT (sur tous les fichiers)
         
-        
+        // Helper dans PropertiesUtils
         ClassLoader classLoader = getClass().getClassLoader();
         String headerPath = classLoader.getResource("sip1.json").getFile();
         ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(OUTPUT_FILE);
@@ -86,6 +86,7 @@ public class ArchiveTransferGeneratorImplTest {
         atgi.writeManagementMetadata();
         atgi.closeDocument();
         }catch(VitamException|XMLStreamException e){
+            // Un logger ?
             e.printStackTrace();
             fail("Should not have an exception");
         }

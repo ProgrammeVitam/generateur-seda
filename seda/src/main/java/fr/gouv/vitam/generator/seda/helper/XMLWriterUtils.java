@@ -47,6 +47,7 @@ public class XMLWriterUtils {
     private static int sequenceID = 0;
 
     private XMLWriterUtils(){
+        // Empty constructor
     }
     /**
      * Write an attribute with only one value
@@ -58,6 +59,7 @@ public class XMLWriterUtils {
      */
     public static void writeAttributeValue(XMLStreamWriter writer, String attribute, String value)
         throws XMLStreamException {
+        // TODO null check ?
         writer.writeStartElement(attribute);
         writer.writeCharacters(value);
         writer.writeEndElement();
@@ -69,6 +71,7 @@ public class XMLWriterUtils {
      */
 
     public static String getNextID() {
+        // TODO to ensure multi-threading issue: AtomicInteger
         sequenceID += 1;
         return "ID" + sequenceID;
     }
@@ -98,6 +101,7 @@ public class XMLWriterUtils {
     public static String setID(XMLStreamWriter writer, boolean prefix) throws XMLStreamException {
         String nextID = XMLWriterUtils.getNextID();
         if (prefix) {
+            // TODO static final String ?
             writer.writeAttribute("xml", "xml", "id", nextID);
         } else {
             writer.writeAttribute("id", nextID);
@@ -120,6 +124,7 @@ public class XMLWriterUtils {
      * 
      * @param date
      * @return a String which contains XML formated date of the given date
+     * Suggestion: LocalDateTime (LocalDateUtil) possède déjà le défaut ISO
      */
 
     public static String getDate(Date date) {
@@ -137,6 +142,8 @@ public class XMLWriterUtils {
      * Convert a Date to XMLGregorianCalendar Object
      * @param date
      * @return
+     * TODO return what ?
+     * Suggestion: LocalDateTime (LocalDateUtil)
      * @throws VitamSedaException
      */
     public static XMLGregorianCalendar getXMLGregorianCalendar(Date date) throws VitamSedaException{

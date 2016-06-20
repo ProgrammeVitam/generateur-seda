@@ -10,7 +10,7 @@ import fr.gouv.vitam.common.logging.VitamLoggerFactory;
  */
 
 class SchedulerMetrics {
-    
+    // All final
     private HashMap<String,Long> nbCallModule;
     private HashMap<String,Long> timeCallModule;
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(SchedulerMetrics.class);
@@ -51,6 +51,7 @@ class SchedulerMetrics {
         LOGGER.debug("Module;Nb exec;Total time exec (ms); Mean Time (ms)");
         for (String moduleId : nbCallModule.keySet()){
             if (nbCallModule.get(moduleId)>0){
+                // TODO StringBuilder when so many arguments LOGGER.info(new StringBuilder(moduleId).append(...).toString());
                 LOGGER.info(moduleId+ ";" + nbCallModule.get(moduleId)+";"+ timeCallModule.get(moduleId)+";"+ timeCallModule.get(moduleId)/nbCallModule.get(moduleId));
             }else{
                 LOGGER.info(moduleId+ ";" + nbCallModule.get(moduleId)+";"+ timeCallModule.get(moduleId)+";N/A");

@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * 
+ * TODO: tu en as un généré automatiquement dans target => conflit. A priori supprime celui-là même si du coup tu n'en auras pas dans ta Javadoc
  */
 package fr.gouv.culture.archivesdefrance.seda.v2;
