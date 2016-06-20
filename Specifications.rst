@@ -112,7 +112,7 @@ Dans le fichier SEDA, les Champs suivants sont gérés
  * DataObjectPackage.Management : élément vide
  * DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content :
  
-   + DescriptionLevel : File s'il y a un DOG comme fils , RecordGrp sinon
+   + DescriptionLevel : Item s'il y a un DOG comme fils , RecordGrp sinon
    + Title : Nom du fichier ou répertoire
    + Description : un champ de debug pour l'instant
    + TransactedDate : Pour les archiveUnit ayant un DOG, le mtime du dernier fichier chargé dans le DOG . Quelle est la bonne valeur quand il y a plus d'un fichier par DOG
