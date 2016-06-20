@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * TODO
+ * Modules of the scheduler implemented for the SEDA module 
  */
 package fr.gouv.vitam.generator.seda.module;

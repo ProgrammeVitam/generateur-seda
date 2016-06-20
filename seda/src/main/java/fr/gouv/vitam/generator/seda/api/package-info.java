@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * TODO comment 
+ * API of the seda module
  */
 package fr.gouv.vitam.generator.seda.api;

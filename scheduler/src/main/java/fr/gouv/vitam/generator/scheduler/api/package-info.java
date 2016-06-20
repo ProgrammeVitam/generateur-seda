@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * TODO
+ * API of scheduler
  */
 package fr.gouv.vitam.generator.scheduler.api;

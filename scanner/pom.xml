@@ -54,7 +54,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>fr.gouv.vitam.generator.scanner.main.Main</mainClass>
+							<mainClass>fr.gouv.vitam.generator.scanner.main.SedaGenerator</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

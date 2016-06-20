@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * TODO
+ * Core part of the Seda module of the SEDA generator
  */
 package fr.gouv.vitam.generator.seda.core;

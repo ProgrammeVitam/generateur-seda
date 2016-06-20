@@ -34,15 +34,12 @@ import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scanner.core.ScanFileSystemTree;
 
 /**
- * Main class
- * TODO Main class for what ? 
- * Instead of Main, maybe something like SedaGenerator ?
- * TODO missing package-info.java
+ * Entry point of the Seda Generator
  */
 
-public class Main {
+public class SedaGenerator {
     
-    private Main(){
+    private SedaGenerator(){
         // Empty constructor
     }
     /**

@@ -35,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLOutputFactory;
@@ -338,19 +339,18 @@ public class ArchiveTransferGenerator {
         CodeListVersionsTypeRoot clvt = new CodeListVersionsTypeRoot();
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> result = mapper.convertValue(jsonNode, Map.class);
-        // TODO use entrySet (getKey, getValue)
-        for (String key : result.keySet()) {
+        for (Entry <String,Object> entry : result.entrySet()) {
             CodeType ct = new CodeType();
-            Object value = result.get(key);
+            Object value = entry.getValue();
             if (value instanceof String) {
-                ct.setValue((String) result.get(key));
+                ct.setValue((String) value);
                 try {
                     //
-                    clvt.getClass().getMethod("set" + key, CodeType.class).invoke(clvt, ct);
+                    clvt.getClass().getMethod("set" + entry.getKey(), CodeType.class).invoke(clvt, ct);
                 } catch (NoSuchMethodException e) { //NOSONAR : it is just a warning based on a bad named argument given in the Json File
-                    LOGGER.warn("Argument" + key + "is not a CodeListVersion argument");
+                    LOGGER.warn("Argument" + entry.getKey() + "is not a CodeListVersion argument");
                 } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
-                    throw new VitamSedaException("Error on assigning " + key + "argument", e);
+                    throw new VitamSedaException("Error on assigning " + entry.getKey() + "argument", e);
                 }
             }
         }

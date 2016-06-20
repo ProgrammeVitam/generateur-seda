@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * TODO
+ * Core package of the scheduler
  */
 package fr.gouv.vitam.generator.scheduler.core;

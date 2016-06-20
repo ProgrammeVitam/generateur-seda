@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * TODO
+ * Entry point package of the Seda Generator
  */
-package fr.gouv.vitam.generator.scheduler.common;
+package fr.gouv.vitam.generator.scanner.main;

@@ -47,16 +47,20 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Test;
 
 import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.common.logging.VitamLogger;
+import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.core.Playbook;
 import fr.gouv.vitam.generator.scheduler.core.PlaybookBuilder;
 import fr.gouv.vitam.generator.scheduler.core.SchedulerEngine;
+import fr.gouv.vitam.generator.scheduler.core.SchedulerMetrics;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 
 /**
  * 
  */
 public class ArchiveTransferGeneratorImplTest {
+    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGeneratorImplTest.class);
 
     private static final String OUTPUT_FILE = "output.zip";
 
@@ -86,8 +90,7 @@ public class ArchiveTransferGeneratorImplTest {
         atgi.writeManagementMetadata();
         atgi.closeDocument();
         }catch(VitamException|XMLStreamException e){
-            // TODO Un logger ?
-            e.printStackTrace();
+            LOGGER.error("Should not have an exception",e);
             fail("Should not have an exception");
         }
     }

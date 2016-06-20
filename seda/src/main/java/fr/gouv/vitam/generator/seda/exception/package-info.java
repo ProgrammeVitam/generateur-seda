@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * TODO
+ * Exception raised by Seda module components
  */
 package fr.gouv.vitam.generator.seda.exception;

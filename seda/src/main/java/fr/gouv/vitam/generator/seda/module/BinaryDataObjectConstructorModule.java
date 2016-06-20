@@ -66,7 +66,12 @@ public class BinaryDataObjectConstructorModule implements PublicModuleInterface 
         ParameterMap returnPM = new ParameterMap();
         String id = XMLWriterUtils.getNextID();
         File f = new File((String)parameters.get("file"));
-        // TODO file exists and readable ?
+        if (!f.exists()){
+            throw new VitamBinaryDataObjectException(f.getPath()+ "doesn't exist anymore");
+        }
+        if (!f.canRead()){
+            throw new VitamBinaryDataObjectException(f.getPath()+ "is not readable");
+        }
         if (f.length() == 0){
             throw new VitamBinaryDataObjectException(f.getPath()+" is an empty file");
         }
