@@ -87,7 +87,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.generator.version>0.4.0-SNAPSHOT</vitam.generator.version>
+		<vitam.generator.version>0.5.0-SNAPSHOT</vitam.generator.version>
+		<vitam.common.version>0.5.0-SNAPSHOT</vitam.common.version>
+
 
 		<!-- Build environment Properties -->
 		<project.scm.id>vitam-gitlab</project.scm.id>
@@ -392,7 +394,7 @@
 			<dependency>
 				<groupId>fr.gouv.vitam</groupId>
 				<artifactId>common-public</artifactId>
-				<version>0.4.0-SNAPSHOT</version>
+				<version>${vitam.common.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>

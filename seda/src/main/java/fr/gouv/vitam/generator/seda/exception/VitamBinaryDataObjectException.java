@@ -36,6 +36,7 @@ public class VitamBinaryDataObjectException extends VitamSedaException {
      * 
      */
     private static final long serialVersionUID = -1212316418512647957L;
+
     /**
      * 
      * @param message
