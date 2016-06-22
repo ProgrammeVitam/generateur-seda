@@ -47,6 +47,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Test;
 
 import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.common.logging.VitamLogger;
+import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.core.Playbook;
 import fr.gouv.vitam.generator.scheduler.core.PlaybookBuilder;
@@ -57,15 +59,16 @@ import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
  * 
  */
 public class ArchiveTransferGeneratorImplTest {
+    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGeneratorImplTest.class);
 
     private static final String OUTPUT_FILE = "output.zip";
 
     @Test
     public void correctSeda() {
         try{
-
+            // TODO FORMAT (sur tous les fichiers)
         
-        
+        // TODO Helper dans PropertiesUtils
         ClassLoader classLoader = getClass().getClassLoader();
         String headerPath = classLoader.getResource("sip1.json").getFile();
         ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(OUTPUT_FILE);
@@ -86,7 +89,7 @@ public class ArchiveTransferGeneratorImplTest {
         atgi.writeManagementMetadata();
         atgi.closeDocument();
         }catch(VitamException|XMLStreamException e){
-            e.printStackTrace();
+            LOGGER.error("Should not have an exception",e);
             fail("Should not have an exception");
         }
     }
@@ -113,10 +116,9 @@ public class ArchiveTransferGeneratorImplTest {
         pm.put("file", filename);
         pm.put("dataobjectgroupID", dataObjectGroupID);
         pm.put("archivetransfergenerator", atgi);
-        Playbook pb=null;
         ClassLoader classLoader = getClass().getClassLoader();
         String jsonFile = classLoader.getResource("playbook_BinaryDataObject.json").getFile();
-        pb = PlaybookBuilder.getPlaybook(jsonFile);
+        Playbook pb = PlaybookBuilder.getPlaybook(jsonFile);
         SchedulerEngine se = new SchedulerEngine();
         se.execute(pb, pm);
         return atgi;

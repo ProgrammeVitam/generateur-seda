@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * 
+ * Entry point package of the Seda Generator
  */
-package fr.gouv.culture.archivesdefrance.seda.v2;
+package fr.gouv.vitam.generator.scanner.main;

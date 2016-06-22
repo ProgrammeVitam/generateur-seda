@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * 
+ * Scanner part of the Seda Generator
  */
 package fr.gouv.vitam.generator.scanner.core;

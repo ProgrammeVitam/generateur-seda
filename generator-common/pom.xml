@@ -5,11 +5,12 @@
     <artifactId>parent</artifactId>
     <version>${vitam.generator.version}</version>
   </parent>
-  <artifactId>common</artifactId>
+  <artifactId>generator-common</artifactId>
   <dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
   </dependencies>
 </project>

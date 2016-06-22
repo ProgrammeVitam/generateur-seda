@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * 
+ * Exceptions raised by the Scheduler 
  */
 package fr.gouv.vitam.generator.scheduler.exception;

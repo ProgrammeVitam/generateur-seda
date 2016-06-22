@@ -33,5 +33,6 @@ import java.util.HashMap;
  * Definition of a Type Alias for the parameters passed and returned by the execution of tasks
  */
 public class ParameterMap extends HashMap<String, Object> {
+    private static final long serialVersionUID = -8501319445037778743L;
 
 }

@@ -36,9 +36,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Playbook {
 
+    // Never initialized ?
     private String name;
     @JsonProperty("tasks")
-    private List<Task> tasks;
+    private final List<Task> tasks;
     
     /**
      * Default Constructor

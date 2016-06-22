@@ -46,7 +46,7 @@ import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 public class DataObjectGroupUsedMap {
     private Map<String, Boolean> mapDataObjectGroup;
     /**
-     * 
+     * Empty constructor
      */
     public DataObjectGroupUsedMap() {
         mapDataObjectGroup = new HashMap<>();
@@ -56,7 +56,7 @@ public class DataObjectGroupUsedMap {
      * Test if the given id is an existing DataObjectGroup
      * 
      * @param id
-     * @return
+     * @return true if the give id is an existing DataObjectGroup
      */
     public boolean existsDataObjectGroup(String id) {
         ParametersChecker.checkParameter("id cannot be null", id);

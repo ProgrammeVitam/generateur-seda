@@ -10,9 +10,8 @@ import fr.gouv.vitam.common.logging.VitamLoggerFactory;
  */
 
 class SchedulerMetrics {
-    
-    private HashMap<String,Long> nbCallModule;
-    private HashMap<String,Long> timeCallModule;
+    private final HashMap<String,Long> nbCallModule;
+    private final HashMap<String,Long> timeCallModule;
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(SchedulerMetrics.class);
 
     public SchedulerMetrics() {
@@ -49,12 +48,14 @@ class SchedulerMetrics {
      */
     public void printStatistics(){
         LOGGER.debug("Module;Nb exec;Total time exec (ms); Mean Time (ms)");
-        for (String moduleId : nbCallModule.keySet()){
+        for (String moduleId : nbCallModule.keySet()){//NOSONAR : We don't use entrySet as we iterate on 2 maps
+            StringBuilder sb = new StringBuilder(moduleId).append(";").append(nbCallModule.get(moduleId)).append(";").append(timeCallModule.get(moduleId)).append(";");
             if (nbCallModule.get(moduleId)>0){
-                LOGGER.info(moduleId+ ";" + nbCallModule.get(moduleId)+";"+ timeCallModule.get(moduleId)+";"+ timeCallModule.get(moduleId)/nbCallModule.get(moduleId));
+                sb.append(timeCallModule.get(moduleId)/nbCallModule.get(moduleId));
             }else{
-                LOGGER.info(moduleId+ ";" + nbCallModule.get(moduleId)+";"+ timeCallModule.get(moduleId)+";N/A");
+                sb.append("N/A");
             }
+            LOGGER.info(sb.toString());
         }
     }
 }

@@ -25,6 +25,6 @@
  * accept its terms.
  */
 /**
- * 
+ * Helper functions for SEDA module
  */
 package fr.gouv.vitam.generator.seda.helper;

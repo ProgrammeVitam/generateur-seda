@@ -24,7 +24,33 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
+package fr.gouv.vitam.generator.scanner.main;
+
+import java.io.IOException;
+
+import javax.xml.stream.XMLStreamException;
+
+import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.generator.scanner.core.ScanFileSystemTree;
+
 /**
- * 
+ * Entry point of the Seda Generator
  */
-package fr.gouv.vitam.generator.scheduler.module;
+
+public class SedaGenerator {
+    
+    private SedaGenerator(){
+        // Empty constructor
+    }
+    /**
+     * Entry point
+     * @param args
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws VitamException
+     */
+    public static void main(String[] args) throws IOException,XMLStreamException,VitamException{
+        //TODO check arguments and number of arguments
+            new ScanFileSystemTree(args[0], args[1], args[2],args[3]).scan();
+    }
+}

@@ -35,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLOutputFactory;
@@ -57,6 +58,7 @@ import fr.gouv.culture.archivesdefrance.seda.v2.LevelType;
 import fr.gouv.culture.archivesdefrance.seda.v2.OrganizationWithIdType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TransferringAgencyTypeRoot;
+import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.json.JsonHandler;
@@ -73,19 +75,21 @@ public class ArchiveTransferGenerator {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGenerator.class);
     private static final String SEDA_NAMESPACE = "fr:gouv:culture:archivesdefrance:seda:v2.0";
-    private static final String ENCODING = "UTF-8";
+    private static final String ENCODING = CharsetUtils.UTF_8;
     private static final String SEDA_FILENAME = "manifest.xml";
-    private ZipFileWriter zipFile;
+    private final ZipFileWriter zipFile;
     private JsonNode globalParameters;
-    private DataObjectGroupUsedMap dataObjectGroupUsedMap;
-    private Map<String, ArchiveUnitTypeRoot> mapArchiveUnit;
-    private XMLStreamWriter writer;
+    private final DataObjectGroupUsedMap dataObjectGroupUsedMap;
+    private final Map<String, ArchiveUnitTypeRoot> mapArchiveUnit;
+    private final XMLStreamWriter writer;
 
 
     /**
      * 
      * @param zipFileName : name of the Zip file that will be created
      * @throws VitamSedaException
+     * @throws IllegalArgumentException if zipFileName is null
+     * TODO pour chaque méthode utilisant checkParameter: ajouter dans la JavaDoc @throws IllegalArgumentException et les noms des arguments vérifiés
      */
     public ArchiveTransferGenerator(String zipFileName) throws VitamSedaException {
         ParametersChecker.checkParameter("xmlname cannot be null", zipFileName);
@@ -93,6 +97,7 @@ public class ArchiveTransferGenerator {
         dataObjectGroupUsedMap = new DataObjectGroupUsedMap();
         mapArchiveUnit = new HashMap<>();
         try {
+            // TODO où est écrit le fichier ?
             FileOutputStream fos = new FileOutputStream(SEDA_FILENAME);
             this.writer = output.createXMLStreamWriter(fos, ENCODING);
         } catch (IOException | XMLStreamException e) {
@@ -101,7 +106,8 @@ public class ArchiveTransferGenerator {
         try{
             zipFile = new ZipFileWriter(zipFileName);
         }catch (FileNotFoundException e){
-            throw new VitamSedaException("Error on writing to" + zipFile, e);
+
+            throw new VitamSedaException("Error on writing to" + zipFileName, e);
         }
     }
 
@@ -110,6 +116,8 @@ public class ArchiveTransferGenerator {
      * 
      * @param headerfile
      * @throws XMLStreamException
+     * @throws VitamSedaException
+     * @throws IllegalArgumentException if headerfile is null
      */
 
     public void generateHeader(String headerfile) throws XMLStreamException, VitamSedaException {
@@ -126,7 +134,7 @@ public class ArchiveTransferGenerator {
         try {
             globalParameters = JsonHandler.getFromFile(new File(headerfile));
         } catch (InvalidParseOperationException e) {
-            throw new VitamSedaException("Error on header file" + headerfile,e);
+            throw new VitamSedaException("Error on header file" + headerfile, e);
         }
 
         getJSONArgument2XML("Comment");
@@ -158,6 +166,7 @@ public class ArchiveTransferGenerator {
      * @param title
      * @param description
      * @return the XML:ID of the archive Unit
+     * @throws IllegalArgumentException if title or description is null
      */
 
     public String addArchiveUnit(String title, String description) {
@@ -183,8 +192,9 @@ public class ArchiveTransferGenerator {
      * Set transactedDate to the ArchiveUnit Descriptive Metadata
      * @param id : id of the ArchiveUnit
      * @param date : Date to be set
+     * @throws IllegalArgumentException if id is null or isn't a valid ArchiveUnit Id
      */
-    public void setTransactedDate(String id,Date date){
+    public void setTransactedDate(String id, Date date){
         ParametersChecker.checkParameter("id cannot be null", id);
         ParametersChecker.checkParameter("id must be a valid ArchiveUnit ID", mapArchiveUnit.get(id));
         ArchiveUnitTypeRoot autr = mapArchiveUnit.get(id);
@@ -199,6 +209,7 @@ public class ArchiveTransferGenerator {
      * Remove an ArchiveUnit from the collection . 
      * It doesn't destroy the relation with other ArchiveUnits
      * @param id
+     * @throws IllegalArgumentException if id is null
      */
     public void removeArchiveUnit(String id) {
         ParametersChecker.checkParameter("id cannot be null", id);
@@ -210,6 +221,7 @@ public class ArchiveTransferGenerator {
      * 
      * @param archiveUnitFatherID
      * @param archiveUnitSonID
+     * @throws IllegalArgumentException if archiveUnitFatherID or archiveUnitSonID are null
      */
     public void addArchiveUnit2ArchiveUnitReference(String archiveUnitFatherID, String archiveUnitSonID) {
         ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", archiveUnitFatherID);
@@ -226,6 +238,7 @@ public class ArchiveTransferGenerator {
      * 
      * @param archiveUnitFatherID
      * @param dataobjectGroupSonID
+     * @throws IllegalArgumentException if archiveUnitFatherID or dataobjectGroupSonID are null
      */
     public void addArchiveUnit2DataObjectGroupReference(String archiveUnitFatherID, String dataobjectGroupSonID) {
         ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", archiveUnitFatherID);
@@ -235,7 +248,7 @@ public class ArchiveTransferGenerator {
         dort.setId(XMLWriterUtils.getNextID());
         dort.setDataObjectGroupReferenceId(dataobjectGroupSonID);
         autrFather.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference().add(dort);
-        // When an ArchiveUnit has a DataObjectGroup, it ia at the Level FILE
+        // When an ArchiveUnit has a DataObjectGroup, it is at the Level FILE
         for (DescriptiveMetadataContentType dmct: autrFather.getContent()){
             autrFather.getContent().remove(dmct);
             dmct.setDescriptionLevel(LevelType.FILE);
@@ -248,8 +261,7 @@ public class ArchiveTransferGenerator {
     /**
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
      * Management Metadata
-     * 
-     * @throws XMLStreamException
+     * @throws VitamSedaException
      */
     public void writeDescriptiveMetadata() throws VitamSedaException {
         try{
@@ -281,10 +293,11 @@ public class ArchiveTransferGenerator {
      * Write the end of the document (close DataObjectPackage, write ArchivalAgency and Transferring Agency)
      * 
      * @throws XMLStreamException
+     * @throws VitamSedaException
      */
 
-    public void closeDocument() throws XMLStreamException,VitamSedaException {
-        // DataObjectPackage
+    public void closeDocument() throws XMLStreamException, VitamSedaException {
+        // DataObjectPackage closing
         writer.writeEndElement();
         getJSONArgument2XML("ArchivalAgency", new ArchivalAgencyTypeRoot());
         getJSONArgument2XML("TransferringAgency", new TransferringAgencyTypeRoot());
@@ -326,18 +339,18 @@ public class ArchiveTransferGenerator {
         CodeListVersionsTypeRoot clvt = new CodeListVersionsTypeRoot();
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> result = mapper.convertValue(jsonNode, Map.class);
-        for (String key : result.keySet()) {
+        for (Entry <String,Object> entry : result.entrySet()) {
             CodeType ct = new CodeType();
-            Object value = result.get(key);
+            Object value = entry.getValue();
             if (value instanceof String) {
-                ct.setValue((String) result.get(key));
+                ct.setValue((String) value);
                 try {
                     //
-                    clvt.getClass().getMethod("set" + key, CodeType.class).invoke(clvt, ct);
+                    clvt.getClass().getMethod("set" + entry.getKey(), CodeType.class).invoke(clvt, ct);
                 } catch (NoSuchMethodException e) { //NOSONAR : it is just a warning based on a bad named argument given in the Json File
-                    LOGGER.warn("Argument" + key + "is not a CodeListVersion argument");
+                    LOGGER.warn("Argument" + entry.getKey() + "is not a CodeListVersion argument");
                 } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
-                    throw new VitamSedaException("Error on assigning " + key + "argument", e);
+                    throw new VitamSedaException("Error on assigning " + entry.getKey() + "argument", e);
                 }
             }
         }

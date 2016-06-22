@@ -37,10 +37,8 @@ import java.util.zip.ZipOutputStream;
 /**
  * A class which helps to write a zip
  */
-
 public class ZipFileWriter {
-
-    private ZipOutputStream zos;
+    private final ZipOutputStream zos;
     private static final int BUFFERSIZE = 64 * 1024;
 
     /**
@@ -60,6 +58,7 @@ public class ZipFileWriter {
      * @throws IOException
      */
     public void addFile(String filename,InputStream is) throws IOException{
+        // TODO nullity + file readability ?
         ZipEntry zipEntry = new ZipEntry(filename);
 
         zos.putNextEntry(zipEntry);
@@ -79,7 +78,8 @@ public class ZipFileWriter {
      * @param fullpath : name of the file on the filesystem whose data will be added to the zip 
      * @throws IOException
      */
-    public void addFile(String filename,String fullpath) throws IOException{
+    public void addFile(String filename, String fullpath) throws IOException{
+        //TODO use autoCloseable property try (allocation) { addFile }
         FileInputStream fis = new FileInputStream(fullpath);
         addFile(filename, fis);      
     }
@@ -90,13 +90,15 @@ public class ZipFileWriter {
      * @throws IOException
      */
     public void addFile(String filename) throws IOException{
-        addFile(filename,filename);      
+        // Suppose que le filename est bien placé ? racine 
+        addFile(filename, filename);      
     }
 
     /**
      * Close the zip file
      * @throws IOException
      */
+    // Suggestion implement AutoCloseable: permet de faire un try(ZipFileWriter zfw = new ZFW()) {} avec close implicit
     public void closeZipFile() throws IOException{
         zos.flush();
         zos.close();

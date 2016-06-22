@@ -29,6 +29,7 @@ package fr.gouv.vitam.generator.seda.helper;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -44,9 +45,10 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 public class XMLWriterUtils {
 
-    private static int sequenceID = 0;
+    private static AtomicInteger sequenceID = new AtomicInteger();
 
     private XMLWriterUtils(){
+        // Empty constructor
     }
     /**
      * Write an attribute with only one value
@@ -58,6 +60,7 @@ public class XMLWriterUtils {
      */
     public static void writeAttributeValue(XMLStreamWriter writer, String attribute, String value)
         throws XMLStreamException {
+        // TODO null check ?
         writer.writeStartElement(attribute);
         writer.writeCharacters(value);
         writer.writeEndElement();
@@ -69,8 +72,8 @@ public class XMLWriterUtils {
      */
 
     public static String getNextID() {
-        sequenceID += 1;
-        return "ID" + sequenceID;
+        sequenceID.incrementAndGet();
+        return "ID" + sequenceID.get();
     }
 
 
@@ -98,6 +101,7 @@ public class XMLWriterUtils {
     public static String setID(XMLStreamWriter writer, boolean prefix) throws XMLStreamException {
         String nextID = XMLWriterUtils.getNextID();
         if (prefix) {
+            // TODO static final String ?
             writer.writeAttribute("xml", "xml", "id", nextID);
         } else {
             writer.writeAttribute("id", nextID);
@@ -120,6 +124,7 @@ public class XMLWriterUtils {
      * 
      * @param date
      * @return a String which contains XML formated date of the given date
+     * Suggestion: LocalDateTime (LocalDateUtil) possède déjà le défaut ISO
      */
 
     public static String getDate(Date date) {
@@ -136,8 +141,10 @@ public class XMLWriterUtils {
     /**
      * Convert a Date to XMLGregorianCalendar Object
      * @param date
-     * @return
+     * @return the XMLGregorianCalendar associated to the date parameter
+     * Suggestion: LocalDateTime (LocalDateUtil)
      * @throws VitamSedaException
+     * @throws IllegalArgumentException if the date parameter is null
      */
     public static XMLGregorianCalendar getXMLGregorianCalendar(Date date) throws VitamSedaException{
         ParametersChecker.checkParameter("date cannot be null",date);

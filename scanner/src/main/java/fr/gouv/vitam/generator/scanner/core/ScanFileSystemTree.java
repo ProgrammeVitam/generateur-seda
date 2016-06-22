@@ -34,19 +34,20 @@ import java.nio.file.Path;
 
 import javax.xml.stream.XMLStreamException;
 
+import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.VitamException;
 
 
 /**
- * 
+ * Scan a FileSystem
  */
+// TODO implements AutoCloseable
 public class ScanFileSystemTree {
 
-
-    private String baseDir;
-    private String configFile;
-    private String outputFile;
-    private String playbookFile;
+    private final String baseDir;
+    private final String configFile;
+    private final String outputFile;
+    private final String playbookFile;
     /**
      * Default Constructor 
      * @param baseDir : root of the path that has to be scanned
@@ -56,6 +57,10 @@ public class ScanFileSystemTree {
      */
 
     public ScanFileSystemTree(String baseDir, String configFile,String playbookFile, String outputFile) {
+        ParametersChecker.checkParameter("baseDir cannot be null", baseDir);
+        ParametersChecker.checkParameter("configFile cannot be null", configFile);
+        ParametersChecker.checkParameter("outputFile cannot be null", outputFile);
+        ParametersChecker.checkParameter("playbookFile cannot be null", playbookFile);
         this.baseDir = baseDir;
         this.configFile = configFile;
         this.outputFile = outputFile;
@@ -65,10 +70,11 @@ public class ScanFileSystemTree {
      * Scan the filesystem
      */
     public void scan() throws IOException, XMLStreamException, VitamException {
-        FileSystem  f = FileSystems.getDefault(); //NOSONAR : The default FileSystem don't have to be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
+        FileSystem  f = FileSystems.getDefault(); //NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
         Path p = f.getPath(baseDir);
         ScanFS sfs = new ScanFS(configFile, playbookFile,outputFile);
         Files.walkFileTree(p, sfs);
+        // TODO in close of AutoCloseable
         sfs.endScan();
     }
 

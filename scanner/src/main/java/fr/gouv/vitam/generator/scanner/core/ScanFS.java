@@ -36,6 +36,7 @@ import java.util.HashMap;
 
 import javax.xml.stream.XMLStreamException;
 
+import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
@@ -49,23 +50,26 @@ import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 /**
- * 
+ * Scanner a FileSystem
  */
 class ScanFS extends SimpleFileVisitor<Path> {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ScanFS.class);
+    // TODO Défini plusieurs fois => un common ?
     private static final String MANIFEST_NAME = "manifest.json";
-
-    private ArchiveTransferGenerator atgi;
+    private final ArchiveTransferGenerator atgi;
     // null when the current directory is an ArchiveUnit and id of the current DataobjectGroup if the directory is an
     // DataobjectGroup
     private String dataObjectGroupOfCurrentDirectory;
-    private HashMap<String, String> mapArchiveUnitPath2Id;
-    private SchedulerEngine schedulerEngine;
-    private Playbook playbookBinary;
+    private final HashMap<String, String> mapArchiveUnitPath2Id;
+    private final SchedulerEngine schedulerEngine;
+    private final Playbook playbookBinary;
 
     public ScanFS(String configFile, String playbookBinaryFile,String outputFile) throws VitamException {
         super();
+        ParametersChecker.checkParameter("configFile cannot be null", configFile);
+        ParametersChecker.checkParameter("playbookBinaryFile cannot be null", playbookBinaryFile);
+        ParametersChecker.checkParameter("outputFile cannot be null", outputFile);
         this.atgi = new ArchiveTransferGenerator(outputFile);
         this.schedulerEngine = new SchedulerEngine();
         this.playbookBinary = PlaybookBuilder.getPlaybook(playbookBinaryFile);

@@ -38,24 +38,24 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import fr.gouv.vitam.generator.scheduler.core.Playbook;
-import fr.gouv.vitam.generator.scheduler.core.PlaybookBuilder;
+import fr.gouv.vitam.common.logging.VitamLogger;
+import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scheduler.exception.VitamSchedulerException;
 
 /**
  * 
  */
 public class PlaybookImportTest {
-
+    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(PlaybookImportTest.class);
     @Test
     public void importJson() {
         try{
             ClassLoader classLoader = getClass().getClassLoader();
             String jsonFile = classLoader.getResource("task_playbook.json").getFile();
-            Playbook pb = PlaybookBuilder.getPlaybook(jsonFile);
+            PlaybookBuilder.getPlaybook(jsonFile);
         }catch(VitamSchedulerException e){
-            e.printStackTrace();
             fail(e.getMessage());
+            LOGGER.error("Error in the unit test",e);
         }
     }
 

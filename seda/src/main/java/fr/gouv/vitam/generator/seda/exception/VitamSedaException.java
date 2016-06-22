@@ -40,12 +40,6 @@ public class VitamSedaException extends VitamException {
     private static final long serialVersionUID = -8737888724395849774L;
     /**
      * 
-     */
-    public VitamSedaException() {
-        super();
-    }
-    /**
-     * 
      * @param message
      */
     public VitamSedaException(String message) {

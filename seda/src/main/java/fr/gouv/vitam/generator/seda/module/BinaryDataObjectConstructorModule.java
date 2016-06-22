@@ -45,9 +45,10 @@ import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 
 /**
  * Module : Constructor of the binaryDataObject
- * Input: 
- *  - file (String) : Full path of the Binary object which will be the reference of the BinaryDataObject
- * Output
+ * <br>
+ * Input:<br> 
+ *  - file (String) : Full path of the Binary object which will be the reference of the BinaryDataObject<br>
+ * Output<br>
  *  - binarydataobject (BinaryDataObjectTypeRoot) : The built BinaryDataObject
  */
 
@@ -65,6 +66,12 @@ public class BinaryDataObjectConstructorModule implements PublicModuleInterface 
         ParameterMap returnPM = new ParameterMap();
         String id = XMLWriterUtils.getNextID();
         File f = new File((String)parameters.get("file"));
+        if (!f.exists()){
+            throw new VitamBinaryDataObjectException(f.getPath()+ "doesn't exist anymore");
+        }
+        if (!f.canRead()){
+            throw new VitamBinaryDataObjectException(f.getPath()+ "is not readable");
+        }
         if (f.length() == 0){
             throw new VitamBinaryDataObjectException(f.getPath()+" is an empty file");
         }

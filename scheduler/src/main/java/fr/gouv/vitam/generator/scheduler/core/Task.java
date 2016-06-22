@@ -70,6 +70,7 @@ public class Task {
      * @return the parameters
      */
     public ParameterMap getParameters() {
+        // Initialized ? Check null ?
         return parameters;
     }
 
@@ -78,6 +79,7 @@ public class Task {
      * @return the binding parameters
      */
     public ParameterMap getRegisteredParameters() {
+        // Initialized ? Check null ?
         return registeredParameters;
     }
 
@@ -86,6 +88,7 @@ public class Task {
      * @return the name
      */
     public String getName() {
+        // Initialized ? Check null ?
         return name;
     }
 
@@ -94,6 +97,7 @@ public class Task {
      * @return the module
      */
     public String getModule() {
+        // Initialized ? Check null ?
         return module;
     }
 
@@ -104,6 +108,7 @@ public class Task {
      * @return this
      */
     public Task setParameters(ParameterMap parameters) {
+        // Check null ?
         this.parameters = parameters;
         return this;
     }
@@ -115,6 +120,7 @@ public class Task {
      * @return this
      */
     public Task setRegisteredParameters(ParameterMap registeredParameters) {
+        // Check null ?
         this.registeredParameters = registeredParameters;
         return this;
     }
@@ -126,17 +132,18 @@ public class Task {
      * @return this
      */
     public Task setName(String name) {
+        // Check null ?
         this.name = name;
         return this;
     }
 
 
     /**
-     * @param moduleID the moduleID to set
-     *
+     * @param module the moduleID to set
      * @return this
      */
     public Task setModule(String module) {
+        // Check null ?
         this.module = module;
         return this;
     }

@@ -5,6 +5,7 @@ package fr.gouv.vitam.generator.seda.api;
  */
 
 public enum SedaModuleParameter {
+    // TODO Question: name = lowercase ou UpperCamelCase comme dans le SEDA ?
     BINARYDATAOBJECT("binarydataobject");
     
     private String name;

@@ -21,6 +21,10 @@
 			<artifactId>scheduler</artifactId>
 			<version>${vitam.generator.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>fr.gouv.vitam</groupId>
+			<artifactId>common-public</artifactId>
+		</dependency>
   </dependencies>
 	<build>
 		<plugins>
@@ -50,7 +54,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>fr.gouv.vitam.generator.scanner.main.Main</mainClass>
+							<mainClass>fr.gouv.vitam.generator.scanner.main.SedaGenerator</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
