@@ -52,7 +52,7 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 /**
  * Scanner a FileSystem
  */
-class ScanFS extends SimpleFileVisitor<Path> {
+public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ScanFS.class);
     // TODO Défini plusieurs fois => un common ?
@@ -64,17 +64,24 @@ class ScanFS extends SimpleFileVisitor<Path> {
     private final HashMap<String, String> mapArchiveUnitPath2Id;
     private final SchedulerEngine schedulerEngine;
     private final Playbook playbookBinary;
-
-    public ScanFS(String configFile, String playbookBinaryFile,String outputFile) throws VitamException {
+    
+    /**
+     * Constructor for ScanFS
+     * @param globalValuesArchiveTransfer : Path of the JSON File containing the global values for the SEDA Archive Transfer Request
+     * @param playbookFileBDO : Path of the file which contains the Playbook for Binary Data Object
+     * @param outputFile : Path of the ZIP Seda File
+     * @throws VitamException
+     */
+    public ScanFS(String globalValuesArchiveTransfer, String playbookFileBDO,String outputFile) throws VitamException {
         super();
-        ParametersChecker.checkParameter("configFile cannot be null", configFile);
-        ParametersChecker.checkParameter("playbookBinaryFile cannot be null", playbookBinaryFile);
+        ParametersChecker.checkParameter("configFile cannot be null", globalValuesArchiveTransfer);
+        ParametersChecker.checkParameter("playbookBinaryFile cannot be null", playbookFileBDO);
         ParametersChecker.checkParameter("outputFile cannot be null", outputFile);
         this.atgi = new ArchiveTransferGenerator(outputFile);
         this.schedulerEngine = new SchedulerEngine();
-        this.playbookBinary = PlaybookBuilder.getPlaybook(playbookBinaryFile);
+        this.playbookBinary = PlaybookBuilder.getPlaybook(playbookFileBDO);
         try {
-            atgi.generateHeader(configFile);
+            atgi.generateHeader(globalValuesArchiveTransfer);
         } catch (XMLStreamException e) {
             throw new VitamException("Exception lors de la génération du header XML", e);
         }
@@ -120,8 +127,8 @@ class ScanFS extends SimpleFileVisitor<Path> {
         BasicFileAttributes attr) {
         // Presence of a manifest.json file (not currently implemented)
         String dataObjectGroupID;
-        String archiveUnitID = "";
-        String fatherID = "";
+        String archiveUnitID;
+        String fatherID;
         if ((attr.isSymbolicLink() || attr.isRegularFile()) && !file.getFileName().toString().equals(MANIFEST_NAME)) {
             // Archive Unit : we create the DataObjectGroup
             if (dataObjectGroupOfCurrentDirectory == null){
@@ -176,14 +183,13 @@ class ScanFS extends SimpleFileVisitor<Path> {
         LOGGER.error("Error on reading " + file + " : " + e.getMessage());
         return FileVisitResult.CONTINUE;
     }
-
+    
     /**
      * At the end of the scan we write the descriptive and Management metadata (the ArchiveUnit are in memory) and flush
      * all the buffers to close correctly the XML
-     * @throws XMLStreamException
-     * @throws VitamSedaException
      */
-    public void endScan() throws XMLStreamException, VitamSedaException {
+    @Override
+    public void close() throws XMLStreamException, VitamSedaException {
         atgi.writeDescriptiveMetadata();
         atgi.writeManagementMetadata();
         atgi.closeDocument();

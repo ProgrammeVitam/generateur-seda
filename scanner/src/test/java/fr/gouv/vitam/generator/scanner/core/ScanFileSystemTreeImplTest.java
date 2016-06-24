@@ -2,6 +2,8 @@ package fr.gouv.vitam.generator.scanner.core;
 
 import org.junit.Test;
 
+import fr.gouv.vitam.generator.scanner.main.SedaGenerator;
+
 public class ScanFileSystemTreeImplTest {
 
     @Test
@@ -11,10 +13,8 @@ public class ScanFileSystemTreeImplTest {
         String basedir = classLoader.getResource("sip1").getFile();
         String configFile = basedir+".json";
         String playbookFile = classLoader.getResource("playbook_binary.json").getFile();
-        // TODO : Once as AutoCloseable try (allo) [ s.scan();}
-        ScanFileSystemTree s = new ScanFileSystemTree(basedir,configFile,playbookFile,"output.zip");
         try {
-            s.scan();
+            SedaGenerator.scan(basedir,configFile,playbookFile,"output.zip");
         }catch (Exception e){
             // TODO : Logger
             e.printStackTrace();
