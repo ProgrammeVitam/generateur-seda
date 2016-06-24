@@ -68,7 +68,8 @@ public class SedaGenerator {
             String globalValuesArchiveTransfer = properties.getProperty("globalValuesArchiveTransfer",workingDir+"/conf/metadata.json");
             String playbookFileBDO =  properties.getProperty("playbookBinaryDataObject", workingDir+"/conf/playbook_BinaryDataObject.json");
             String outputFile = properties.getProperty("outputFile",workingDir+"/SIP-"+currentDate+".zip");
-            scan(scanDir,globalValuesArchiveTransfer,playbookFileBDO,outputFile);
+            String errFile = properties.getProperty("errFile",workingDir+"SIP-"+currentDate+".rejected"); 
+            scan(scanDir,globalValuesArchiveTransfer,playbookFileBDO,outputFile,errFile);
     }
     /**
      * Usage function of the program
@@ -89,8 +90,8 @@ public class SedaGenerator {
      * @throws XMLStreamException
      * @throws VitamException
      */
-    public static void scan(String scanDir,String globalValuesArchiveTransfer,String playbookFileBDO,String outputFile) throws IOException, XMLStreamException, VitamException {      
-        try (ScanFS sfs = new ScanFS(globalValuesArchiveTransfer, playbookFileBDO,outputFile)){
+    public static void scan(String scanDir,String globalValuesArchiveTransfer,String playbookFileBDO,String outputFile,String errFile) throws IOException, XMLStreamException, VitamException {      
+        try (ScanFS sfs = new ScanFS(globalValuesArchiveTransfer, playbookFileBDO,outputFile,errFile)){
             Path p = FileSystems.getDefault().getPath(scanDir);//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
             Files.walkFileTree(p, sfs);
         }

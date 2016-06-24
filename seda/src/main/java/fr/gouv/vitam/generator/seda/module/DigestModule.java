@@ -90,7 +90,7 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
             // Hexa serait plus correct, non ? fonction native de Digest et supporté par SEDA (et par Vitam du coup)
             bdotr.setMessageDigest(mdbot);
         } catch (IOException e) {
-            throw new VitamBinaryDataObjectException("IO Exception on the file" + f.toString(), e);
+            throw new VitamBinaryDataObjectException(f.toString()+ " has had an I/O exception" + e.getMessage(), e);
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;

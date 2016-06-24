@@ -26,7 +26,11 @@
  */
 package fr.gouv.vitam.generator.scanner.core;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
@@ -36,6 +40,7 @@ import java.util.HashMap;
 
 import javax.xml.stream.XMLStreamException;
 
+import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.common.logging.VitamLogger;
@@ -64,6 +69,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     private final HashMap<String, String> mapArchiveUnitPath2Id;
     private final SchedulerEngine schedulerEngine;
     private final Playbook playbookBinary;
+    private final PrintStream errFileStream;
     
     /**
      * Constructor for ScanFS
@@ -72,14 +78,22 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      * @param outputFile : Path of the ZIP Seda File
      * @throws VitamException
      */
-    public ScanFS(String globalValuesArchiveTransfer, String playbookFileBDO,String outputFile) throws VitamException {
+    public ScanFS(String globalValuesArchiveTransfer, String playbookFileBDO,String outputFile,String errFile) throws VitamException {
         super();
         ParametersChecker.checkParameter("configFile cannot be null", globalValuesArchiveTransfer);
         ParametersChecker.checkParameter("playbookBinaryFile cannot be null", playbookFileBDO);
         ParametersChecker.checkParameter("outputFile cannot be null", outputFile);
+        ParametersChecker.checkParameter("outputFile cannot be null", errFile);
         this.atgi = new ArchiveTransferGenerator(outputFile);
         this.schedulerEngine = new SchedulerEngine();
         this.playbookBinary = PlaybookBuilder.getPlaybook(playbookFileBDO);
+        try {
+            this.errFileStream = new PrintStream(errFile, CharsetUtils.UTF_8);
+        }catch (UnsupportedEncodingException e){
+            throw new VitamException(CharsetUtils.UTF_8+" is not a valid Charset",e);
+        }catch (FileNotFoundException e){
+            throw new VitamException("Can't write the error file",e);
+        }
         try {
             atgi.generateHeader(globalValuesArchiveTransfer);
         } catch (XMLStreamException e) {
@@ -153,7 +167,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                     atgi.setTransactedDate(archiveUnitID, (Date) inputParameterMap.get("file.mtime")); 
                 }
             } catch (VitamBinaryDataObjectException e){//NOSONAR : This exception is for BinaryDataObject rejected file
-                LOGGER.warn(file.toUri().getPath() + " has been rejected for the reason : "+ e.getMessage());  
+                LOGGER.warn(file.toUri().getPath() + " has been rejected for the reason : "+ e.getMessage());
+                errFileStream.println(e.getMessage());
             } catch (VitamSchedulerException|VitamSedaException e) {
                 LOGGER.error(e);
             } catch (VitamException e){

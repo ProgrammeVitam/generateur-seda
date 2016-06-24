@@ -14,7 +14,7 @@ public class ScanFileSystemTreeImplTest {
         String configFile = basedir+".json";
         String playbookFile = classLoader.getResource("playbook_binary.json").getFile();
         try {
-            SedaGenerator.scan(basedir,configFile,playbookFile,"output.zip");
+            SedaGenerator.scan(basedir,configFile,playbookFile,"output.zip","output.err");
         }catch (Exception e){
             // TODO : Logger
             e.printStackTrace();
