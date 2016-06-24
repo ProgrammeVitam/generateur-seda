@@ -77,6 +77,7 @@ public class ArchiveTransferGenerator {
     private static final String SEDA_NAMESPACE = "fr:gouv:culture:archivesdefrance:seda:v2.0";
     private static final String ENCODING = CharsetUtils.UTF_8;
     private static final String SEDA_FILENAME = "manifest.xml";
+    private final String temporarySedaFilePath;
     private final ZipFileWriter zipFile;
     private JsonNode globalParameters;
     private final DataObjectGroupUsedMap dataObjectGroupUsedMap;
@@ -97,8 +98,8 @@ public class ArchiveTransferGenerator {
         dataObjectGroupUsedMap = new DataObjectGroupUsedMap();
         mapArchiveUnit = new LinkedHashMap<>();
         try {
-            // TODO où est écrit le fichier ?
-            FileOutputStream fos = new FileOutputStream(SEDA_FILENAME);
+            temporarySedaFilePath = System.getProperty("java.io.tmpdir")+"/"+SEDA_FILENAME;
+            FileOutputStream fos = new FileOutputStream(temporarySedaFilePath);
             this.writer = output.createXMLStreamWriter(fos, ENCODING);
         } catch (IOException | XMLStreamException e) {
             throw new VitamSedaException("Error on writing to" + SEDA_FILENAME, e);
@@ -304,8 +305,9 @@ public class ArchiveTransferGenerator {
         writer.writeEndDocument();
         writer.close();
         try{
-            zipFile.addFile(SEDA_FILENAME);
+            zipFile.addFile(SEDA_FILENAME,temporarySedaFilePath);
             zipFile.closeZipFile();
+            new File(temporarySedaFilePath).delete();
         }catch(IOException e){
             throw new VitamSedaException("Error to write to zipFile",e);
         }
