@@ -36,17 +36,14 @@ package fr.gouv.vitam.generator.seda.module;
 
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Test;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.FormatIdentificationType;
+import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
-import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 public class SiegfriedModuleTest {
     
@@ -88,7 +85,7 @@ public class SiegfriedModuleTest {
         } catch (SecurityException|IllegalArgumentException|IllegalAccessException e) {
             e.printStackTrace();
             fail("This exception should not happened (linked to the java reflection on  SiegfriedModule)");
-        } catch (VitamSedaException e) {
+        } catch (VitamException e) {
             e.printStackTrace();
             fail("Real fail on SiegFriedModule");
         }

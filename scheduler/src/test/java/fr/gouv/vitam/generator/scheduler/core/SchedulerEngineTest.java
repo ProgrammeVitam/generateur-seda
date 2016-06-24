@@ -16,29 +16,59 @@ public class SchedulerEngineTest {
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(SchedulerEngineTest.class);
     
     @Test
-    public void test() {
+    public void nominal() {
+        ParameterMap input=new ParameterMap();
+        input.put("mandatory_argument", "test");
+        input.put("nullable_argument", null);
+        launchPlaybook(input);
+    }
+    
+    
+    @Test
+    public void missingMandatoryArgument() {
+        ParameterMap input=new ParameterMap();
+        input.put("nullable_argument", null);
+        launchPlaybook(input);
+    }
+    
+    @Test
+    public void badClassArgument() {
+        ParameterMap input=new ParameterMap();
+        input.put("mandatory_argument", 1);
+        launchPlaybook(input);
+    }
+    
+    
+    
+    private Playbook initatePlaybook(){
         Playbook pb = new Playbook();
         Task taskDummy = new Task();
         taskDummy.setName("DummyModule");
         taskDummy.setModule("dummy");
         ParameterMap pmDummy = new ParameterMap();
-        pmDummy.put("file","@@binarydataobjectfile@@");
+        pmDummy.put("mandatory_argument","@@mandatory_argument@@");
+        pmDummy.put("nullable_argument","@@nullable_argument@@");
         taskDummy.setParameters(pmDummy);
         ParameterMap pmDummyRegistered =new ParameterMap();
         pmDummyRegistered.put("test", "@@test");
         taskDummy.setRegisteredParameters(pmDummyRegistered);
         pb.getTasks().add(taskDummy);
+        return pb;
+    }
+    
+    private void launchPlaybook(ParameterMap input){
         SchedulerEngine se = new SchedulerEngine();
-        ParameterMap initial=new ParameterMap();
-        initial.put("file","test");
-        // Variable which is not in the input parameter of the module
-        initial.put("file1","test");
+        Playbook pb = initatePlaybook();
         try{
-            se.execute(pb,initial);
+            se.execute(pb,input);
+            se.printStatistics();
+        }catch(IllegalArgumentException e){
+            // It is the nominal behaviour of the test
+            LOGGER.info(e.getMessage());
         }catch(VitamException e){
             fail(e.getMessage());
-            LOGGER.error("Error in the unit test",e);
+            LOGGER.error(e);
         }        
-  
     }
+    
 }

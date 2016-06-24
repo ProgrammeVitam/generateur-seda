@@ -30,6 +30,8 @@ package fr.gouv.vitam.generator.seda.module;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.MessageDigestBinaryObjectType;
@@ -38,6 +40,8 @@ import fr.gouv.vitam.common.digest.Digest;
 import fr.gouv.vitam.common.digest.DigestType;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
+import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
@@ -50,18 +54,30 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
  * Output : 
  * - binarydataobject
  */
-public class DigestModule implements PublicModuleInterface {
+public class DigestModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "digest";
+    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    
+    
+    {
+        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+        INPUTSIGNATURE.put("digest.algorithm",new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DigestType.SHA512));
 
+    }
+    
+    @Override
+    public Map<String,InputParameter> getInputSignature(){
+        return INPUTSIGNATURE;
+    }
+    
+    
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
     @Override
-    public ParameterMap execute(ParameterMap parameters) throws VitamSedaException{
-        ParametersChecker.checkParameter("parameters["+SedaModuleParameter.BINARYDATAOBJECT.getName()+"] cannot be null", parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName()));
-        ParametersChecker.checkParameter("parameters[digest.algorithm] cannot be null", parameters.get("digest.algorithm"));
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
         BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         ParameterMap returnPM = new ParameterMap();
         File f = new File(bdotr.getWorkingFilename());

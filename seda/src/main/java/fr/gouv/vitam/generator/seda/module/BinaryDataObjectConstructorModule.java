@@ -31,13 +31,16 @@ package fr.gouv.vitam.generator.seda.module;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.FileInfoType;
 import fr.gouv.culture.archivesdefrance.seda.v2.FormatIdentificationType;
-import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
+import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
@@ -52,17 +55,28 @@ import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
  *  - binarydataobject (BinaryDataObjectTypeRoot) : The built BinaryDataObject
  */
 
-public class BinaryDataObjectConstructorModule implements PublicModuleInterface {
+public class BinaryDataObjectConstructorModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "binaryDataObjectConstructor";
-
+    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    
+    
+    {
+        INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
+    }
+    
+    @Override
+    public Map<String,InputParameter> getInputSignature(){
+        return INPUTSIGNATURE;
+    }
+    
+    
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
     @Override   
-    public ParameterMap execute(ParameterMap parameters) throws VitamSedaException{
-        ParametersChecker.checkParameter("parameters[file] cannot be null", parameters.get("file"));
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
         ParameterMap returnPM = new ParameterMap();
         String id = XMLWriterUtils.getNextID();
         File f = new File((String)parameters.get("file"));

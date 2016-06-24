@@ -27,7 +27,10 @@
 
 package fr.gouv.vitam.generator.scheduler.api;
 
+import java.util.Map;
+
 import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 
 /**
  * High level interface for the Module of the Scheduler Engine 
@@ -49,4 +52,10 @@ public interface ModuleInterface {
      * @return module
      */
     public String getModuleId();
+    
+    /**
+     * Get the input signature of the module
+     * @return the input signature of the module
+     */
+    public Map<String,InputParameter> getInputSignature();
 }
