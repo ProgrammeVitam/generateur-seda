@@ -38,6 +38,8 @@ package fr.gouv.vitam.generator.seda.module;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -54,10 +56,13 @@ import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.FormatIdentificationType;
 import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
+import fr.gouv.vitam.common.digest.DigestType;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.json.JsonHandler;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
+import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
@@ -70,21 +75,31 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
  * Output<br>
  * - binarydataobject (BinaryDataObjectTypeRoot)
  */
-public class SiegfriedModule implements PublicModuleInterface {
-    private static final String MODULE_NAME = "siegfried";
+public class SiegfriedModule extends AbstractModule implements PublicModuleInterface {
     // Only used to inject a Mock HTTP client in unit tests
     private CloseableHttpClient testhttpclient;
+    private static final String MODULE_NAME = "siegfried";
+    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    
+    
+    {
+        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+        INPUTSIGNATURE.put("siegfriedURL",new InputParameter().setObjectclass(String.class));
+
+    }
+    
+    @Override
+    public Map<String,InputParameter> getInputSignature(){
+        return INPUTSIGNATURE;
+    }
     
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
-
     @Override
-    public ParameterMap execute(ParameterMap parameters) throws VitamSedaException{
-        ParametersChecker.checkParameter("parameters["+SedaModuleParameter.BINARYDATAOBJECT.getName()+"] cannot be null", parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName()));
-        ParametersChecker.checkParameter("parameters[siegfriedURL] cannot be null", parameters.get("siegfriedURL"));
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
         ParameterMap returnPM = new ParameterMap();
         BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         FormatIdentificationType format = bdotr.getFormatIdentification();

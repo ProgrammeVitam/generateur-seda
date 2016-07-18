@@ -32,47 +32,54 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL 2.1 license and that you accept its terms.
  */
-package fr.gouv.vitam.generator.scheduler.module;
+package fr.gouv.vitam.generator.scheduler.core;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.generator.scheduler.api.ModuleInterface;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
-import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
-import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
-import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 
 /**
- * A dummy module to be used for Unit Tests
+ * 
  */
-public class DummyModule extends AbstractModule implements PublicModuleInterface {
-    private static final String MODULE_NAME = "dummy";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
-    
-    {
-        INPUTSIGNATURE.put("mandatory_argument", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("optional_argument", new InputParameter().setMandatory(false).setDefaultValue("test"));
-        INPUTSIGNATURE.put("nullable_argument", new InputParameter().setNullable(true));
-    }
+public abstract class AbstractModule implements ModuleInterface { 
+    @Override
+    public abstract Map<String, InputParameter> getInputSignature();
     
     @Override
-    public Map<String,InputParameter> getInputSignature(){
-        return INPUTSIGNATURE;
+    public final ParameterMap execute(ParameterMap parameters) throws VitamException{
+        checkParameters(parameters);
+        return realExecute(parameters);
+    }
+    /**
+     * Verify the "strong typing" of the Module
+     * @param parameters
+     */
+    protected  void checkParameters(ParameterMap parameters) {
+        Map<String, InputParameter> inputParameters = getInputSignature();
+        for (Entry<String,InputParameter> e: inputParameters.entrySet()){ 
+            String prefixException= "parameter["+e.getKey()+"] for module"+getModuleId();
+            // Missing parameter . It the mandatory flag is present, exception, else we insert the default value
+            if (!parameters.containsKey(e.getKey())){
+                if (e.getValue().isMandatory()){
+                    throw new IllegalArgumentException(prefixException+" is missing");
+                }else{
+                    parameters.put(e.getKey(), e.getValue().getDefaultValue());
+                }
+            }
+            // Verify if the argument can be null
+            if (!e.getValue().isNullable() && parameters.get(e.getKey()) == null){
+                throw new IllegalArgumentException(prefixException+ " is null which is forbidden");
+            }
+            // Verify the type of the argument
+            if (parameters.get(e.getKey())!= null &&   !e.getValue().getObjectclass().isInstance(parameters.get(e.getKey()))){
+                throw new IllegalArgumentException(prefixException+ " is not of the class type" + e.getValue().getObjectclass().getCanonicalName());
+            }
+        }
     }
     
+    protected abstract ParameterMap realExecute(ParameterMap parameters) throws VitamException;
     
-    
-    @Override
-    public String getModuleId() {
-        return MODULE_NAME;
-    }
-
-    @Override
-    public ParameterMap realExecute(ParameterMap parameters) throws VitamException{
-        ParameterMap returnPM = new ParameterMap();
-        returnPM.put("test", "test");
-        return returnPM;
-    }
-
 }

@@ -32,47 +32,83 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL 2.1 license and that you accept its terms.
  */
-package fr.gouv.vitam.generator.scheduler.module;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import fr.gouv.vitam.common.exception.VitamException;
-import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
-import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
-import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
-import fr.gouv.vitam.generator.scheduler.core.InputParameter;
+package fr.gouv.vitam.generator.scheduler.core;
 
 /**
- * A dummy module to be used for Unit Tests
+ * 
  */
-public class DummyModule extends AbstractModule implements PublicModuleInterface {
-    private static final String MODULE_NAME = "dummy";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+public class InputParameter {
+    private  Class objectclass=Object.class;
+    private  boolean isNullable=false;
+    private  boolean isMandatory=true;
+    private  Object defaultValue=null;
     
-    {
-        INPUTSIGNATURE.put("mandatory_argument", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("optional_argument", new InputParameter().setMandatory(false).setDefaultValue("test"));
-        INPUTSIGNATURE.put("nullable_argument", new InputParameter().setNullable(true));
+    public InputParameter() {
+        //empty constructor
     }
     
-    @Override
-    public Map<String,InputParameter> getInputSignature(){
-        return INPUTSIGNATURE;
-    }
-    
-    
-    
-    @Override
-    public String getModuleId() {
-        return MODULE_NAME;
+    /**
+     * @return the objectclass
+     */
+    public Class getObjectclass() {
+        return objectclass;
     }
 
-    @Override
-    public ParameterMap realExecute(ParameterMap parameters) throws VitamException{
-        ParameterMap returnPM = new ParameterMap();
-        returnPM.put("test", "test");
-        return returnPM;
+
+    /**
+     * @return the isNullable
+     */
+    public boolean isNullable() {
+        return isNullable;
+    }
+
+    /**
+     * @return the defaultValue
+     */
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+    /**
+     * @return the isMandatory
+     */
+    public boolean isMandatory() {
+        return isMandatory;
+    }
+    /**
+     * @param objectclass the objectclass to set
+     *
+     * @return this
+     */
+    public InputParameter setObjectclass(Class objectclass) {
+        this.objectclass = objectclass;
+        return this;
+    }
+    /**
+     * @param isNullable the isNullable to set
+     *
+     * @return this
+     */
+    public InputParameter setNullable(boolean isNullable) {
+        this.isNullable = isNullable;
+        return this;
+    }
+    /**
+     * @param isMandatory the isMandatory to set
+     *
+     * @return this
+     */
+    public InputParameter setMandatory(boolean isMandatory) {
+        this.isMandatory = isMandatory;
+        return this;
+    }
+    /**
+     * @param defaultValue the defaultValue to set
+     *
+     * @return this
+     */
+    public InputParameter setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+        return this;
     }
 
 }

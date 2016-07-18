@@ -28,11 +28,15 @@
 package fr.gouv.vitam.generator.seda.module;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
+import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
 import fr.gouv.vitam.generator.seda.core.ArchiveTransferGenerator;
 import fr.gouv.vitam.generator.seda.core.DataObjectGroupUsedMap;
@@ -48,8 +52,22 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
  * - binarydataobject (BinaryDataObjectTypeRoot)
  */
 
-public class WriteBinaryDataObjectModule implements PublicModuleInterface {
+public class WriteBinaryDataObjectModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "writeBinaryDataObject";
+    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    
+    
+    {
+        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+        INPUTSIGNATURE.put("archivetransfergenerator",new InputParameter().setObjectclass(ArchiveTransferGenerator.class));
+        INPUTSIGNATURE.put("dataobjectgroupID", new InputParameter().setObjectclass(String.class).setNullable(true));
+    }
+    
+    @Override
+    public Map<String,InputParameter> getInputSignature(){
+        return INPUTSIGNATURE;
+    }
+    
 
     @Override
     public String getModuleId() {
@@ -57,10 +75,7 @@ public class WriteBinaryDataObjectModule implements PublicModuleInterface {
     }
 
     @Override
-    public ParameterMap execute(ParameterMap parameters) throws VitamSedaException{
-        ParametersChecker.checkParameter("parameters["+SedaModuleParameter.BINARYDATAOBJECT.getName()+"] cannot be null", parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName()));
-        // dataobjectgroupID can be null
-        ParametersChecker.checkParameter("parameters[archivetransfergenerator] cannot be null", parameters.get("archivetransfergenerator"));
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
         BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         ParameterMap returnPM = new ParameterMap();
         String dataObjectGroupID = (String) parameters.get("dataobjectgroupID");

@@ -1,1 +1,4 @@
-java -classpath "conf;lib/*" fr.gouv.vitam.generator.scanner.main.Main %1 %2 conf/playbook_BinaryDataObject.json %3
+@echo off
+start "Siegfried" "%~dp0\run_siegfried.bat"
+java -classpath "%~dp0/conf;%~dp0/lib/*" fr.gouv.vitam.generator.scanner.main.SedaGenerator %~dp0 %1
+taskkill /F /IM sf.exe >NUL
