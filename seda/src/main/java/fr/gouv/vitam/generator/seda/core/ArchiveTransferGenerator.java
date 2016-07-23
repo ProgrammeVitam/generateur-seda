@@ -204,6 +204,8 @@ public class ArchiveTransferGenerator {
             dmct.setTransactedDate(XMLWriterUtils.getDate(date));
             autr.getContent().add(dmct);
         }
+        autr.setStartDate(date);
+        autr.setEndDate(date);
     }
     
     /**
@@ -256,8 +258,6 @@ public class ArchiveTransferGenerator {
             autrFather.getContent().add(dmct);
         }
     }
-
-
 
     /**
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
@@ -382,7 +382,46 @@ public class ArchiveTransferGenerator {
             }
         }
     }
-
+    
+    /**
+     * Calculate the Start and End Date of an ArchiveUnit
+     * @param archiveUnitID
+     */
+    public void addStartAndEndDate2ArchiveUnit(String archiveUnitID){
+        ParametersChecker.checkParameter("Archive Unit ID cannot be null", archiveUnitID);
+        ArchiveUnitTypeRoot autr = mapArchiveUnit.get(archiveUnitID);
+        boolean first=true;
+        Date startDate = null;
+        Date endDate = null;
+        for (Object aut : autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()){
+            ArchiveUnitTypeRoot sonautr = mapArchiveUnit.get(((ArchiveUnitType) aut).getArchiveUnitRefId());
+            // Initialize the start and endDate
+            if (first){
+                startDate = sonautr.getStartDate();
+                endDate = sonautr.getEndDate();
+                first=false;
+            }else{
+                // Take the minimum date of the sons
+                if (sonautr.getStartDate().compareTo(startDate)<0){
+                    startDate = sonautr.getStartDate();
+                    
+                }
+                // Take the maximum date of the sons
+                if (sonautr.getEndDate().compareTo(endDate)>0){
+                    endDate = sonautr.getEndDate();
+                }
+            }
+        }
+        for (DescriptiveMetadataContentType dmct: autr.getContent()){
+            autr.getContent().remove(dmct);
+            dmct.setStartDate(XMLWriterUtils.getDate(startDate));
+            dmct.setEndDate(XMLWriterUtils.getDate(endDate));
+            autr.getContent().add(dmct);
+        }
+        autr.setStartDate(startDate);
+        autr.setEndDate(endDate);
+    }
+    
     /**
      * @return the dataObjectGroupUsedMap
      */
@@ -396,4 +435,5 @@ public class ArchiveTransferGenerator {
     public ZipFileWriter getZipFile() {
         return zipFile;
     }
+    
 }

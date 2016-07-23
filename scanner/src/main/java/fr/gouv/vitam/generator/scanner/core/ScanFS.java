@@ -164,7 +164,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                     fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
                     atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
                     atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupID);
-                    atgi.setTransactedDate(archiveUnitID, (Date) inputParameterMap.get("file.mtime")); 
+                    atgi.setTransactedDate(archiveUnitID, new Date(file.toFile().lastModified())); 
                 }
             } catch (VitamBinaryDataObjectException e){//NOSONAR : This exception is for BinaryDataObject rejected file
                 LOGGER.warn(file.toUri().getPath() + " has been rejected for the reason : "+ e.getMessage());
@@ -186,6 +186,14 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public FileVisitResult postVisitDirectory(Path dir,
         IOException exc) {
+        String dirName = dir.getFileName().toString();
+        // DataObjectGroup : The directory is a DataObjectGroup so we create a pseudo ArchiveUnitID
+        if (dirName.startsWith("__") && dirName.endsWith("__")) {
+            // FIXME
+        }else{
+             String auid = mapArchiveUnitPath2Id.get(dir.toString());
+             atgi.addStartAndEndDate2ArchiveUnit(auid);
+        }
         return FileVisitResult.CONTINUE;
     }
 

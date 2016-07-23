@@ -62,6 +62,7 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
     
     {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
+        INPUTSIGNATURE.put("dataobjectversion", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("BinaryMaster"));
     }
     
     @Override
@@ -91,7 +92,7 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         }
         BinaryDataObjectTypeRoot bdotr = new BinaryDataObjectTypeRoot();
         bdotr.setId(id);
-        bdotr.setDataObjectVersion("DataObjectVersion0");
+        bdotr.setDataObjectVersion((String) parameters.get("dataobjectversion"));
         bdotr.setUri("Content/"+id);
         bdotr.setSize(new BigInteger(String.valueOf(f.length())));
         bdotr.setFormatIdentification(new FormatIdentificationType());

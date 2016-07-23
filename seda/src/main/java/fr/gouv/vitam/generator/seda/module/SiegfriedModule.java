@@ -80,6 +80,8 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
     private CloseableHttpClient testhttpclient;
     private static final String MODULE_NAME = "siegfried";
     private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    private static final int MAX_TRIES = 3;
+    private static final long MILLI_SECONDS_BETWEEN_TRIES = 5000;
     
     
     {
@@ -104,33 +106,52 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
         BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         FormatIdentificationType format = bdotr.getFormatIdentification();
         File file = new File(bdotr.getWorkingFilename());
-        try{
-            String responseSiegfried = callSiegfried((String) parameters.get("siegfriedURL"), file);        
-            JsonNode jsonNode = JsonHandler.getFromString(responseSiegfried);
-            JsonNode j=jsonNode.get("files").get(0).get("matches").get(0);
-            String mime = j.get("mime").asText();
-            if (mime != null && mime.length() >0){
-                format.setMimeType(mime);
+        int tries=0;
+        while (true){
+            try{
+                tries+=1;
+                String responseSiegfried = callSiegfried((String) parameters.get("siegfriedURL"), file);        
+                JsonNode jsonNode = JsonHandler.getFromString(responseSiegfried);
+                JsonNode j=jsonNode.get("files").get(0).get("matches").get(0);
+                String mime = j.get("mime").asText();
+                if (mime != null && mime.length() >0){
+                    format.setMimeType(mime);
+                }
+                String formatId = j.get("id").asText();
+                if (formatId != null && formatId.length() > 0 ){
+                    format.setFormatId(formatId);
+                }
+                String formatLitteral=j.get("format").asText();
+                if (formatLitteral != null && formatLitteral.length() >0){
+                    format.setFormatLitteral(formatLitteral);
+                }
+                break;
+            } catch (InvalidParseOperationException e) {
+                if (tries > MAX_TRIES){
+                    throw new VitamSedaException("Error on the Json got from Siegfried",e);
+                }
+                sleep(MILLI_SECONDS_BETWEEN_TRIES);
+            } catch (IOException e) {
+                if (tries > MAX_TRIES){
+                    throw new VitamSedaException("I/O error during Siegfried Module",e);
+                }
+                sleep(MILLI_SECONDS_BETWEEN_TRIES);
             }
-            String formatId = j.get("id").asText();
-            if (formatId != null && formatId.length() > 0 ){
-                format.setFormatId(formatId);
-            }
-            String formatLitteral=j.get("format").asText();
-            if (formatLitteral != null && formatLitteral.length() >0){
-                format.setFormatLitteral(formatLitteral);
-            }
-        
-        } catch (InvalidParseOperationException e) {
-            throw new VitamSedaException("Error on the Json got from Siegfried",e);
-        } catch (IOException e) {
-            throw new VitamSedaException("I/O error during Siegfried Module",e);
         }
         bdotr.setFormatIdentification(format);
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;
     }
+    
+    private void sleep(long ms){
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {// NOSONAR : This should never happen
+            
+        }
         
+    }
+    
     private String callSiegfried(String siegfriedURL , File file) throws VitamSedaException,IOException{
         CloseableHttpClient httpclient;
         String returnSiegfriedValue = null;
