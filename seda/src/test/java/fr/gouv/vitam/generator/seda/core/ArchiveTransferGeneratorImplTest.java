@@ -76,14 +76,23 @@ public class ArchiveTransferGeneratorImplTest {
         atgi.startDataObjectPackage();
         String archiveFatherID = atgi.addArchiveUnit("Titre0", "Description0");
         String archiveSonID1 = atgi.addArchiveUnit("Titre1", "Description1");
-        String archiveSonID2 = atgi.addArchiveUnit("Titre1", "Description1");
+        String archiveSonID2 = atgi.addArchiveUnit("Titre2", "Description2");
+        String archiveSonID3 = atgi.addArchiveUnit("Titre3", "Description3");
+        String archiveSonID4 = atgi.addArchiveUnit("Titre4", "Description4");
+        atgi.setTransactedDate(archiveSonID1, new Date(2));
+        atgi.setTransactedDate(archiveSonID3, new Date(1));
+        atgi.setTransactedDate(archiveSonID4, new Date());
+
         atgi.setTransactedDate(archiveSonID1, new Date());
         atgi.removeArchiveUnit(archiveSonID2);
         String dataObjectGroup1ID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();	
         atgi = addBinaryDataObject(atgi,headerPath,  dataObjectGroup1ID);
         atgi = addBinaryDataObject(atgi,headerPath,  dataObjectGroup1ID);
         atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID1);
+        atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID3);
+        atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID4);
         atgi.addArchiveUnit2DataObjectGroupReference(archiveSonID1, dataObjectGroup1ID);
+        atgi.addStartAndEndDate2ArchiveUnit(archiveFatherID);
         atgi = addBinaryDataObject(atgi,headerPath, null);
         atgi.writeDescriptiveMetadata();
         atgi.writeManagementMetadata();
