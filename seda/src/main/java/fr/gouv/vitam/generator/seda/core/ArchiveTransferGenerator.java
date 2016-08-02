@@ -106,9 +106,12 @@ public class ArchiveTransferGenerator {
         }
         try{
             zipFile = new ZipFileWriter(zipFileName);
+            zipFile.addDirectory("Content/");
         }catch (FileNotFoundException e){
 
             throw new VitamSedaException("Error on writing to" + zipFileName, e);
+        }catch (IOException e){
+            throw new VitamSedaException("Can't create /Content directory in the zipFile",e);
         }
     }
 
@@ -254,7 +257,7 @@ public class ArchiveTransferGenerator {
         // When an ArchiveUnit has a DataObjectGroup, it is at the Level FILE
         for (DescriptiveMetadataContentType dmct: autrFather.getContent()){
             autrFather.getContent().remove(dmct);
-            dmct.setDescriptionLevel(LevelType.FILE);
+            dmct.setDescriptionLevel(LevelType.ITEM);
             autrFather.getContent().add(dmct);
         }
     }

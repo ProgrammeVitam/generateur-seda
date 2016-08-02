@@ -32,7 +32,7 @@
 	<scm>
 		<connection>scm:git:https://dev.programmevitam.fr/gitlab/ecarriere/generator.git</connection>
 		<developerConnection>scm:git:https://dev.programmevitam.fr/gitlab/ecarriere/generator.git</developerConnection>
-		<url>https://dev.programmevitam.fr/gitlab/vitam/vitam.git</url>
+		<url>https://dev.programmevitam.fr/gitlab/ecarriere/generator.git</url>
 	  <tag>HEAD</tag>
          </scm>
 

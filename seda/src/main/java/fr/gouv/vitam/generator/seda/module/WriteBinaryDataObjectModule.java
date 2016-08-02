@@ -100,7 +100,7 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
         // Write BinaryDataObject
         atgi.writeXMLFragment(bdotr);
         try{
-            atgi.getZipFile().addFile("Content/"+bdotr.getId(), bdotr.getWorkingFilename());
+            atgi.getZipFile().addFile(bdotr.getUri(), bdotr.getWorkingFilename());
         }catch(IOException e){
             throw new VitamSedaException("Error to write to zipFile",e);
         }

@@ -64,7 +64,7 @@ public class SedaGenerator {
             String workingDir = args[0];
             String scanDir = args[1];
             String currentDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-            Properties properties = PropertiesUtils.readProperties(PropertiesUtils.getResourcesFile("generator.properties"));
+            Properties properties = PropertiesUtils.readProperties(PropertiesUtils.findFile("generator.properties"));
             String globalValuesArchiveTransfer = properties.getProperty("globalValuesArchiveTransfer",workingDir+"/conf/metadata.json");
             String playbookFileBDO =  properties.getProperty("playbookBinaryDataObject", workingDir+"/conf/playbook_BinaryDataObject.json");
             String outputFile = properties.getProperty("outputFile",workingDir+"/SIP-"+currentDate+".zip");
