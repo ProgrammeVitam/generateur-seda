@@ -18,6 +18,11 @@
   		<groupId>fr.gouv.vitam.generator</groupId>
   		<artifactId>scheduler</artifactId>
   		<version>${vitam.generator.version}</version>
-  	</dependency>
+	</dependency>
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<scope>test</scope>
+	</dependency>
   </dependencies>
 </project>

@@ -35,12 +35,16 @@
 package fr.gouv.vitam.generator.scheduler.core;
 
 /**
- * 
+ * Input parameter of a module 
  */
 public class InputParameter {
+    // Class of the input parameter
     private  Class objectclass=Object.class;
+    // Do this parameter can be nullable ?
     private  boolean isNullable=false;
+    // Is this parameter mandatory in the module ?
     private  boolean isMandatory=true;
+    // If the module is not mandatory, what is the default value of the parameter ?
     private  Object defaultValue=null;
     
     public InputParameter() {

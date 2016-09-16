@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
-import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;

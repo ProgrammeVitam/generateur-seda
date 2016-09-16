@@ -1,8 +1,11 @@
 package fr.gouv.vitam.generator.scanner.core;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 
 import fr.gouv.vitam.generator.scanner.main.SedaGenerator;
+import fr.gouv.vitam.generator.seda.core.ArchiveTransferConfig;
 
 public class ScanFileSystemTreeImplTest {
 
@@ -11,13 +14,14 @@ public class ScanFileSystemTreeImplTest {
         // TODO : PropertyUtils
         ClassLoader classLoader = getClass().getClassLoader();
         String basedir = classLoader.getResource("sip1").getFile();
-        String configFile = basedir+".json";
+        String configDir = classLoader.getResource("conf").getFile();
+        ArchiveTransferConfig atc = new ArchiveTransferConfig("/",configDir );
         String playbookFile = classLoader.getResource("playbook_binary.json").getFile();
         try {
-            SedaGenerator.scan(basedir,configFile,playbookFile,"output.zip","output.err");
+            SedaGenerator.scan(basedir,atc,playbookFile,"output.zip","output.err");
         }catch (Exception e){
-            // TODO : Logger
             e.printStackTrace();
+            fail();
         }
     }
 

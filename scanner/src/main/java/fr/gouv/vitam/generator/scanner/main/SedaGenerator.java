@@ -26,6 +26,7 @@
  */
 package fr.gouv.vitam.generator.scanner.main;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -38,14 +39,20 @@ import javax.xml.stream.XMLStreamException;
 
 import fr.gouv.vitam.common.PropertiesUtils;
 import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.common.logging.VitamLogger;
+import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scanner.core.ScanFS;
+import fr.gouv.vitam.generator.seda.core.ArchiveTransferConfig;
+import fr.gouv.vitam.generator.seda.core.ArchiveTransferGenerator;
 
 /**
  * Entry point of the Seda Generator
  */
 
 public class SedaGenerator {
-    
+
+    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGenerator.class);
+
     private SedaGenerator(){
         // Empty constructor
     }
@@ -60,16 +67,23 @@ public class SedaGenerator {
             if (args.length < 2){
                 usage();
                 System.exit(1);
-            }
+            }            
             String workingDir = args[0];
             String scanDir = args[1];
             String currentDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-            Properties properties = PropertiesUtils.readProperties(PropertiesUtils.findFile("generator.properties"));
-            String globalValuesArchiveTransfer = properties.getProperty("globalValuesArchiveTransfer",workingDir+"/conf/metadata.json");
-            String playbookFileBDO =  properties.getProperty("playbookBinaryDataObject", workingDir+"/conf/playbook_BinaryDataObject.json");
-            String outputFile = properties.getProperty("outputFile",workingDir+"/SIP-"+currentDate+".zip");
-            String errFile = properties.getProperty("errFile",workingDir+"SIP-"+currentDate+".rejected"); 
-            scan(scanDir,globalValuesArchiveTransfer,playbookFileBDO,outputFile,errFile);
+            String playbookFileBDO =  workingDir+"/conf/playbook_BinaryDataObject.json";
+            String outputFile = workingDir+"/SIP-"+currentDate+".zip";
+            String errFile = workingDir+"SIP-"+currentDate+".rejected";
+            ArchiveTransferConfig atc = new ArchiveTransferConfig(workingDir+"/conf", scanDir);
+            try{
+                Properties properties = PropertiesUtils.readProperties(PropertiesUtils.findFile("generator.properties"));
+                playbookFileBDO =  properties.getProperty("playbookBinaryDataObject", playbookFileBDO);
+                outputFile = properties.getProperty("outputFile",outputFile);
+                errFile = properties.getProperty("errFile",errFile); 
+            }catch(FileNotFoundException e){ // NOSONAR : It is OK not to have generator.properties file
+                LOGGER.debug("generator.properties is missing . Use default values");
+            }
+            scan(scanDir,atc,playbookFileBDO,outputFile,errFile);
     }
     /**
      * Usage function of the program
@@ -82,16 +96,17 @@ public class SedaGenerator {
     
     /**
      * Launch the scan of directories to create the seda archive unit transfer
-     * @param scanDir : The 
-     * @param globalValuesArchiveTransfer
+     * @param scanDir 
+     * @param archiveTransferConfig
      * @param playbookFileBDO
      * @param outputFile
+     * @param errFile
      * @throws IOException
      * @throws XMLStreamException
      * @throws VitamException
      */
-    public static void scan(String scanDir,String globalValuesArchiveTransfer,String playbookFileBDO,String outputFile,String errFile) throws IOException, XMLStreamException, VitamException {      
-        try (ScanFS sfs = new ScanFS(globalValuesArchiveTransfer, playbookFileBDO,outputFile,errFile)){
+    public static void scan(String scanDir,ArchiveTransferConfig archiveTransferConfig,String playbookFileBDO,String outputFile,String errFile) throws IOException, XMLStreamException, VitamException {      
+        try (ScanFS sfs = new ScanFS(archiveTransferConfig, playbookFileBDO,outputFile,errFile)){
             Path p = FileSystems.getDefault().getPath(scanDir);//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
             Files.walkFileTree(p, sfs);
         }

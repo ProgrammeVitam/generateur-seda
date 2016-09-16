@@ -55,8 +55,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.FormatIdentificationType;
 import fr.gouv.vitam.common.CharsetUtils;
-import fr.gouv.vitam.common.ParametersChecker;
-import fr.gouv.vitam.common.digest.DigestType;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.json.JsonHandler;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
@@ -76,8 +74,8 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
  * - binarydataobject (BinaryDataObjectTypeRoot)
  */
 public class SiegfriedModule extends AbstractModule implements PublicModuleInterface {
-    // Only used to inject a Mock HTTP client in unit tests
-    private CloseableHttpClient testhttpclient;
+    // TODO : (probably) not Thread-Safe
+    private CloseableHttpClient httpclient=HttpClients.createDefault();
     private static final String MODULE_NAME = "siegfried";
     private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
     private static final int MAX_TRIES = 3;
@@ -153,14 +151,7 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
     }
     
     private String callSiegfried(String siegfriedURL , File file) throws VitamSedaException,IOException{
-        CloseableHttpClient httpclient;
         String returnSiegfriedValue = null;
-        if (testhttpclient != null){
-            httpclient = testhttpclient;
-        }else{
-            httpclient = HttpClients.createDefault();
-        }
-
         try{
             HttpPost post = new HttpPost(siegfriedURL + "/identify");
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -169,10 +160,9 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
             returnSiegfriedValue= EntityUtils.toString(response.getEntity(), CharsetUtils.UTF8);
+            post.releaseConnection();
         }catch(ClientProtocolException e){
             throw new VitamSedaException("Error on the HTTP client sent to siegfried",e);
-        }finally{
-            httpclient.close();
         }
         return returnSiegfriedValue;
     }

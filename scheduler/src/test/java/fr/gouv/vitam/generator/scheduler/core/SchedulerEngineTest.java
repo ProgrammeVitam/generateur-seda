@@ -67,7 +67,6 @@ public class SchedulerEngineTest {
             LOGGER.info(e.getMessage());
         }catch(VitamException e){
             fail(e.getMessage());
-            LOGGER.error(e);
         }        
     }
     

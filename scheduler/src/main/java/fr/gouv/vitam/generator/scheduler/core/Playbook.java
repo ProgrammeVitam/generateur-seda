@@ -33,10 +33,10 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A playbook (like in Ansible) is a list (ordered) of tasks
+ * This class is a POJO class for JSON unmarshalling
  */
 public class Playbook {
 
-    // Never initialized ?
     private String name;
     @JsonProperty("tasks")
     private final List<Task> tasks;

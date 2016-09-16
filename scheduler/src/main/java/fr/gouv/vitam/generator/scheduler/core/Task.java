@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 
 /**
- * The tast is the equivalent of the ansible task . It is the call of a module with input parameters and a list of
+ * The task is the equivalent of the ansible task . It is the call of a module with input parameters and a list of
  * return parameters that must be registered to global variables
  */
 
@@ -70,7 +70,6 @@ public class Task {
      * @return the parameters
      */
     public ParameterMap getParameters() {
-        // Initialized ? Check null ?
         return parameters;
     }
 
@@ -79,7 +78,6 @@ public class Task {
      * @return the binding parameters
      */
     public ParameterMap getRegisteredParameters() {
-        // Initialized ? Check null ?
         return registeredParameters;
     }
 
@@ -88,7 +86,6 @@ public class Task {
      * @return the name
      */
     public String getName() {
-        // Initialized ? Check null ?
         return name;
     }
 
@@ -97,7 +94,6 @@ public class Task {
      * @return the module
      */
     public String getModule() {
-        // Initialized ? Check null ?
         return module;
     }
 
@@ -108,7 +104,6 @@ public class Task {
      * @return this
      */
     public Task setParameters(ParameterMap parameters) {
-        // Check null ?
         this.parameters = parameters;
         return this;
     }
@@ -120,7 +115,6 @@ public class Task {
      * @return this
      */
     public Task setRegisteredParameters(ParameterMap registeredParameters) {
-        // Check null ?
         this.registeredParameters = registeredParameters;
         return this;
     }
@@ -132,7 +126,6 @@ public class Task {
      * @return this
      */
     public Task setName(String name) {
-        // Check null ?
         this.name = name;
         return this;
     }
@@ -143,7 +136,6 @@ public class Task {
      * @return this
      */
     public Task setModule(String module) {
-        // Check null ?
         this.module = module;
         return this;
     }

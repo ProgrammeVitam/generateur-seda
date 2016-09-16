@@ -36,17 +36,31 @@ package fr.gouv.vitam.generator.seda.core;
 
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
+import java.io.File;
+import java.math.BigInteger;
 import java.util.Date;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Test;
 
+import fr.gouv.culture.archivesdefrance.seda.v2.AgentType;
+import fr.gouv.culture.archivesdefrance.seda.v2.CoverageType;
+import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentType;
+import fr.gouv.culture.archivesdefrance.seda.v2.IdentifierType;
+import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentType.CustodialHistory;
+import fr.gouv.culture.archivesdefrance.seda.v2.EventType;
+import fr.gouv.culture.archivesdefrance.seda.v2.GpsType;
+import fr.gouv.culture.archivesdefrance.seda.v2.KeywordsType;
+import fr.gouv.culture.archivesdefrance.seda.v2.LevelType;
+import fr.gouv.culture.archivesdefrance.seda.v2.OrganizationType;
+import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
+import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.common.json.JsonHandler;
 import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
@@ -54,6 +68,8 @@ import fr.gouv.vitam.generator.scheduler.core.Playbook;
 import fr.gouv.vitam.generator.scheduler.core.PlaybookBuilder;
 import fr.gouv.vitam.generator.scheduler.core.SchedulerEngine;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
+import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
+import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 
 /**
  * 
@@ -71,8 +87,10 @@ public class ArchiveTransferGeneratorImplTest {
         // TODO Helper dans PropertiesUtils
         ClassLoader classLoader = getClass().getClassLoader();
         String headerPath = classLoader.getResource("sip1.json").getFile();
-        ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(OUTPUT_FILE);
-        atgi.generateHeader(headerPath);
+        String configDir = classLoader.getResource("conf").getFile();
+        ArchiveTransferConfig atc = new ArchiveTransferConfig("/",configDir );
+        ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
+        atgi.generateHeader();
         atgi.startDataObjectPackage();
         String archiveFatherID = atgi.addArchiveUnit("Titre0", "Description0");
         String archiveSonID1 = atgi.addArchiveUnit("Titre1", "Description1");
@@ -107,9 +125,9 @@ public class ArchiveTransferGeneratorImplTest {
     public void emptyFile() {
         try{
         ClassLoader classLoader = getClass().getClassLoader();
-        String headerPath = classLoader.getResource("sip1.json").getFile();
-        ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(OUTPUT_FILE);
-        atgi.generateHeader(headerPath);
+        ArchiveTransferConfig atc = new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+        ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc,OUTPUT_FILE);
+        atgi.generateHeader();
         atgi.startDataObjectPackage();
         addBinaryDataObject(atgi, classLoader.getResource("empty").getFile() , null);
         }catch(VitamBinaryDataObjectException e){
@@ -118,6 +136,123 @@ public class ArchiveTransferGeneratorImplTest {
             fail("The empty file should raise an VitamBinaryDataObjectException");
         }
         fail("The empty file should raise an exception");
+    }
+
+    @Test
+    public void generateModelContentMetadata(){
+        DescriptiveMetadataContentType dmct = new DescriptiveMetadataContentType();
+        XMLGregorianCalendar xgc = null;
+        try{
+            xgc = XMLWriterUtils.getXMLGregorianCalendar(new Date());
+        }catch(VitamSedaException e){
+            e.printStackTrace();
+            fail();
+        }
+        dmct.setDescriptionLevel(LevelType.RECORD_GRP);
+        TextType title_fr = new TextType();
+        title_fr.setValue("Titre francais");
+        title_fr.setLang("fr");
+        dmct.getTitle().add(title_fr);
+        TextType title_en = new TextType();
+        title_en.setValue("English title");
+        title_en.setLang("en");
+        dmct.getTitle().add(title_en);
+        dmct.setFilePlanPosition("Valeur de filePlanPosition");
+        dmct.setSystemId("Valeur de SystemID)");
+        dmct.setOriginatingSystemId("Valeur de OriginatingSystemId");
+        dmct.setArchivalAgencyArchiveUnitIdentifier("Valeur de archivalAgencyArchiveUnitIdentifier");
+        dmct.setOriginatingAgencyArchiveUnitIdentifier("Valeur de originatingAgencyArchiveUnitIdentifier");
+        dmct.setTransferringAgencyArchiveUnitIdentifier("Valeur de transferringAgencyArchiveUnitIdentifier");
+        TextType descriptionFR = new TextType();
+        descriptionFR.setValue("Description francaise");
+        descriptionFR.setLang("fr");
+        dmct.getDescription().add(descriptionFR);
+        TextType descriptionEN = new TextType();
+        descriptionEN.setValue("English Description");
+        descriptionEN.setLang("en");
+        dmct.getDescription().add(descriptionEN);
+        // custodialHistory non implémenté
+        TextType type = new TextType();
+        type.setValue("Valeur du type");
+        type.setLang("fr");
+        dmct.setType(type);
+        TextType documentType = new TextType();
+        documentType.setValue("Valeur du document");
+        documentType.setValue("fr");
+        dmct.setDocumentType(documentType);
+        dmct.setLanguage("FR");
+        dmct.setDescriptionLanguage("FR");
+        dmct.setStatus("Valeur de Status");
+        dmct.setVersion("Valeur de version");
+        dmct.getTag().add("XML Tag 1 (de type xml:token)");
+        dmct.getTag().add("XML Tag 2 (de type xml:token)");
+        // Keyword non implémenté
+        CoverageType ct = new CoverageType();
+        TextType spatial = new TextType();
+        spatial.setValue("Valeur de Spatial");
+        spatial.setLang("fr");
+        ct.getSpatial().add(spatial);
+        TextType temporal = new TextType();
+        temporal.setValue("Valeur de temporal");
+        temporal.setLang("fr");
+        ct.getTemporal().add(temporal);
+        TextType juridictional = new TextType();
+        juridictional.setValue("Valeur de juridictional");
+        juridictional.setLang("fr");
+        ct.getJuridictional().add(juridictional);
+        dmct.setCoverage(ct);
+        IdentifierType it = new IdentifierType();
+        it.setValue("Identifiant de l'OriginatingAgency");
+        OrganizationType ot = new OrganizationType();
+        ot.setIdentifier(it);
+        dmct.setOriginatingAgency(ot);
+        IdentifierType it2 = new IdentifierType();
+        it2.setValue("Identifiant de l'OriginatingAgency");
+        OrganizationType ot2 = new OrganizationType();
+        ot2.setIdentifier(it2);
+        dmct.setSubmissionAgency(ot2);
+        AgentType at =new AgentType();
+        QName qName = new QName("Identifier");
+        JAXBElement<String> jaxbe = new JAXBElement(qName, String.class,"Identifiant Agent");
+        at.getContent().add(jaxbe);
+        dmct.setAuthorizedAgent(at);
+        DescriptiveMetadataContentType.Writer wr = new DescriptiveMetadataContentType.Writer();
+        wr.setGivenName("Valeur de GivenName");
+        wr.setFirstName("Valeur de FirstName");
+        wr.setBirthName("Valeur de BirthName");
+        wr.setBirthDate(xgc);
+        wr.setDeathDate(xgc);
+        dmct.getWriter().add(wr);
+        dmct.getAddressee().add(at);
+        dmct.getRecipient().add(at);
+        dmct.setSource("Valeur de Source");
+        // Related Object Reference non implémenté
+        dmct.setCreatedDate("Created Date : chaîne de caractères sans contrôle du format");
+        dmct.setTransactedDate("Transacted Date : chaîne de caractères sans contrôle du format");
+        dmct.setAcquiredDate("AcquiredDate : chaîne de caractères sans contrôle du format");
+        dmct.setSentDate("Sent date : chaîne de caractères sans contrôle du format" );
+        dmct.setReceivedDate("Received date : chaîne de caractères sans contrôle du format");
+        dmct.setStartDate("Start Date : A ne pas utiliser car calculé automatiquement par le générateur SEDA");
+        dmct.setEndDate("End Date : A ne pas utiliser car calculé automatiquement par le générateur SEDA");
+        EventType et = new EventType();
+        et.setEventIdentifier("Identifiant de l'évenement");
+        et.setEventType("Type de l'évenement");
+        et.setEventDateTime(xgc);
+        dmct.getEvent().add(et);
+        // Signature non implémenté
+        GpsType gps = new GpsType();
+        gps.setGpsLatitude("Latitude : string sans formatage imposé par le SEDA");
+        gps.setGpsLongitude("Longitude :  string sans formatage imposé par le SEDA");
+        gps.setGpsAltitude(new BigInteger("8848"));
+        dmct.setGps(gps);
+        dmct.setRestrictionValue("Valeur de restrictionValue");
+        dmct.setRestrictionEndDate(xgc);
+        try{
+            System.out.println(JsonHandler.writeAsString(dmct));
+        }catch(InvalidParseOperationException e){
+            e.printStackTrace();
+            fail();
+        }
     }
     
     private ArchiveTransferGenerator addBinaryDataObject(ArchiveTransferGenerator atgi,String filename, String dataObjectGroupID) throws VitamException{

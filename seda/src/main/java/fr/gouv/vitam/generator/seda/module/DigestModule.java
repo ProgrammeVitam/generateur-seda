@@ -29,14 +29,12 @@ package fr.gouv.vitam.generator.seda.module;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.MessageDigestBinaryObjectType;
 import fr.gouv.vitam.common.BaseXx;
-import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.digest.Digest;
 import fr.gouv.vitam.common.digest.DigestType;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
