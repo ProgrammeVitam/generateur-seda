@@ -47,7 +47,8 @@ class SchedulerMetrics {
      * Publish the statistics
      */
     public void printStatistics(){
-        LOGGER.debug("Module;Nb exec;Total time exec (ms); Mean Time (ms)");
+        LOGGER.info("Statistiques des modules de traitements");
+        LOGGER.info("Module;Nb exec;Total time exec (ms); Mean Time (ms)");
         for (String moduleId : nbCallModule.keySet()){//NOSONAR : We don't use entrySet as we iterate on 2 maps
             StringBuilder sb = new StringBuilder(moduleId).append(";").append(nbCallModule.get(moduleId)).append(";").append(timeCallModule.get(moduleId)).append(";");
             if (nbCallModule.get(moduleId)>0){

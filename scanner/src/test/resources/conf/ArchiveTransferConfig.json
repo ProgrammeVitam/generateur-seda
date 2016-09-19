@@ -25,5 +25,6 @@
 	},
 	"TransferringAgency" : {
 		"Identifier" : "Identifier5"
-	}
+	},
+	"ignore_patterns" : ["java*.jar"]
 }

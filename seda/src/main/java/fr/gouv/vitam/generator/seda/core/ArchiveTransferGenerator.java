@@ -298,7 +298,8 @@ public class ArchiveTransferGenerator {
      * Management Metadata
      * @throws VitamSedaException
      */
-    public void writeDescriptiveMetadata() throws VitamSedaException {
+    public int writeDescriptiveMetadata() throws VitamSedaException {
+        int nbArchiveUnits=0;
         try{
             writer.writeStartElement("DescriptiveMetadata");
         }catch(XMLStreamException e){
@@ -306,9 +307,11 @@ public class ArchiveTransferGenerator {
         }
         for (ArchiveUnitTypeRoot autr : mapArchiveUnit.values()) {
             writeXMLFragment(autr);
+            nbArchiveUnits++;
         }
         try{
             writer.writeEndElement();
+            return nbArchiveUnits;
         }catch(XMLStreamException e){
             throw new VitamSedaException("Can't write Descriptive Medatadata", e); 
         }
@@ -436,12 +439,12 @@ public class ArchiveTransferGenerator {
                 first=false;
             }else{
                 // Take the minimum date of the sons
-                if (sonautr.getStartDate().compareTo(startDate)<0){
+                if (sonautr.getStartDate() != null &&  sonautr.getStartDate().compareTo(startDate)<0){
                     startDate = sonautr.getStartDate();
                     
                 }
                 // Take the maximum date of the sons
-                if (sonautr.getEndDate().compareTo(endDate)>0){
+                if (sonautr.getEndDate() != null && sonautr.getEndDate().compareTo(endDate)>0){
                     endDate = sonautr.getEndDate();
                 }
             }

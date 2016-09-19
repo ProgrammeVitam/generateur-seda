@@ -51,7 +51,7 @@ import fr.gouv.vitam.generator.seda.core.ArchiveTransferGenerator;
 
 public class SedaGenerator {
 
-    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGenerator.class);
+    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(SedaGenerator.class);
 
     private SedaGenerator(){
         // Empty constructor
@@ -83,7 +83,10 @@ public class SedaGenerator {
             }catch(FileNotFoundException e){ // NOSONAR : It is OK not to have generator.properties file
                 LOGGER.debug("generator.properties is missing . Use default values");
             }
+            long beginTimeMS = System.currentTimeMillis();
+            LOGGER.info("Generateur SEDA : Beginning of  scan of directory " + scanDir);
             scan(scanDir,atc,playbookFileBDO,outputFile,errFile);
+            LOGGER.info("Generateur SEDA : End of scan of directory "+ scanDir + " in "+(System.currentTimeMillis()-beginTimeMS)+" ms");
     }
     /**
      * Usage function of the program

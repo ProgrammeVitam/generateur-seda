@@ -82,7 +82,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     private final PrintStream errFileStream;
     private final Set<PathMatcher> excludeFileSet = new HashSet<>();
     private final ArchiveTransferConfig archiveTransferConfig;
-    
+    private final long beginTimeMS;
+    private int numberBinaryDataObject=0;
     /**
      * Constructor for ScanFS
      * @param archiveTransferConfig : contains the aggregate configuration of the differents configurations sources
@@ -115,6 +116,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         }
         mapArchiveUnitPath2Id = new HashMap<>();
         setExcludedFileList();
+        beginTimeMS = System.currentTimeMillis();
     }
     
     private void setExcludedFileList(){
@@ -146,6 +148,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         if (dirName.startsWith("__") && dirName.endsWith("__")) {
             dataObjectGroupOfCurrentDirectory = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
             String archiveUnitID = atgi.addArchiveUnit(dir.getFileName().toString(), dir.toString(),manifestPathName);
+            mapArchiveUnitPath2Id.put(dir.toString(),archiveUnitID);
             String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
             atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
             atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupOfCurrentDirectory);
@@ -169,7 +172,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public FileVisitResult visitFile(Path file,
         BasicFileAttributes attr) {
-        if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME)){
+        if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) || file.getFileName().toString().equals(MANIFEST_NAME)){
             return FileVisitResult.CONTINUE;
         }
         for(PathMatcher pm : excludeFileSet){
@@ -179,43 +182,59 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
             }
         }
 
-        
-        // Presence of a manifest.json file (not currently implemented)
+        // If the file is not a regular file, ignore
+        if (!(attr.isSymbolicLink() || attr.isRegularFile())) {
+            return FileVisitResult.CONTINUE;
+        }
         String dataObjectGroupID;
         String archiveUnitID;
         String fatherID;
-        if ((attr.isSymbolicLink() || attr.isRegularFile()) && !file.getFileName().toString().equals(MANIFEST_NAME)) {
-            // Archive Unit : we create the DataObjectGroup
-            if (dataObjectGroupOfCurrentDirectory == null){
-                dataObjectGroupID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
-            } else {
-                // The directory is a DataObjectGroup : the DataObjectGroup ID is known (has been defined previously
-                // when we manage the father directory)
-                dataObjectGroupID = dataObjectGroupOfCurrentDirectory;
-            }
-            try {
-                ParameterMap inputParameterMap=new ParameterMap();
-                inputParameterMap.put("file",file.toUri().getPath());
-                inputParameterMap.put("dataobjectgroupID",dataObjectGroupID);
-                inputParameterMap.put("archivetransfergenerator", atgi);
-                schedulerEngine.execute(playbookBinary, inputParameterMap);
-                if (dataObjectGroupOfCurrentDirectory == null) {
-                    archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
-                        "Pseudo Archive Unit du fichier :" + file.toString());
-                    fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
-                    atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
-                    atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupID);
-                    atgi.setTransactedDate(archiveUnitID, new Date(file.toFile().lastModified())); 
+        
+        // Archive Unit : we create the DataObjectGroup
+        if (dataObjectGroupOfCurrentDirectory == null){
+            dataObjectGroupID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
+        } else {
+            // The directory is a DataObjectGroup : the DataObjectGroup ID is known (has been defined previously
+            // when we manage the father directory)
+            dataObjectGroupID = dataObjectGroupOfCurrentDirectory;
+        }
+        // Prepare the parameters
+        ParameterMap inputParameterMap=new ParameterMap();
+        inputParameterMap.put("file",file.toUri().getPath());
+        inputParameterMap.put("dataobjectgroupID",dataObjectGroupID);
+        inputParameterMap.put("archivetransfergenerator", atgi);
+        try {
+            schedulerEngine.execute(playbookBinary, inputParameterMap);
+            // Standard Directory
+            if (dataObjectGroupOfCurrentDirectory == null) {
+                // Create the Pseudo ArchiveUnit
+                archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
+                    "Pseudo Archive Unit du fichier :" + file.toString());
+                // Get the ID of the parent ArchiveUnit
+                fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
+                // Add the relation between father and son
+                atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
+                // Add the relation between son AU and DataObjectGroup
+                atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupID);
+                // Calculate TransactedDate,StartDate and EndDate
+                atgi.setTransactedDate(archiveUnitID, new Date(file.toFile().lastModified()));
+            // DataObjectGroup Directory
+            }else{
+                // Get the ID of the DataObjectGroup Directory Archive Unit 
+                fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
+                // If the file is the BinaryMaster Version, set the Transacted, StartDate and EndDate in the Archive Unit
+                if (file.getFileName().toString().startsWith("BinaryMaster")){
+                    atgi.setTransactedDate(fatherID, new Date(file.toFile().lastModified()));
                 }
-            } catch (VitamBinaryDataObjectException e){//NOSONAR : This exception is for BinaryDataObject rejected file
-                LOGGER.warn(file.toUri().getPath() + " has been rejected for the reason : "+ e.getMessage());
-                errFileStream.println(e.getMessage());
-            } catch (VitamSchedulerException|VitamSedaException e) {
-                LOGGER.error(e);
-            } catch (VitamException e){
-                LOGGER.error(e);
             }
-    
+            numberBinaryDataObject++;
+        } catch (VitamBinaryDataObjectException e){//NOSONAR : This exception is for BinaryDataObject rejected file
+            LOGGER.warn(file.toUri().getPath() + " has been rejected for the reason : "+ e.getMessage());
+            errFileStream.println(e.getMessage());
+        } catch (VitamSchedulerException|VitamSedaException e) {
+            LOGGER.error(e);
+        } catch (VitamException e){
+            LOGGER.error(e);
         }
         return FileVisitResult.CONTINUE;
     }
@@ -228,10 +247,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     public FileVisitResult postVisitDirectory(Path dir,
         IOException exc) {
         String dirName = dir.getFileName().toString();
-        // DataObjectGroup : The directory is a DataObjectGroup so we create a pseudo ArchiveUnitID
-        if (dirName.startsWith("__") && dirName.endsWith("__")) {
-            // FIXME
-        }else{
+        // When in the ArchiveUnit Standard mode (not DOG), the start and endDate have to be calculated recursively
+        if (dataObjectGroupOfCurrentDirectory == null ) {           
              String auid = mapArchiveUnitPath2Id.get(dir.toString());
              atgi.addStartAndEndDate2ArchiveUnit(auid);
         }
@@ -253,7 +270,12 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      */
     @Override
     public void close() throws XMLStreamException, VitamSedaException {
-        atgi.writeDescriptiveMetadata();
+        long binaryDataObjecttotalTime = (System.currentTimeMillis()-beginTimeMS);
+        LOGGER.info("Managing BinaryDataObjects : "+ binaryDataObjecttotalTime + " ms for "+ numberBinaryDataObject +" BinaryDataObjects (time per BDO : "+ binaryDataObjecttotalTime/numberBinaryDataObject +" ms)");
+        long beginDescriptiveMetadateTime = System.currentTimeMillis();
+        int nbArchiveUnits = atgi.writeDescriptiveMetadata();
+        long descriptiveMetadataTotalTime = (System.currentTimeMillis()-beginDescriptiveMetadateTime);
+        LOGGER.info("Writing ArchiveUnits : "+ descriptiveMetadataTotalTime + " ms for "+ nbArchiveUnits + " ArchiveUnits (time per AU : " + descriptiveMetadataTotalTime/nbArchiveUnits+" ms)");
         atgi.writeManagementMetadata();
         atgi.closeDocument();
         schedulerEngine.printStatistics();
