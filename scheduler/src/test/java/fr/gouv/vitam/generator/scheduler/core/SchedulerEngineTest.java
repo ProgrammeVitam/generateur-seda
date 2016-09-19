@@ -20,7 +20,7 @@ public class SchedulerEngineTest {
         ParameterMap input=new ParameterMap();
         input.put("mandatory_argument", "test");
         input.put("nullable_argument", null);
-        launchPlaybook(input);
+        launchPlaybook(input,"");
     }
     
     
@@ -28,14 +28,14 @@ public class SchedulerEngineTest {
     public void missingMandatoryArgument() {
         ParameterMap input=new ParameterMap();
         input.put("nullable_argument", null);
-        launchPlaybook(input);
+        launchPlaybook(input,"parameter[mandatory_argument] for moduledummy is null which is forbidden");
     }
     
     @Test
     public void badClassArgument() {
         ParameterMap input=new ParameterMap();
         input.put("mandatory_argument", 1);
-        launchPlaybook(input);
+        launchPlaybook(input,"parameter[mandatory_argument] for moduledummy is not of the class typejava.lang.String");
     }
     
     
@@ -56,7 +56,7 @@ public class SchedulerEngineTest {
         return pb;
     }
     
-    private void launchPlaybook(ParameterMap input){
+    private void launchPlaybook(ParameterMap input,String expected){
         SchedulerEngine se = new SchedulerEngine();
         Playbook pb = initatePlaybook();
         try{
@@ -64,7 +64,10 @@ public class SchedulerEngineTest {
             se.printStatistics();
         }catch(IllegalArgumentException e){
             // It is the nominal behaviour of the test
-            LOGGER.info(e.getMessage());
+            if (!(e.getMessage().equals(expected))){
+                fail(e.getMessage());
+            }
+            
         }catch(VitamException e){
             fail(e.getMessage());
         }        
