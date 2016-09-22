@@ -50,7 +50,7 @@ public class SchedulerEngineTest {
         pmDummy.put("nullable_argument","@@nullable_argument@@");
         taskDummy.setParameters(pmDummy);
         ParameterMap pmDummyRegistered =new ParameterMap();
-        pmDummyRegistered.put("test", "@@test");
+        pmDummyRegistered.put("test", "@@test@@");
         taskDummy.setRegisteredParameters(pmDummyRegistered);
         pb.getTasks().add(taskDummy);
         return pb;

@@ -42,17 +42,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchivalAgencyTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
@@ -282,7 +274,7 @@ public class ArchiveTransferGenerator {
         ParametersChecker.checkParameter("dataobjectGroupSonID cannot be null", dataobjectGroupSonID);
         ArchiveUnitTypeRoot autrFather = mapArchiveUnit.get(archiveUnitFatherID);
         DataObjectRefType dort = new DataObjectRefType();
-        dort.setId(XMLWriterUtils.getNextID());
+//        dort.setId(XMLWriterUtils.getNextID());
         dort.setDataObjectGroupReferenceId(dataobjectGroupSonID);
         autrFather.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference().add(dort);
         // When an ArchiveUnit has a DataObjectGroup, it is at the Level FILE
@@ -296,6 +288,7 @@ public class ArchiveTransferGenerator {
     /**
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
      * Management Metadata
+     * @return number of written archive units
      * @throws VitamSedaException
      */
     public int writeDescriptiveMetadata() throws VitamSedaException {
