@@ -29,13 +29,12 @@ package fr.gouv.vitam.generator.seda.module;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.MessageDigestBinaryObjectType;
-import fr.gouv.vitam.common.ParametersChecker;
+import fr.gouv.vitam.common.BaseXx;
 import fr.gouv.vitam.common.digest.Digest;
 import fr.gouv.vitam.common.digest.DigestType;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
@@ -85,9 +84,8 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
             DigestType digestType = DigestType.valueOf((String)parameters.get("digest.algorithm"));
             MessageDigestBinaryObjectType mdbot = new MessageDigestBinaryObjectType();
             mdbot.setAlgorithm(digestType.getName());
-            // BaseXx contient Base64
-            mdbot.setValue(Base64.getEncoder().encodeToString(Digest.digest(f, digestType).digest()));
-            // Hexa serait plus correct, non ? fonction native de Digest et supporté par SEDA (et par Vitam du coup)
+            String base16Digest=BaseXx.getBase16(Digest.digest(f, digestType).digest());
+            mdbot.setValue(base16Digest);
             bdotr.setMessageDigest(mdbot);
         } catch (IOException e) {
             throw new VitamBinaryDataObjectException(f.toString()+ " has had an I/O exception" + e.getMessage(), e);

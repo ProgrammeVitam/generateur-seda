@@ -76,7 +76,7 @@ public class SiegfriedModuleTest {
             pm.put("binarydataobject", bdotr);
             
             SiegfriedModule sm = new SiegfriedModule();
-            Field f= sm.getClass().getDeclaredField("testhttpclient");
+            Field f= sm.getClass().getDeclaredField("httpclient");
             f.setAccessible(true);
             f.set(sm, mockHttpClient);
             sm.execute(pm);

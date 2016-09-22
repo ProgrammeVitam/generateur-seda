@@ -100,7 +100,6 @@ public class SchedulerEngine {
     private ParameterMap substitute(ParameterMap templateParameters, ParameterMap valuesParameters) {
         ParameterMap pm = new ParameterMap();
         Pattern pattern = Pattern.compile("^@@(.*)@@$");
-        // Prefer entrySet
         for (Entry<String,Object> entry : templateParameters.entrySet()) {
             String value = (String) entry.getValue();
             Matcher matcher = pattern.matcher(value);

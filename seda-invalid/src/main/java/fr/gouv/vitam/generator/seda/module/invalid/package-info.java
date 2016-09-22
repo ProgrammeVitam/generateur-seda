@@ -24,42 +24,7 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
-
-package fr.gouv.vitam.generator.scheduler.core;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 /**
- * A playbook (like in Ansible) is a list (ordered) of tasks
- * This class is a POJO class for JSON unmarshalling
+ * Modules SEDA to generate bad SEDA profile on differents rules
  */
-public class Playbook {
-
-    private String name;
-    @JsonProperty("tasks")
-    private final List<Task> tasks;
-    
-    /**
-     * Default Constructor
-     */
-    public Playbook() {
-        this.tasks = new ArrayList<>();
-    }
-    
-    /**
-     * 
-     * @return tasks
-     */
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-}
+package fr.gouv.vitam.generator.seda.module.invalid;

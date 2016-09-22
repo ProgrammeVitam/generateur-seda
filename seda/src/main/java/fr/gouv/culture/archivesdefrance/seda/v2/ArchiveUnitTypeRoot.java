@@ -26,12 +26,48 @@
  */
 package fr.gouv.culture.archivesdefrance.seda.v2;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
  */
 @XmlRootElement(name = "ArchiveUnit")
 public class ArchiveUnitTypeRoot extends ArchiveUnitType {
-
+    @XmlTransient
+    private Date startDate;
+    @XmlTransient
+    private Date endDate;
+    /**
+     * @return the startDate
+     */
+    public Date getStartDate() {
+        return startDate;
+    }
+    /**
+     * @param startDate the startDate to set
+     *
+     * @return this
+     */
+    public ArchiveUnitTypeRoot setStartDate(Date startDate) {
+        this.startDate = startDate;
+        return this;
+    }
+    /**
+     * @return the endDate
+     */
+    public Date getEndDate() {
+        return endDate;
+    }
+    /**
+     * @param endDate the endDate to set
+     *
+     * @return this
+     */
+    public ArchiveUnitTypeRoot setEndDate(Date endDate) {
+        this.endDate = endDate;
+        return this;
+    }
 }

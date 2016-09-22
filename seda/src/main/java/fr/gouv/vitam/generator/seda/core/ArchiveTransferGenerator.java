@@ -42,9 +42,17 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchivalAgencyTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
@@ -79,24 +87,26 @@ public class ArchiveTransferGenerator {
     private static final String SEDA_FILENAME = "manifest.xml";
     private final String temporarySedaFilePath;
     private final ZipFileWriter zipFile;
-    private JsonNode globalParameters;
     private final DataObjectGroupUsedMap dataObjectGroupUsedMap;
     private final Map<String, ArchiveUnitTypeRoot> mapArchiveUnit;
     private final XMLStreamWriter writer;
+    private final ArchiveTransferConfig archiveTransferConfig;
 
 
-    /**
-     * 
+    /** 
+     * @param archiveTransferConfig : contains the global configuration of the ArchiveTransfer
      * @param zipFileName : name of the Zip file that will be created
      * @throws VitamSedaException
      * @throws IllegalArgumentException if zipFileName is null
      * TODO pour chaque méthode utilisant checkParameter: ajouter dans la JavaDoc @throws IllegalArgumentException et les noms des arguments vérifiés
      */
-    public ArchiveTransferGenerator(String zipFileName) throws VitamSedaException {
+    public ArchiveTransferGenerator(ArchiveTransferConfig archiveTransferConfig,String zipFileName) throws VitamSedaException {
+        ParametersChecker.checkParameter("archiveTransferConfig cannot be null", archiveTransferConfig);
         ParametersChecker.checkParameter("xmlname cannot be null", zipFileName);
         XMLOutputFactory output = XMLOutputFactory.newInstance();
         dataObjectGroupUsedMap = new DataObjectGroupUsedMap();
         mapArchiveUnit = new LinkedHashMap<>();
+        this.archiveTransferConfig = archiveTransferConfig;
         try {
             temporarySedaFilePath = System.getProperty("java.io.tmpdir")+"/"+SEDA_FILENAME;
             FileOutputStream fos = new FileOutputStream(temporarySedaFilePath);
@@ -106,23 +116,24 @@ public class ArchiveTransferGenerator {
         }
         try{
             zipFile = new ZipFileWriter(zipFileName);
+            zipFile.addDirectory("Content/");
         }catch (FileNotFoundException e){
 
             throw new VitamSedaException("Error on writing to" + zipFileName, e);
+        }catch (IOException e){
+            throw new VitamSedaException("Can't create /Content directory in the zipFile",e);
         }
     }
 
     /**
      * Generate the Head of the xml Seda File : All elements up to DataObjectPackage (excluded)
      * 
-     * @param headerfile
      * @throws XMLStreamException
      * @throws VitamSedaException
      * @throws IllegalArgumentException if headerfile is null
      */
 
-    public void generateHeader(String headerfile) throws XMLStreamException, VitamSedaException {
-        ParametersChecker.checkParameter("headerfile cannot be null", headerfile);
+    public void generateHeader() throws XMLStreamException, VitamSedaException {
         writer.writeStartDocument();
         writer.writeStartElement("ArchiveTransfer");
         writer.writeNamespace("xlink", "http://www.w3.org/1999/xlink");
@@ -132,18 +143,12 @@ public class ArchiveTransferGenerator {
         writer.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation",
             SEDA_NAMESPACE + " seda-2.0-main.xsd");
         XMLWriterUtils.setID(writer);
-        try {
-            globalParameters = JsonHandler.getFromFile(new File(headerfile));
-        } catch (InvalidParseOperationException e) {
-            throw new VitamSedaException("Error on header file" + headerfile, e);
-        }
-
         getJSONArgument2XML("Comment");
         XMLWriterUtils.writeAttributeValue(writer, "Date", XMLWriterUtils.getDate());
         getJSONArgument2XML("MessageIdentifier");
         getJSONArgument2XML("ArchivalAgreement");
-        if (globalParameters.has("CodeListVersions")) {
-            CodeListVersionsTypeRoot clvt = getCodeListVersionsType(globalParameters.get("CodeListVersions"));
+        if (archiveTransferConfig.has("CodeListVersions")) {
+            CodeListVersionsTypeRoot clvt = getCodeListVersionsType(archiveTransferConfig.get("CodeListVersions"));
             writeXMLFragment(clvt);
         }
         startDataObjectPackage();
@@ -173,6 +178,18 @@ public class ArchiveTransferGenerator {
     public String addArchiveUnit(String title, String description) {
         ParametersChecker.checkParameter("title cannot be null", title);
         ParametersChecker.checkParameter("description cannot be null", description);
+        return addArchiveUnit(title, description,null);
+    }
+    /**
+     * efine an archive with 3 elements : title and description and a json metadata File
+     * @param title
+     * @param description
+     * @param metadataFile
+     * @return the XML:ID of the archive Unit
+     */
+    public String addArchiveUnit(String title, String description,File metadataFile) {
+        ParametersChecker.checkParameter("title cannot be null", title);
+        ParametersChecker.checkParameter("description cannot be null", description);
         String id = XMLWriterUtils.getNextID();
         ArchiveUnitTypeRoot autr = new ArchiveUnitTypeRoot();
         TextType textTypeTitle = new TextType();
@@ -180,14 +197,31 @@ public class ArchiveTransferGenerator {
         TextType textTypeDescription = new TextType();
         textTypeDescription.setValue(description);
         DescriptiveMetadataContentType dmct = new DescriptiveMetadataContentType();
-        dmct.getTitle().add(textTypeTitle);
-        dmct.getDescription().add(textTypeDescription);
-        dmct.setDescriptionLevel(LevelType.RECORD_GRP);
+        try{
+            if (metadataFile != null){
+                JsonNode jn = JsonHandler.getFromFile(metadataFile);
+                if (jn.has("Content")){
+                    dmct = JsonHandler.getFromJsonNode(jn.get("Content"), DescriptiveMetadataContentType.class);
+                }
+            }
+        }catch(InvalidParseOperationException e){
+            LOGGER.warn("File "+metadataFile+ " is not a valid json File for Content Metadata",e);
+        }
+        if (dmct.getTitle().isEmpty()) {
+            dmct.getTitle().add(textTypeTitle);
+        }
+        if (dmct.getDescription().isEmpty()){
+            dmct.getDescription().add(textTypeDescription);
+        }
+        if (dmct.getDescriptionLevel() == null){
+            dmct.setDescriptionLevel(LevelType.RECORD_GRP);
+        }
         autr.getContent().add(dmct);
         autr.setId(id);
         mapArchiveUnit.put(id, autr);
         return id;
     }
+    
 
     /**
      * Set transactedDate to the ArchiveUnit Descriptive Metadata
@@ -204,6 +238,8 @@ public class ArchiveTransferGenerator {
             dmct.setTransactedDate(XMLWriterUtils.getDate(date));
             autr.getContent().add(dmct);
         }
+        autr.setStartDate(date);
+        autr.setEndDate(date);
     }
     
     /**
@@ -252,19 +288,18 @@ public class ArchiveTransferGenerator {
         // When an ArchiveUnit has a DataObjectGroup, it is at the Level FILE
         for (DescriptiveMetadataContentType dmct: autrFather.getContent()){
             autrFather.getContent().remove(dmct);
-            dmct.setDescriptionLevel(LevelType.FILE);
+            dmct.setDescriptionLevel(LevelType.ITEM);
             autrFather.getContent().add(dmct);
         }
     }
-
-
 
     /**
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
      * Management Metadata
      * @throws VitamSedaException
      */
-    public void writeDescriptiveMetadata() throws VitamSedaException {
+    public int writeDescriptiveMetadata() throws VitamSedaException {
+        int nbArchiveUnits=0;
         try{
             writer.writeStartElement("DescriptiveMetadata");
         }catch(XMLStreamException e){
@@ -272,9 +307,11 @@ public class ArchiveTransferGenerator {
         }
         for (ArchiveUnitTypeRoot autr : mapArchiveUnit.values()) {
             writeXMLFragment(autr);
+            nbArchiveUnits++;
         }
         try{
             writer.writeEndElement();
+            return nbArchiveUnits;
         }catch(XMLStreamException e){
             throw new VitamSedaException("Can't write Descriptive Medatadata", e); 
         }
@@ -360,14 +397,14 @@ public class ArchiveTransferGenerator {
     }
 
     private void getJSONArgument2XML(String key) throws XMLStreamException {
-        if (globalParameters.has(key) && globalParameters.get(key).getNodeType().equals(JsonNodeType.STRING)) {
-            XMLWriterUtils.writeAttributeValue(writer, key, globalParameters.get(key).textValue());
+        if (archiveTransferConfig.has(key) && archiveTransferConfig.get(key).getNodeType().equals(JsonNodeType.STRING)) {
+            XMLWriterUtils.writeAttributeValue(writer, key, archiveTransferConfig.get(key).textValue());
         }
     }
 
     private void getJSONArgument2XML(String key, OrganizationWithIdType owit) throws VitamSedaException{
-        if (globalParameters.has(key)) {
-            JsonNode jsonSonNode = globalParameters.get(key);
+        if (archiveTransferConfig.has(key)) {
+            JsonNode jsonSonNode = archiveTransferConfig.get(key);
             String identifierKey = "Identifier";
             if (jsonSonNode.has(identifierKey) &&
                 jsonSonNode.get(identifierKey).getNodeType().equals(JsonNodeType.STRING)) {
@@ -382,7 +419,46 @@ public class ArchiveTransferGenerator {
             }
         }
     }
-
+    
+    /**
+     * Calculate the Start and End Date of an ArchiveUnit
+     * @param archiveUnitID
+     */
+    public void addStartAndEndDate2ArchiveUnit(String archiveUnitID){
+        ParametersChecker.checkParameter("Archive Unit ID cannot be null", archiveUnitID);
+        ArchiveUnitTypeRoot autr = mapArchiveUnit.get(archiveUnitID);
+        boolean first=true;
+        Date startDate = null;
+        Date endDate = null;
+        for (Object aut : autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()){
+            ArchiveUnitTypeRoot sonautr = mapArchiveUnit.get(((ArchiveUnitType) aut).getArchiveUnitRefId());
+            // Initialize the start and endDate
+            if (first){
+                startDate = sonautr.getStartDate();
+                endDate = sonautr.getEndDate();
+                first=false;
+            }else{
+                // Take the minimum date of the sons
+                if (sonautr.getStartDate() != null &&  sonautr.getStartDate().compareTo(startDate)<0){
+                    startDate = sonautr.getStartDate();
+                    
+                }
+                // Take the maximum date of the sons
+                if (sonautr.getEndDate() != null && sonautr.getEndDate().compareTo(endDate)>0){
+                    endDate = sonautr.getEndDate();
+                }
+            }
+        }
+        for (DescriptiveMetadataContentType dmct: autr.getContent()){
+            autr.getContent().remove(dmct);
+            dmct.setStartDate(XMLWriterUtils.getDate(startDate));
+            dmct.setEndDate(XMLWriterUtils.getDate(endDate));
+            autr.getContent().add(dmct);
+        }
+        autr.setStartDate(startDate);
+        autr.setEndDate(endDate);
+    }
+    
     /**
      * @return the dataObjectGroupUsedMap
      */
@@ -396,4 +472,5 @@ public class ArchiveTransferGenerator {
     public ZipFileWriter getZipFile() {
         return zipFile;
     }
+    
 }

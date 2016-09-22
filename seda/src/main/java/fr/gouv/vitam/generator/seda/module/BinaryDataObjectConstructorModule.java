@@ -62,6 +62,7 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
     
     {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
+        INPUTSIGNATURE.put("dataobjectversion", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("BinaryMaster"));
     }
     
     @Override
@@ -91,8 +92,15 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         }
         BinaryDataObjectTypeRoot bdotr = new BinaryDataObjectTypeRoot();
         bdotr.setId(id);
-        bdotr.setDataObjectVersion("DataObjectVersion0");
-        bdotr.setUri("Content/"+id);
+        
+        
+        String extension = ".seda";
+        int position = f.getName().lastIndexOf('.');
+        if (position != -1){
+            extension = f.getName().substring(position);
+        }
+        bdotr.setUri("Content/"+id+extension);
+        bdotr.setDataObjectVersion((String) parameters.get("dataobjectversion"));
         bdotr.setSize(new BigInteger(String.valueOf(f.length())));
         bdotr.setFormatIdentification(new FormatIdentificationType());
         FileInfoType fit = new FileInfoType();

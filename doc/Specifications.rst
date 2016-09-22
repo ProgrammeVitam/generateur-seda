@@ -91,7 +91,7 @@ Un fichier ZIP (pkZIP) avec les fichiers suivants :
  * Un fichier SEDA généré qui est valide par rapport au schéma SEDA 2.0 (MENODA)
  
    + (A valider) L'encodage du fichier de sortie doit être en UTF-8
-   + (Souhait) Les PO souhaitent avoir un affichage des archive Unit dans l'ordre du parcours en profondeur de l'arborescence
+   + L'affichage des archive Unit est dans l'ordre du parcours en profondeur de l'arborescence
  * Un répertoire Content qui contient l'ensemble des BinaryDataObject décrits dans le fichier SEDA. Chaque fichier a pour nom son ID dans le bordereau Seda
 
 
@@ -115,22 +115,11 @@ Dans le fichier SEDA, les Champs suivants sont gérés
    + DescriptionLevel : Item s'il y a un DOG comme fils , RecordGrp sinon
    + Title : Nom du fichier ou répertoire
    + Description : un champ de debug pour l'instant
-   + TransactedDate : Pour les archiveUnit ayant un DOG, le mtime du dernier fichier chargé dans le DOG . Quelle est la bonne valeur quand il y a plus d'un fichier par DOG
-  
-Interface de l'outil
---------------------
-
-Il s'agit d'un logiciel en ligne de commande qui prendra les arguments suivants : 
-
-* Nom du répertoire dont on désire obtenir le bordereau SEDA associé . Ce répertoire permettra de générer le bloc DataObjectPackage
-* Fichier paramètre contenant les élements globaux du SEDA (Coment, MessageIdentifier, ArchivalAgreement,CodeListVersions,ArchivalAgency,TransferringAgency)
-* Chemin (relatif ou absolu) du fichier SEDA généré
+   + TransactedDate : Pour les archiveUnit ayant un DOG, le mtime du dernier fichier chargé dans le DOG . Quelle est la bonne valeur quand il y a plus d'un fichier par DOG ?
+   + StartDate/EndDate : Pour les ArchiveUnit de type RecordGrp, le StartDate est la TransactedDate la plus ancienne des fichier du RecordGrp et la EndDate est la TransactedDate la plus récente des fichiers du RecordGrp
 
 Ecart au standard
 ---------------
 
 * Modification du SEDA : La restriction XMLREFID a été supprimé pour  ArchiveUnitRefIdType et GroupRefIdType
 
-Charges
--------
-17 points

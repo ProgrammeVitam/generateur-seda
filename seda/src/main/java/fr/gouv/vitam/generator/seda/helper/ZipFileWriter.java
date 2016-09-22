@@ -49,6 +49,16 @@ public class ZipFileWriter {
     public ZipFileWriter(String zipname) throws FileNotFoundException {
         FileOutputStream fos = new FileOutputStream(zipname);
         this.zos = new ZipOutputStream(fos);
+
+    }
+    
+    /**
+     * Create a directory in the ZIP File
+     * @param directory
+     * @throws IOException
+     */
+    public void addDirectory(String directory) throws IOException{
+        zos.putNextEntry(new ZipEntry(directory));
     }
     
     /**
