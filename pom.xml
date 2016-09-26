@@ -87,8 +87,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.generator.version>0.8.0-SNAPSHOT</vitam.generator.version>
-		<vitam.common.version>0.8.0-SNAPSHOT</vitam.common.version>
+		<vitam.generator.version>0.9.0-SNAPSHOT</vitam.generator.version>
+		<vitam.common.version>0.9.0-SNAPSHOT</vitam.common.version>
 
 
 		<!-- Build environment Properties -->

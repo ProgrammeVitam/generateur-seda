@@ -211,11 +211,6 @@ public class ArchiveTransferGeneratorImplTest {
         OrganizationType ot2 = new OrganizationType();
         ot2.setIdentifier(it2);
         dmct.setSubmissionAgency(ot2);
-        AgentType at =new AgentType();
-        QName qName = new QName("Identifier");
-        JAXBElement<String> jaxbe = new JAXBElement(qName, String.class,"Identifiant Agent");
-        at.getContent().add(jaxbe);
-        dmct.setAuthorizedAgent(at);
         DescriptiveMetadataContentType.Writer wr = new DescriptiveMetadataContentType.Writer();
         wr.setGivenName("Valeur de GivenName");
         wr.setFirstName("Valeur de FirstName");
@@ -223,15 +218,13 @@ public class ArchiveTransferGeneratorImplTest {
         wr.setBirthDate(xgc);
         wr.setDeathDate(xgc);
         dmct.getWriter().add(wr);
-        dmct.getAddressee().add(at);
-        dmct.getRecipient().add(at);
         dmct.setSource("Valeur de Source");
         // Related Object Reference non implémenté
-        dmct.setCreatedDate("Created Date : chaîne de caractères sans contrôle du format");
-        dmct.setTransactedDate("Transacted Date : chaîne de caractères sans contrôle du format");
-        dmct.setAcquiredDate("AcquiredDate : chaîne de caractères sans contrôle du format");
-        dmct.setSentDate("Sent date : chaîne de caractères sans contrôle du format" );
-        dmct.setReceivedDate("Received date : chaîne de caractères sans contrôle du format");
+        dmct.setCreatedDate(xgc.toString());
+        dmct.setTransactedDate(xgc.toString());
+        dmct.setAcquiredDate(xgc.toString());
+        dmct.setSentDate(xgc.toString());
+        dmct.setReceivedDate(xgc.toString());
         dmct.setStartDate("Start Date : A ne pas utiliser car calculé automatiquement par le générateur SEDA");
         dmct.setEndDate("End Date : A ne pas utiliser car calculé automatiquement par le générateur SEDA");
         EventType et = new EventType();
