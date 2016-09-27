@@ -24,12 +24,12 @@ Sous Windows, le script inclut le démarrage de Siegfried (http://www.itforarchi
 Lancement sous Linux
 ---------------------
 
-La version Linux a besoin comme pré-requis l'outil d'identification de format Siegfried : 
+La version Linux a besoin comme pré-requis de l'outil d'identification de format Siegfried : 
 
-  * Pour une distribution basé sur des packages deb en 64 bits , suivre la procédure https://github.com/richardlehane/siegfried#ubuntudebian-64-bit
+  * Pour une distribution basée sur des packages deb en 64 bits , suivre la procédure https://github.com/richardlehane/siegfried#ubuntudebian-64-bit
   * Pour une distribution RPM, il n'y a pas pour l'instant de version compilée
 
-Lors du 1er lancement, il faut récupérer le fichier de signature : ``sf -update`` (accès HTTP sans proxy sur Internet nécessaire )
+Lors du 1er lancement, il faut récupérer le fichier de signature : ``sf -update`` (accès HTTP sans proxy sur Internet nécessaire)
 
 Lors de chaque lancement : 
 
@@ -50,7 +50,7 @@ Fichiers de configuration
 Dans le répertoire conf : 
 
   * logback.xml : fichier de configuration logback standard
-  * ArchiveUnitTransfer.json : Metadonnées globales de l'archive Transfer (Coment,MessageIdentifier,ArchivalAgreement,CodeListVersions,ArchivalAgency et TransferringAgency) 
+  * ArchiveUnitTransfer.json : Metadonnées globales de l'ArchiveTransfer (Comment, MessageIdentifier, ArchivalAgreement, CodeListVersions, ArchivalAgency et TransferringAgency) 
   * playbook_BinaryDataObject.json : Définition du "workflow" des différentes étapes pour un BinaryDataObject
 
 Voir le fichier doc/Configuration.rst pour plus de détails
@@ -59,10 +59,10 @@ Fichiers de sortie
 ==================
 
 2 fichiers : 
-
-  * SIP-YYYYMMDDHHMMSS.zip : Bordereau SIP contenant les fichiers binaires et le fichier 
-  * SIP-YYYYMMDDHHMMSS.rejected : liste des fichiers rejetés de l'arborescence d'entrée
-
+ * Un fichier horodaté ZIP (pkZIP) avec les fichiers suivants (SIP-yyyyMMddHHmmss.zip) : 
+   * Un fichier SEDA généré qui est valide par rapport au schéma SEDA 2.0 (MEDONA) : l'affichage des ArchiveUnit est dans l'ordre du parcours en profondeur de l'arborescence
+   * Un répertoire Content qui contient l'ensemble des BinaryDataObject décrits dans le fichier SEDA. Chaque fichier a pour nom son ID dans le bordereau Seda
+ * Un fichier avec la liste des fichiers rejetés (SIP-yyyyMMddHHmmss.rejected) 
 
 Compilation & Packaging
 =======================
