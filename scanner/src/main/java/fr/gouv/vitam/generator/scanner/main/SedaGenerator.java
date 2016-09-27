@@ -79,7 +79,7 @@ public class SedaGenerator {
             File f = new File(scanDir);
             if (!(f.exists() && f.isDirectory())){
                 System.err.println("The given path must be a directory (not a single file): " + scanDir);//NOSONAR : error message
-                System.exit(1);
+                System.exit(2);
             }
             try{
                 Properties properties = PropertiesUtils.readProperties(PropertiesUtils.findFile("generator.properties"));
@@ -95,7 +95,7 @@ public class SedaGenerator {
                 scan(scanDir,atc,playbookFileBDO,outputFile,errFile);
             }catch (VitamSedaMissingFieldException e){ // NOSONAR : global catch of this exception
                 System.err.println("Champ Manquant :" +  e.getMessage()); // NOSONAR : 
-                System.exit(1);
+                System.exit(3);
             }
             LOGGER.info("Generateur SEDA : End of scan of directory "+ scanDir + " in "+(System.currentTimeMillis()-beginTimeMS)+" ms");
     }

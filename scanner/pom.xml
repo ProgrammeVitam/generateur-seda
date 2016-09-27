@@ -3,7 +3,7 @@
   <parent>
     <groupId>fr.gouv.vitam.generator</groupId>
     <artifactId>parent</artifactId>
-    <version>${vitam.generator.version}</version>
+    <version>0.9.0-SNAPSHOT</version>
   </parent>
   <artifactId>scanner</artifactId>
   <dependencies>
@@ -14,17 +14,24 @@
 		<dependency>
 			<groupId>fr.gouv.vitam.generator</groupId>
 			<artifactId>seda</artifactId>
-			<version>${vitam.generator.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.gouv.vitam.generator</groupId>
 			<artifactId>scheduler</artifactId>
-			<version>${vitam.generator.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.gouv.vitam</groupId>
 			<artifactId>common-public</artifactId>
 		</dependency>
+                <dependency>
+                        <groupId>com.github.stefanbirkner</groupId>
+                        <artifactId>system-rules</artifactId>
+                        <version>${junit.system-rules.version}</version>
+                        <scope>test</scope>
+                </dependency>
+
   </dependencies>
 	<build>
 		<plugins>

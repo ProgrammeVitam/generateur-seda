@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.gouv.vitam.generator</groupId>
 	<artifactId>parent</artifactId>
-	<version>${vitam.generator.version}</version>
+	<version>0.9.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>generator-parent</name>
 	<description>${project.artifactId}</description>
@@ -87,7 +87,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.generator.version>0.9.0-SNAPSHOT</vitam.generator.version>
 		<vitam.common.version>0.9.0-SNAPSHOT</vitam.common.version>
 
 
@@ -122,6 +121,7 @@
 		<mockito.version>1.10.19</mockito.version>
 		<httpclient.version>4.5.2</httpclient.version>
 		<powermock.version>1.6.5</powermock.version>
+		<junit.system-rules.version>1.16.1</junit.system-rules.version>
 		<sonar.exclusions>file:**/generated-sources/**</sonar.exclusions>
 	</properties>
 
@@ -524,6 +524,12 @@
 				<version>${easymock.version}</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+		        	<groupId>com.github.stefanbirkner</groupId>
+			        <artifactId>system-rules</artifactId>
+				<version>${junit.system-rules.version}</version>
+				<scope>test</scope>
+        		</dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>
