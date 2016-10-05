@@ -80,7 +80,7 @@ public class DAGGenerator {
             LOGGER.debug("generator.properties is missing . Use default values");
         }
         try{
-            generateDag(atc,outputFile,new Integer(args[1]).intValue(),new Integer(args[2]).intValue());
+            generateDag(atc,outputFile,Integer.parseInt(args[1]),Integer.parseInt(args[2]));
         }catch (VitamSedaMissingFieldException e){ // NOSONAR : global catch of this exception
             System.err.println("Champ Manquant :" +  e.getMessage()); // NOSONAR : 
             System.exit(3);
@@ -88,7 +88,7 @@ public class DAGGenerator {
     }
 
     /**
-     * Launch the scan of directories to create the seda archive unit transfer
+     * Generate a heavily connected DAG ((level*levelLength)*(level*levelLength-1)/2 edges)
      * @param archiveTransferConfig
      * @param outputFile
      * @param levels : number of the levels in the DAG
