@@ -102,7 +102,7 @@ public class SedaGenerator {
     /**
      * Usage function of the program
      */
-    public static void usage(){
+    private static void usage(){
         System.err.println("2 arguments are expected");//NOSONAR : usage
         System.err.println("- Current Working Dir "); //NOSONAR : usage
         System.err.println("- Directory that must be scanned"); //NOSONAR : usage

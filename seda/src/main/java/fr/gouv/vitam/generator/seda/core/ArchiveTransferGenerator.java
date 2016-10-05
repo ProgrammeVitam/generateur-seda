@@ -146,21 +146,11 @@ public class ArchiveTransferGenerator {
         }else{
             throw new VitamSedaMissingFieldException("Missing CodeListVersions in the configuration File");
         }
-        startDataObjectPackage();
-    }
-
-    /**
-     * Beginning of the DataObjectPackage block
-     * 
-     * @throws XMLStreamException
-     */
-
-    public void startDataObjectPackage() throws XMLStreamException {
         writer.writeStartElement("DataObjectPackage");
         XMLWriterUtils.setID(writer);
     }
-   
-    
+
+ 
     /**
      * Define an archive with 2 elements : title and description
      * 

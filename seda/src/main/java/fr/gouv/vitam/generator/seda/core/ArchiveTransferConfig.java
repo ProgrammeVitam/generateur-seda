@@ -30,7 +30,7 @@ public class ArchiveTransferConfig {
         }else{
             globalConfig = readJsonFile(configDir + FileSystems.getDefault().getSeparator() +  CONFIG_NAME); // NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29 
         }
-        if (new File(targetDir).isFile()){
+        if (targetDir != null && new File(targetDir).isFile()){
             scanConfig = readJsonFile(targetDir);
         }else{
             scanConfig = readJsonFile(targetDir + FileSystems.getDefault().getSeparator() +  CONFIG_NAME);// NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29 

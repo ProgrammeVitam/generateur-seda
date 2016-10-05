@@ -85,7 +85,6 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
     {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("siegfriedURL",new InputParameter().setObjectclass(String.class));
-
     }
     
     @Override

@@ -17,6 +17,7 @@
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<modules>
+		<module>dag-generator</module>
 		<module>scanner</module>
 		<module>scheduler</module>
 		<module>seda</module>

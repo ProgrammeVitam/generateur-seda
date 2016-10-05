@@ -1,0 +1,29 @@
+{
+	"Comment" : "2eme SIP",
+	"ArchivalAgreement" : "ArchivalAgreement0",
+	"CodeListVersions" : {
+		"ReplyCodeListVersion" : "ReplyCodeListVersion0",
+		"MessageDigestAlgorithmCodeListVersion" : "MessageDigestAlgorithmCodeListVersion0",
+		"MimeTypeCodeListVersion" : "MimeTypeCodeListVersion0",
+		"EncodingCodeListVersion" : "EncodingCodeListVersion0",
+		"FileFormatCodeListVersion" : "FileFormatCodeListVersion0",
+		"CompressionAlgorithmCodeListVersion" : "CompressionAlgorithmCodeListVersion0",
+		"DataObjectVersionCodeListVersion" : "DataObjectVersionCodeListVersion0",
+		"StorageRuleCodeListVersion" : "StorageRuleCodeListVersion0",
+		"AppraisalRuleCodeListVersion" : "AppraisalRuleCodeListVersion0",
+		"AccessRuleCodeListVersion" : "AccessRuleCodeListVersion0",
+		"DisseminationRuleCodeListVersion" : "DisseminationRuleCodeListVersion0",
+		"ReuseRuleCodeListVersion" : "ReuseRuleCodeListVersion0",
+		"ClassificationRuleCodeListVersion" : "ClassificationRuleCodeListVersion0",
+		"AuthorizationReasonCodeListVersion" : "AuthorizationReasonCodeListVersion0",
+		"RelationshipCodeListVersion" : "RelationshipCodeListVersion0",
+		"UNKNOWN" : "RelationshipCodeListVersion0"
+	},
+	"ArchivalAgency" : {
+		"Identifier" : "Identifier4"
+	},
+	"TransferringAgency" : {
+		"Identifier" : "Identifier5"
+	},
+	"ignore_patterns" : ["java*.jar"]
+}

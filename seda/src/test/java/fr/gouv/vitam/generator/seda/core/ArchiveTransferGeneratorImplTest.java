@@ -91,7 +91,6 @@ public class ArchiveTransferGeneratorImplTest {
         ArchiveTransferConfig atc = new ArchiveTransferConfig("/",configDir );
         ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
         atgi.generateHeader();
-        atgi.startDataObjectPackage();
         String archiveFatherID = atgi.addArchiveUnit("Titre0", "Description0");
         String archiveSonID1 = atgi.addArchiveUnit("Titre1", "Description1");
         String archiveSonID2 = atgi.addArchiveUnit("Titre2", "Description2");
@@ -128,7 +127,6 @@ public class ArchiveTransferGeneratorImplTest {
         ArchiveTransferConfig atc = new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
         ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc,OUTPUT_FILE);
         atgi.generateHeader();
-        atgi.startDataObjectPackage();
         addBinaryDataObject(atgi, classLoader.getResource("empty").getFile() , null);
         }catch(VitamBinaryDataObjectException e){
             return;
