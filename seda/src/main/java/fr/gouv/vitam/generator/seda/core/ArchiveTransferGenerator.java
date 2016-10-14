@@ -42,17 +42,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchivalAgencyTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
@@ -73,6 +65,7 @@ import fr.gouv.vitam.common.json.JsonHandler;
 import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
+import fr.gouv.vitam.generator.seda.exception.VitamSedaMissingFieldException;
 import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 import fr.gouv.vitam.generator.seda.helper.ZipFileWriter;
 
@@ -143,29 +136,21 @@ public class ArchiveTransferGenerator {
         writer.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation",
             SEDA_NAMESPACE + " seda-2.0-main.xsd");
         XMLWriterUtils.setID(writer);
-        getJSONArgument2XML("Comment");
+        getJSONArgument2XML("Comment",false);
         XMLWriterUtils.writeAttributeValue(writer, "Date", XMLWriterUtils.getDate());
-        getJSONArgument2XML("MessageIdentifier");
-        getJSONArgument2XML("ArchivalAgreement");
+        getJSONArgument2XML("MessageIdentifier",true);
+        getJSONArgument2XML("ArchivalAgreement",false);
         if (archiveTransferConfig.has("CodeListVersions")) {
             CodeListVersionsTypeRoot clvt = getCodeListVersionsType(archiveTransferConfig.get("CodeListVersions"));
             writeXMLFragment(clvt);
+        }else{
+            throw new VitamSedaMissingFieldException("Missing CodeListVersions in the configuration File");
         }
-        startDataObjectPackage();
-    }
-
-    /**
-     * Beginning of the DataObjectPackage block
-     * 
-     * @throws XMLStreamException
-     */
-
-    public void startDataObjectPackage() throws XMLStreamException {
         writer.writeStartElement("DataObjectPackage");
         XMLWriterUtils.setID(writer);
     }
-   
-    
+
+ 
     /**
      * Define an archive with 2 elements : title and description
      * 
@@ -282,7 +267,7 @@ public class ArchiveTransferGenerator {
         ParametersChecker.checkParameter("dataobjectGroupSonID cannot be null", dataobjectGroupSonID);
         ArchiveUnitTypeRoot autrFather = mapArchiveUnit.get(archiveUnitFatherID);
         DataObjectRefType dort = new DataObjectRefType();
-        dort.setId(XMLWriterUtils.getNextID());
+//        dort.setId(XMLWriterUtils.getNextID());
         dort.setDataObjectGroupReferenceId(dataobjectGroupSonID);
         autrFather.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference().add(dort);
         // When an ArchiveUnit has a DataObjectGroup, it is at the Level FILE
@@ -296,6 +281,7 @@ public class ArchiveTransferGenerator {
     /**
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
      * Management Metadata
+     * @return number of written archive units
      * @throws VitamSedaException
      */
     public int writeDescriptiveMetadata() throws VitamSedaException {
@@ -337,8 +323,8 @@ public class ArchiveTransferGenerator {
     public void closeDocument() throws XMLStreamException, VitamSedaException {
         // DataObjectPackage closing
         writer.writeEndElement();
-        getJSONArgument2XML("ArchivalAgency", new ArchivalAgencyTypeRoot());
-        getJSONArgument2XML("TransferringAgency", new TransferringAgencyTypeRoot());
+        getJSONArgument2XML("ArchivalAgency", new ArchivalAgencyTypeRoot(),true);
+        getJSONArgument2XML("TransferringAgency", new TransferringAgencyTypeRoot(),true);
         writer.writeEndDocument();
         writer.close();
         try{
@@ -384,7 +370,7 @@ public class ArchiveTransferGenerator {
             if (value instanceof String) {
                 ct.setValue((String) value);
                 try {
-                    //
+                    // Introspection . Must be changed by an Object Mapper
                     clvt.getClass().getMethod("set" + entry.getKey(), CodeType.class).invoke(clvt, ct);
                 } catch (NoSuchMethodException e) { //NOSONAR : it is just a warning based on a bad named argument given in the Json File
                     LOGGER.warn("Argument" + entry.getKey() + "is not a CodeListVersion argument");
@@ -393,16 +379,23 @@ public class ArchiveTransferGenerator {
                 }
             }
         }
+        if ((clvt.getReplyCodeListVersion() == null) || 
+            (clvt.getMessageDigestAlgorithmCodeListVersion() == null) || 
+            (clvt.getFileFormatCodeListVersion() == null)){
+              throw new VitamSedaMissingFieldException("In the CodeListVersion, one of the 3 mandatory element (ReplyCodeListVersion, MessageDigestAlgorithmCodeListVersion, FileFormatCodeListVersion)  is missing");
+           }
         return clvt;
     }
 
-    private void getJSONArgument2XML(String key) throws XMLStreamException {
+    private void getJSONArgument2XML(String key,boolean required) throws XMLStreamException {
         if (archiveTransferConfig.has(key) && archiveTransferConfig.get(key).getNodeType().equals(JsonNodeType.STRING)) {
             XMLWriterUtils.writeAttributeValue(writer, key, archiveTransferConfig.get(key).textValue());
+        }else if (required){
+            throw new VitamSedaMissingFieldException(key + " is mandatory in the SEDA. Add this parameter to configuration file ");
         }
     }
 
-    private void getJSONArgument2XML(String key, OrganizationWithIdType owit) throws VitamSedaException{
+    private void getJSONArgument2XML(String key, OrganizationWithIdType owit,boolean required) throws VitamSedaException{
         if (archiveTransferConfig.has(key)) {
             JsonNode jsonSonNode = archiveTransferConfig.get(key);
             String identifierKey = "Identifier";
@@ -417,6 +410,8 @@ public class ArchiveTransferGenerator {
                     throw new VitamSedaException("Can't write OrganizationWithIdType", e); 
                 }
             }
+        }else if (required ){
+            throw new VitamSedaMissingFieldException(key + "is mandatory in the SEDA. Add this parameter to configuration file ");
         }
     }
     

@@ -1,0 +1,85 @@
+{ "Content" : {
+  "DescriptionLevel" : "RECORD_GRP",
+  "Title" : [ {
+    "Value" : "Titre francais",
+    "Lang" : "fr"
+  }, {
+    "Value" : "English title",
+    "Lang" : "en"
+  } ],
+  "FilePlanPosition" : "Valeur de filePlanPosition",
+  "SystemId" : "Valeur de SystemID)",
+  "OriginatingSystemId" : "Valeur de OriginatingSystemId",
+  "ArchivalAgencyArchiveUnitIdentifier" : "Valeur de archivalAgencyArchiveUnitIdentifier",
+  "OriginatingAgencyArchiveUnitIdentifier" : "Valeur de originatingAgencyArchiveUnitIdentifier",
+  "TransferringAgencyArchiveUnitIdentifier" : "Valeur de transferringAgencyArchiveUnitIdentifier",
+  "Description" : [ {
+    "Value" : "Description francaise",
+    "Lang" : "fr"
+  }, {
+    "Value" : "English Description",
+    "Lang" : "en"
+  } ],
+  "Type" : {
+    "Value" : "Valeur du type",
+    "Lang" : "fr"
+  },
+  "DocumentType" : {
+    "Value" : "fr"
+  },
+  "Language" : "FR",
+  "DescriptionLanguage" : "FR",
+  "Status" : "Valeur de Status",
+  "Version" : "Valeur de version",
+  "Tag" : [ "XML Tag 1 (de type xml:token)", "XML Tag 2 (de type xml:token)" ],
+  "Coverage" : {
+    "Spatial" : [ {
+      "Value" : "Valeur de Spatial",
+      "Lang" : "fr"
+    } ],
+    "Temporal" : [ {
+      "Value" : "Valeur de temporal",
+      "Lang" : "fr"
+    } ],
+    "Juridictional" : [ {
+      "Value" : "Valeur de juridictional",
+      "Lang" : "fr"
+    } ]
+  },
+  "OriginatingAgency" : {
+    "Identifier" : {
+      "Value" : "Identifiant de l'OriginatingAgency"
+    }
+  },
+  "SubmissionAgency" : {
+    "Identifier" : {
+      "Value" : "Identifiant de l'OriginatingAgency"
+    }
+  },
+  "Writer" : [ {
+    "FirstName" : "Valeur de FirstName",
+    "BirthName" : "Valeur de BirthName",
+    "GivenName" : "Valeur de GivenName",
+    "BirthDate" : "2016-09-26T13:34:08.284+0000",
+    "DeathDate" : "2016-09-26T13:34:08.284+0000"
+  } ],
+  "Source" : "Valeur de Source",
+  "CreatedDate" : "2016-09-26T15:34:08.284+02:00",
+  "TransactedDate" : "2016-09-26T15:34:08.284+02:00",
+  "AcquiredDate" : "2016-09-26T15:34:08.284+02:00",
+  "SentDate" : "2016-09-26T15:34:08.284+02:00",
+  "ReceivedDate" : "2016-09-26T15:34:08.284+02:00",
+  "Event" : [ {
+    "EventIdentifier" : "Identifiant de l'\u00E9venement",
+    "EventType" : "Type de l'\u00E9venement",
+    "EventDateTime" : "2016-09-26T13:34:08.284+0000"
+  } ],
+  "Gps" : {
+    "GpsAltitude" : 8848,
+    "GpsLatitude" : "Latitude : string sans formatage impos\u00E9 par le SEDA",
+    "GpsLongitude" : "Longitude :  string sans formatage impos\u00E9 par le SEDA"
+  },
+  "RestrictionValue" : "Valeur de restrictionValue",
+  "RestrictionEndDate" : "2016-09-26T13:34:08.284+0000"
+}
+}

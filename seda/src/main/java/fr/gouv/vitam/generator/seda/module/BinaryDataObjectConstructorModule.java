@@ -33,6 +33,8 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.FileInfoType;
@@ -58,6 +60,7 @@ import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 public class BinaryDataObjectConstructorModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "binaryDataObjectConstructor";
     private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    private static final Pattern DataObjectVersionFileName = Pattern.compile("^([a-zA-Z]*)_([0-9]+)_(.*)$");
     
     
     {
@@ -100,12 +103,19 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
             extension = f.getName().substring(position);
         }
         bdotr.setUri("Content/"+id+extension);
-        bdotr.setDataObjectVersion((String) parameters.get("dataobjectversion"));
+        FileInfoType fit = new FileInfoType();
         bdotr.setSize(new BigInteger(String.valueOf(f.length())));
         bdotr.setFormatIdentification(new FormatIdentificationType());
-        FileInfoType fit = new FileInfoType();
-        fit.setFilename(f.getName());
         fit.setLastModified(XMLWriterUtils.getXMLGregorianCalendar(new Date(f.lastModified())));
+        // Match the format <Usage>_<Version>_<File Name>
+        Matcher m = DataObjectVersionFileName.matcher(f.getName());
+        if (m.matches()){
+            bdotr.setDataObjectVersion(m.group(1)+"_"+m.group(2));
+            fit.setFilename(m.group(3));
+        }else{
+            bdotr.setDataObjectVersion((String) parameters.get("dataobjectversion"));
+            fit.setFilename(f.getName());
+        }
         bdotr.setFileInfo(fit);
         // Working attribute that is not put in the xml
         bdotr.setWorkingFilename(f.getPath());

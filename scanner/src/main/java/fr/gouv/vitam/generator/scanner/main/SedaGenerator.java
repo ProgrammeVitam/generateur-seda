@@ -26,6 +26,7 @@
  */
 package fr.gouv.vitam.generator.scanner.main;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -43,7 +44,7 @@ import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scanner.core.ScanFS;
 import fr.gouv.vitam.generator.seda.core.ArchiveTransferConfig;
-import fr.gouv.vitam.generator.seda.core.ArchiveTransferGenerator;
+import fr.gouv.vitam.generator.seda.exception.VitamSedaMissingFieldException;
 
 /**
  * Entry point of the Seda Generator
@@ -75,6 +76,11 @@ public class SedaGenerator {
             String outputFile = workingDir+"/SIP-"+currentDate+".zip";
             String errFile = workingDir+"SIP-"+currentDate+".rejected";
             ArchiveTransferConfig atc = new ArchiveTransferConfig(workingDir+"/conf", scanDir);
+            File f = new File(scanDir);
+            if (!(f.exists() && f.isDirectory())){
+                System.err.println("The given path must be a directory (not a single file): " + scanDir);//NOSONAR : error message
+                System.exit(2);
+            }
             try{
                 Properties properties = PropertiesUtils.readProperties(PropertiesUtils.findFile("generator.properties"));
                 playbookFileBDO =  properties.getProperty("playbookBinaryDataObject", playbookFileBDO);
@@ -85,13 +91,18 @@ public class SedaGenerator {
             }
             long beginTimeMS = System.currentTimeMillis();
             LOGGER.info("Generateur SEDA : Beginning of  scan of directory " + scanDir);
-            scan(scanDir,atc,playbookFileBDO,outputFile,errFile);
+            try{
+                scan(scanDir,atc,playbookFileBDO,outputFile,errFile);
+            }catch (VitamSedaMissingFieldException e){ // NOSONAR : global catch of this exception
+                System.err.println("Champ Manquant :" +  e.getMessage()); // NOSONAR : 
+                System.exit(3);
+            }
             LOGGER.info("Generateur SEDA : End of scan of directory "+ scanDir + " in "+(System.currentTimeMillis()-beginTimeMS)+" ms");
     }
     /**
      * Usage function of the program
      */
-    public static void usage(){
+    private static void usage(){
         System.err.println("2 arguments are expected");//NOSONAR : usage
         System.err.println("- Current Working Dir "); //NOSONAR : usage
         System.err.println("- Directory that must be scanned"); //NOSONAR : usage

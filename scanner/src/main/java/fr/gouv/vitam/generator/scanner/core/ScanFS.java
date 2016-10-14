@@ -70,7 +70,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ScanFS.class);
     // TODO Défini plusieurs fois => un common ?
-    private static final String MANIFEST_NAME = "manifest.json";
+    private static final String ARCHIVEUNITMETADATAFILE_NAME = "ArchiveUnitMetadata.json";
     private static final String IGNORE_PATTERNS_JSON_KEY = "ignore_patterns";
     private final ArchiveTransferGenerator atgi;
     // null when the current directory is an ArchiveUnit and id of the current DataobjectGroup if the directory is an
@@ -139,8 +139,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
         String dirName = dir.getFileName().toString();
         File manifestPathName = null;
-        if (new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+MANIFEST_NAME).isFile()){
-            manifestPathName = new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+MANIFEST_NAME);
+        if (new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+ARCHIVEUNITMETADATAFILE_NAME).isFile()){
+            manifestPathName = new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+ARCHIVEUNITMETADATAFILE_NAME);
             LOGGER.debug(manifestPathName.toString());
         }        
         dataObjectGroupOfCurrentDirectory = null;
@@ -172,7 +172,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public FileVisitResult visitFile(Path file,
         BasicFileAttributes attr) {
-        if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) || file.getFileName().toString().equals(MANIFEST_NAME)){
+        if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) || file.getFileName().toString().equals(ARCHIVEUNITMETADATAFILE_NAME)){
             return FileVisitResult.CONTINUE;
         }
         for(PathMatcher pm : excludeFileSet){
