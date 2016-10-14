@@ -83,51 +83,52 @@ public class ArchiveTransferGeneratorImplTest {
     public void correctSeda() {
         try{
             // TODO FORMAT (sur tous les fichiers)
-        
-        // TODO Helper dans PropertiesUtils
-        ClassLoader classLoader = getClass().getClassLoader();
-        String headerPath = classLoader.getResource("sip1.json").getFile();
-        String configDir = classLoader.getResource("conf").getFile();
-        ArchiveTransferConfig atc = new ArchiveTransferConfig("/",configDir );
-        ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
-        atgi.generateHeader();
-        String archiveFatherID = atgi.addArchiveUnit("Titre0", "Description0");
-        String archiveSonID1 = atgi.addArchiveUnit("Titre1", "Description1");
-        String archiveSonID2 = atgi.addArchiveUnit("Titre2", "Description2");
-        String archiveSonID3 = atgi.addArchiveUnit("Titre3", "Description3");
-        String archiveSonID4 = atgi.addArchiveUnit("Titre4", "Description4");
-        atgi.setTransactedDate(archiveSonID1, new Date(2));
-        atgi.setTransactedDate(archiveSonID3, new Date(1));
-        atgi.setTransactedDate(archiveSonID4, new Date());
 
-        atgi.setTransactedDate(archiveSonID1, new Date());
-        atgi.removeArchiveUnit(archiveSonID2);
-        String dataObjectGroup1ID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();	
-        atgi = addBinaryDataObject(atgi,headerPath,  dataObjectGroup1ID);
-        atgi = addBinaryDataObject(atgi,headerPath,  dataObjectGroup1ID);
-        atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID1);
-        atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID3);
-        atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID4);
-        atgi.addArchiveUnit2DataObjectGroupReference(archiveSonID1, dataObjectGroup1ID);
-        atgi.addStartAndEndDate2ArchiveUnit(archiveFatherID);
-        atgi = addBinaryDataObject(atgi,headerPath, null);
-        atgi.writeDescriptiveMetadata();
-        atgi.writeManagementMetadata();
-        atgi.closeDocument();
-        }catch(VitamException|XMLStreamException e){
+            // TODO Helper dans PropertiesUtils
+            ClassLoader classLoader = getClass().getClassLoader();
+            String headerPath = classLoader.getResource("sip1.json").getFile();
+            String configDir = classLoader.getResource("conf").getFile();
+            ArchiveTransferConfig atc = new ArchiveTransferConfig("/",configDir );
+            ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
+            atgi.generateHeader();
+            String archiveFatherID = atgi.addArchiveUnit("Titre0", "Description0");
+            String archiveSonID1 = atgi.addArchiveUnit("Titre1", "Description1");
+            String archiveSonID2 = atgi.addArchiveUnit("Titre2", "Description2");
+            String archiveSonID3 = atgi.addArchiveUnit("Titre3", "Description3");
+            String archiveSonID4 = atgi.addArchiveUnit("Titre4", "Description4");
+            atgi.setTransactedDate(archiveSonID1, new Date(2));
+            atgi.setTransactedDate(archiveSonID3, new Date(1));
+            atgi.setTransactedDate(archiveSonID4, new Date());
+
+            atgi.setTransactedDate(archiveSonID1, new Date());
+            atgi.removeArchiveUnit(archiveSonID2);
+            String dataObjectGroup1ID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();	
+            atgi = addBinaryDataObject(atgi,headerPath,  dataObjectGroup1ID);
+            atgi = addBinaryDataObject(atgi,headerPath,  dataObjectGroup1ID);
+            atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID1);
+            atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID3);
+            atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID4);
+            atgi.addArchiveUnit2DataObjectGroupReference(archiveSonID1, dataObjectGroup1ID);
+            atgi.addStartAndEndDate2ArchiveUnit(archiveFatherID);
+            atgi = addBinaryDataObject(atgi,headerPath, null);
+            atgi.writeDescriptiveMetadata();
+            atgi.writeManagementMetadata();
+            atgi.closeDocument();
+        }catch(Exception e){
             LOGGER.error("Should not have an exception",e);
             fail("Should not have an exception");
         }
+
     }
     
     @Test
     public void emptyFile() {
         try{
-        ClassLoader classLoader = getClass().getClassLoader();
-        ArchiveTransferConfig atc = new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
-        ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc,OUTPUT_FILE);
-        atgi.generateHeader();
-        addBinaryDataObject(atgi, classLoader.getResource("empty").getFile() , null);
+            ClassLoader classLoader = getClass().getClassLoader();
+            ArchiveTransferConfig atc = new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+            ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc,OUTPUT_FILE);
+            atgi.generateHeader();
+            addBinaryDataObject(atgi, classLoader.getResource("empty").getFile() , null);
         }catch(VitamBinaryDataObjectException e){
             return;
         }catch(VitamException|XMLStreamException e){
@@ -245,7 +246,7 @@ public class ArchiveTransferGeneratorImplTest {
             fail();
         }
     }
-    
+
     private ArchiveTransferGenerator addBinaryDataObject(ArchiveTransferGenerator atgi,String filename, String dataObjectGroupID) throws VitamException{
         ParameterMap pm = new ParameterMap() ;
         pm.put("file", filename);

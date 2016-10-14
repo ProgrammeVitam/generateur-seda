@@ -150,7 +150,7 @@ public class ArchiveTransferGenerator {
         XMLWriterUtils.setID(writer);
     }
 
- 
+
     /**
      * Define an archive with 2 elements : title and description
      * 
@@ -206,7 +206,7 @@ public class ArchiveTransferGenerator {
         mapArchiveUnit.put(id, autr);
         return id;
     }
-    
+
 
     /**
      * Set transactedDate to the ArchiveUnit Descriptive Metadata
@@ -226,7 +226,7 @@ public class ArchiveTransferGenerator {
         autr.setStartDate(date);
         autr.setEndDate(date);
     }
-    
+
     /**
      * Remove an ArchiveUnit from the collection . 
      * It doesn't destroy the relation with other ArchiveUnits
@@ -267,7 +267,7 @@ public class ArchiveTransferGenerator {
         ParametersChecker.checkParameter("dataobjectGroupSonID cannot be null", dataobjectGroupSonID);
         ArchiveUnitTypeRoot autrFather = mapArchiveUnit.get(archiveUnitFatherID);
         DataObjectRefType dort = new DataObjectRefType();
-//        dort.setId(XMLWriterUtils.getNextID());
+        //        dort.setId(XMLWriterUtils.getNextID());
         dort.setDataObjectGroupReferenceId(dataobjectGroupSonID);
         autrFather.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference().add(dort);
         // When an ArchiveUnit has a DataObjectGroup, it is at the Level FILE
@@ -334,10 +334,10 @@ public class ArchiveTransferGenerator {
         }catch(IOException e){
             throw new VitamSedaException("Error to write to zipFile",e);
         }
-        
+
     }
 
-    
+
     /**
      * Serialize a Jaxb POJO object in the current XML stream
      * @param jaxbPOJO
@@ -353,7 +353,7 @@ public class ArchiveTransferGenerator {
     }
 
 
-    
+
     /**
      * Parse the node CodeListVersion of the json header file and do the binding with the pojo
      * 
@@ -382,8 +382,8 @@ public class ArchiveTransferGenerator {
         if ((clvt.getReplyCodeListVersion() == null) || 
             (clvt.getMessageDigestAlgorithmCodeListVersion() == null) || 
             (clvt.getFileFormatCodeListVersion() == null)){
-              throw new VitamSedaMissingFieldException("In the CodeListVersion, one of the 3 mandatory element (ReplyCodeListVersion, MessageDigestAlgorithmCodeListVersion, FileFormatCodeListVersion)  is missing");
-           }
+            throw new VitamSedaMissingFieldException("In the CodeListVersion, one of the 3 mandatory element (ReplyCodeListVersion, MessageDigestAlgorithmCodeListVersion, FileFormatCodeListVersion)  is missing");
+        }
         return clvt;
     }
 
@@ -414,7 +414,7 @@ public class ArchiveTransferGenerator {
             throw new VitamSedaMissingFieldException(key + "is mandatory in the SEDA. Add this parameter to configuration file ");
         }
     }
-    
+
     /**
      * Calculate the Start and End Date of an ArchiveUnit
      * @param archiveUnitID
@@ -422,26 +422,25 @@ public class ArchiveTransferGenerator {
     public void addStartAndEndDate2ArchiveUnit(String archiveUnitID){
         ParametersChecker.checkParameter("Archive Unit ID cannot be null", archiveUnitID);
         ArchiveUnitTypeRoot autr = mapArchiveUnit.get(archiveUnitID);
-        boolean first=true;
         Date startDate = null;
         Date endDate = null;
         for (Object aut : autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()){
             ArchiveUnitTypeRoot sonautr = mapArchiveUnit.get(((ArchiveUnitType) aut).getArchiveUnitRefId());
-            // Initialize the start and endDate
-            if (first){
-                startDate = sonautr.getStartDate();
-                endDate = sonautr.getEndDate();
-                first=false;
-            }else{
+            if (sonautr != null){
+
+                // Initialize the start and endDate
                 // Take the minimum date of the sons
-                if (sonautr.getStartDate() != null &&  sonautr.getStartDate().compareTo(startDate)<0){
+                if (sonautr.getStartDate() != null && (startDate == null ||  sonautr.getStartDate().compareTo(startDate)<0)){
                     startDate = sonautr.getStartDate();
-                    
+
                 }
                 // Take the maximum date of the sons
-                if (sonautr.getEndDate() != null && sonautr.getEndDate().compareTo(endDate)>0){
+                if (sonautr.getEndDate() != null && (endDate == null || sonautr.getEndDate().compareTo(endDate)>0)){
                     endDate = sonautr.getEndDate();
                 }
+
+            }else{
+                LOGGER.info(archiveUnitID + " is an unknown Archive Unit ID");
             }
         }
         for (DescriptiveMetadataContentType dmct: autr.getContent()){
@@ -453,7 +452,7 @@ public class ArchiveTransferGenerator {
         autr.setStartDate(startDate);
         autr.setEndDate(endDate);
     }
-    
+
     /**
      * @return the dataObjectGroupUsedMap
      */
@@ -467,5 +466,5 @@ public class ArchiveTransferGenerator {
     public ZipFileWriter getZipFile() {
         return zipFile;
     }
-    
+
 }
