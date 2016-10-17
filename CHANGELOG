@@ -1,0 +1,8 @@
+20161017 
+* Changed from SiegFried 1.5.0 64 bits to 1.6.5 32 bits (to have compatibility with 32 bits OS)
+* Update the Pronom Definition for SiegFried to V88
+* Prevent a NPE during the calculation of StartDate/EndDate
+* Bumps to 0.10.0-SNAPSHOT (currently follow the naming of Vitam)
+
+20161010
+* First published version
