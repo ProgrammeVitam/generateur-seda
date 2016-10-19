@@ -108,14 +108,14 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         bdotr.setFormatIdentification(new FormatIdentificationType());
         fit.setLastModified(XMLWriterUtils.getXMLGregorianCalendar(new Date(f.lastModified())));
         // Match the format <Usage>_<Version>_<File Name>
-        Matcher m = DataObjectVersionFileName.matcher(f.getName());
+        /*Matcher m = DataObjectVersionFileName.matcher(f.getName());
         if (m.matches()){
             bdotr.setDataObjectVersion(m.group(1)+"_"+m.group(2));
             fit.setFilename(m.group(3));
-        }else{
+        }else{*/
             bdotr.setDataObjectVersion((String) parameters.get("dataobjectversion"));
             fit.setFilename(f.getName());
-        }
+        //}
         bdotr.setFileInfo(fit);
         // Working attribute that is not put in the xml
         bdotr.setWorkingFilename(f.getPath());

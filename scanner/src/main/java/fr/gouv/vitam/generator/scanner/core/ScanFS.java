@@ -231,9 +231,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         } catch (VitamBinaryDataObjectException e){//NOSONAR : This exception is for BinaryDataObject rejected file
             LOGGER.warn(file.toUri().getPath() + " has been rejected for the reason : "+ e.getMessage());
             errFileStream.println(e.getMessage());
-        } catch (VitamSchedulerException|VitamSedaException e) {
-            LOGGER.error(e);
-        } catch (VitamException e){
+        } catch (VitamException e) {
             LOGGER.error(e);
         }
         return FileVisitResult.CONTINUE;
@@ -246,7 +244,6 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public FileVisitResult postVisitDirectory(Path dir,
         IOException exc) {
-        String dirName = dir.getFileName().toString();
         // When in the ArchiveUnit Standard mode (not DOG), the start and endDate have to be calculated recursively
         if (dataObjectGroupOfCurrentDirectory == null ) {           
              String auid = mapArchiveUnitPath2Id.get(dir.toString());
@@ -270,11 +267,11 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      */
     @Override
     public void close() throws XMLStreamException, VitamSedaException {
-        long binaryDataObjecttotalTime = (System.currentTimeMillis()-beginTimeMS);
+        long binaryDataObjecttotalTime = System.currentTimeMillis()-beginTimeMS;
         LOGGER.info("Managing BinaryDataObjects : "+ binaryDataObjecttotalTime + " ms for "+ numberBinaryDataObject +" BinaryDataObjects (time per BDO : "+ binaryDataObjecttotalTime/numberBinaryDataObject +" ms)");
         long beginDescriptiveMetadateTime = System.currentTimeMillis();
         int nbArchiveUnits = atgi.writeDescriptiveMetadata();
-        long descriptiveMetadataTotalTime = (System.currentTimeMillis()-beginDescriptiveMetadateTime);
+        long descriptiveMetadataTotalTime = System.currentTimeMillis()-beginDescriptiveMetadateTime;
         LOGGER.info("Writing ArchiveUnits : "+ descriptiveMetadataTotalTime + " ms for "+ nbArchiveUnits + " ArchiveUnits (time per AU : " + descriptiveMetadataTotalTime/nbArchiveUnits+" ms)");
         atgi.writeManagementMetadata();
         atgi.closeDocument();

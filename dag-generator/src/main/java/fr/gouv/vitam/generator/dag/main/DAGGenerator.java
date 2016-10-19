@@ -109,8 +109,8 @@ public class DAGGenerator {
         }
         // Create an edge between all node which are inferior on the topological order
         // The first level are independant roots
-        for (int i=levels;i< (levels*levelLength);i++){
-            for (int j=i+1;j < (levels*levelLength);j++){
+        for (int i=0;i< (levels*levelLength);i++){
+            for (int j=Math.max(i+1,levels);j < (levels*levelLength);j++){
                 atg.addArchiveUnit2ArchiveUnitReference(sortedNodes[i],sortedNodes[j]);
             }
         }
