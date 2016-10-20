@@ -223,7 +223,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                 // Get the ID of the DataObjectGroup Directory Archive Unit 
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
                 // If the file is the BinaryMaster Version, set the Transacted, StartDate and EndDate in the Archive Unit
-                if (file.getFileName().toString().startsWith("BinaryMaster")){
+                if (file.getFileName().toString().startsWith("__BinaryMaster")){
                     atgi.setTransactedDate(fatherID, new Date(file.toFile().lastModified()));
                 }
             }
