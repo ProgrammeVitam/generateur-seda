@@ -48,36 +48,46 @@ import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
 
 /**
- * Module that will put a false size to BinaryDataObject matching file_regex expression
+ * Module that will filter information on the FormatIdentification arguments of the BinaryDataObject
  */
-public class InvalidSizeModule extends AbstractModule implements PublicModuleInterface {
-    private static final String MODULE_NAME = "InvalidSize";
+public class FormatIdentificationFilterModule extends AbstractModule implements PublicModuleInterface {
+    private static final String MODULE_NAME = "FormatIdentificationFilterModule";
     private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
-    
+
+
     {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("file_regex", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("false_size", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("1"));
+        INPUTSIGNATURE.put("displayFormatLitteral", new InputParameter().setObjectclass(Boolean.class).setMandatory(false).setDefaultValue(true));
+        INPUTSIGNATURE.put("displayMimeType", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("true"));
+        INPUTSIGNATURE.put("displayFormatId", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("true"));
     }
-    
-    @Override
-    public Map<String,InputParameter> getInputSignature(){
-        return INPUTSIGNATURE;
-    }
-    
+
     @Override
     public String getModuleId() {
         return MODULE_NAME;
-    }    
-    
+    }
+
+    @Override
+    public Map<String, InputParameter> getInputSignature() {
+        return INPUTSIGNATURE;
+    }
+
     @Override
     protected ParameterMap realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
         Pattern p = Pattern.compile((String) parameters.get("file_regex"));
         BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         if (p.matcher(bdotr.getFileInfo().getFilename()).matches()){
-            BigInteger falseSize = new BigInteger((String)parameters.get("false_size"));
-            bdotr.setSize(falseSize);
+            if (! Boolean.getBoolean((String) parameters.get("displayFormatLitteral"))){
+                bdotr.getFormatIdentification().setFormatLitteral(null);
+            }
+            if (! Boolean.getBoolean((String) parameters.get("displayMimeType"))){
+                bdotr.getFormatIdentification().setMimeType(null);
+            }
+            if (! Boolean.getBoolean((String) parameters.get("displayFormatId"))){
+                bdotr.getFormatIdentification().setFormatId(null);
+            }
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;
