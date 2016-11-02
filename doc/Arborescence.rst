@@ -9,8 +9,6 @@ Dans le cadre de projet Vitam, il est nécessaire de générer des SIP sous form
 * tester les développements 
 * éventuellement faciliter l'intégration dans Vitam en fournissant des outils dans la toolbox Vitam
 
-Nous partirons sur un première version dite PP qui implémentera les spécifications suivantes 
-
 Arborescence d'entrée
 ---------------------
 Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suivant :
@@ -21,7 +19,7 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
 
 * Dans l'arborescence, on peut trouver des répertoires :
 
-  + Répertoire dont le nom commence par __ et termine par __ , il s'agit d'un DataObjectGroup qui est rattaché à un ArchiveUnit virtuel de même nom (A valider)
+  + Répertoire dont le nom commence par __ et termine par __ , il s'agit d'un DataObjectGroup qui est rattaché à un ArchiveUnit virtuel de même nom 
   
     - Ce répertoire ne doit contenir que des fichiers. En cas de présence d'un répertoire, il s'agit d'une erreur bloquante lors du parsing de l'arborescence
     - Les fichiers dans ce répertoire doivent avoir la forme suivante .
@@ -44,17 +42,21 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
   
     - il s'agit d'une ArchiveUnit ayant virtuellement par fichier présent 1 ArchiveUnit qui contient lui-même 1 DataObjectGroup 
 
-	- L'ArchiveUnit virtuel a pour valeur du champ DescriptionLevel "Item" (A valider)
-	- L'ArchiveUnit Virtuel a pour valeur du champ TransactedDate la date de dernière modification du fichier (Modification time du fichier) (Non Implémenté)
-	- Un fichier vide est ignoré en logguant la présence de ce fichier vide mais il ne s'agit que d'un warning (non bloquant) (A valider)
-    - Un fichier caché (au sens attribut Windows) est ignoré (Non implémenté)
+	- L'ArchiveUnit virtuel a pour valeur du champ DescriptionLevel "Item" 
+	- L'ArchiveUnit Virtuel a pour valeur du champ TransactedDate la date de dernière modification du fichier (Modification time du fichier)
+	- Un fichier vide est ignoré en logguant la présence de ce fichier vide mais il ne s'agit que d'un warning (non bloquant) 
+    - Un fichier caché (au sens attribut Windows) est ignoré (Non implémenté a ce jour)
+    - Dans le binaryDataObject, la valeur du champ DataObjectVersion est par défaut "BinaryMaster". Si le fichier est de la forme __<Lettres minuscules ou majuscule>_<Chiffres>_.*, le champ DataObjectVersion vaut <Lettres minuscules ou majuscule>_<Chiffres> . Si le fichier est de la forme __<Lettres minuscules ou majuscule>_.*; le champ DataObjectVersion vaut <Lettres minuscules ou majuscule>_<Chiffres>
 
-* Dans l'arborescence, on peut trouver des fichiers :
+* Dans l'arborescence, on peut trouver des fichiers : 
 
   + Les noms de fichiers suivants sont ignorés : 
 
     - Le fichier ArchiveTransferConfig.json à la racine de l'arborescence. Ce fichier contient les paramétrages globaux spécifiques pour cette arborescence
     - Le fichier ArchiveUnitMetadata.json sur chaque répertoire . Ce fichier contient les métadonnées descriptives pour l'ArchiveUnit correspond au répertoire auquel il appartient
+    - Le fichier ArchiveUnitMetadata.xml sur chaque répertoire . Ce fichier contient les métadonnées descriptives pour l'ArchiveUnit correspond au répertoire auquel il appartient
+  
+  + En cas de présence d'un fichier ArchiveUnitMetadata.xml et d'un fichier ArchiveUnitMetadata.json dans le même répertoire
 
 Example d'arborescence
 ----------------------
@@ -110,7 +112,11 @@ Dans le fichier SEDA, les champs suivants sont gérés :
    + FormatIdentification : si le module Siegfried est activé, on positionne les 3 champs FormatLitteral, MimeType, FormatId
    + FileInfo : FileName et LastModified (mtime du fichier)
 
- * DataObjectPackage.Management : élément vide
+ * DataObjectPackage.ManagementMetadata : Les champs suivants (extension du SEDA pour Vitam) sont gérés) : 
+
+   + OriginatingAgencyIdentifier : identifiant du service producteur
+   + SubmissionAgencyIdentifer : identifiant du service versant
+
  * DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content :
  
    + DescriptionLevel : Item s'il y a un DataObjectGroup comme fils, RecordGrp sinon

@@ -57,7 +57,6 @@ import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.core.Playbook;
 import fr.gouv.vitam.generator.scheduler.core.PlaybookBuilder;
 import fr.gouv.vitam.generator.scheduler.core.SchedulerEngine;
-import fr.gouv.vitam.generator.scheduler.exception.VitamSchedulerException;
 import fr.gouv.vitam.generator.seda.core.ArchiveTransferConfig;
 import fr.gouv.vitam.generator.seda.core.ArchiveTransferGenerator;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;

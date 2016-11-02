@@ -24,5 +24,7 @@
 	},
 	"TransferringAgency" : {
 		"Identifier" : "Identifier5"
-	}
+	},
+	"ManagementMetadata.OriginatingAgencyIdentifier" : "Service_producteur",
+	"ManagementMetadata.SubmissionAgencyIdentifier" : "Service_versant"
 }

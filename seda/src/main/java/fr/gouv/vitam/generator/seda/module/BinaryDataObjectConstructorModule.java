@@ -61,12 +61,14 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
     private static final String MODULE_NAME = "binaryDataObjectConstructor";
     private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
     private static final Pattern DataObjectVersionFileName = Pattern.compile("^__([a-zA-Z]*)_([0-9]+)_(.*)$");
-    private static final Pattern DataObjectShortVersionFileName = Pattern.compile("^__([a-zA-Z]*)_([0-9]+)_(.*)$");
+    private static final Pattern DataObjectShortVersionFileName = Pattern.compile("^__([a-zA-Z]*)_(.*)$");
+    private static final String DATAOBJECTVERSION_PARAMETER = "dataobjectversion";
+    private static final String DATAOBJECTVERSION_DEFAULT = "BinaryMaster";
     
     
     {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("dataobjectversion", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("BinaryMaster"));
+        INPUTSIGNATURE.put(DATAOBJECTVERSION_PARAMETER, new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DATAOBJECTVERSION_DEFAULT));
     }
     
     @Override
@@ -120,7 +122,7 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
 				bdotr.setDataObjectVersion(m.group(1));
 				fit.setFilename(m.group(2));
 			} else {
-				bdotr.setDataObjectVersion((String) parameters.get("dataobjectversion"));
+				bdotr.setDataObjectVersion((String) parameters.get(DATAOBJECTVERSION_PARAMETER));
 				fit.setFilename(f.getName());
 			}
 		}
