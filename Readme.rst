@@ -50,7 +50,7 @@ Fichiers de configuration
 Dans le répertoire conf : 
 
   * logback.xml : fichier de configuration logback standard
-  * ArchiveUnitTransfer.json : Metadonnées globales de l'ArchiveTransfer (Comment, MessageIdentifier, ArchivalAgreement, CodeListVersions, ArchivalAgency et TransferringAgency) 
+  * ArchiveUnitTransfer.json : Metadonnées globales de l'ArchiveTransfer (Comment, MessageIdentifier, ArchivalAgreement, CodeListVersions, ArchivalAgency, TransferringAgency, OriginatingAgencyIdentifier, SubmissionAgencyIdentifier) 
   * playbook_BinaryDataObject.json : Définition du "workflow" des différentes étapes pour un BinaryDataObject
 
 Voir le fichier doc/Configuration.rst pour plus de détails
