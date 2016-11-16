@@ -1,3 +1,7 @@
+SNAPSHOT
+* Add the support of SubmissionAgencyIdentifier and OriginatingAgencyIdentifier fields (extension of ManagementMetadata for Vitam)
+* Update the documentation
+
 20161018
 * Changed from SiegFried 1.5.0 64 bits to 1.6.5 32 bits (to have compatibility with 32 bits OS)
 * Update the Pronom Definition for SiegFried to V88

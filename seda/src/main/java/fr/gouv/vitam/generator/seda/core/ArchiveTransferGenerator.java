@@ -55,6 +55,7 @@ import fr.gouv.culture.archivesdefrance.seda.v2.DataObjectRefType;
 import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentType;
 import fr.gouv.culture.archivesdefrance.seda.v2.IdentifierType;
 import fr.gouv.culture.archivesdefrance.seda.v2.LevelType;
+import fr.gouv.culture.archivesdefrance.seda.v2.ManagementMetadataTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.OrganizationWithIdType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TransferringAgencyTypeRoot;
@@ -310,7 +311,14 @@ public class ArchiveTransferGenerator {
      */
 
     public void writeManagementMetadata() throws XMLStreamException {
-        writer.writeEmptyElement("ManagementMetadata");
+        ManagementMetadataTypeRoot mmtr = new ManagementMetadataTypeRoot();
+        mmtr.setOriginatingAgencyIdentifier(archiveTransferConfig.getString("ManagementMetadata.OriginatingAgencyIdentifier"));
+        mmtr.setSubmissionAgencyIdentifier(archiveTransferConfig.getString("ManagementMetadata.SubmissionAgencyIdentifier"));
+        try{
+                writeXMLFragment(mmtr);
+        }catch(VitamSedaException e){
+            LOGGER.error(e);
+        }
     }
 
     /**

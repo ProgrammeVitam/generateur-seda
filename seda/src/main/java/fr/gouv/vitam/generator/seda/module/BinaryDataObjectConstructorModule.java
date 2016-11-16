@@ -60,12 +60,15 @@ import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 public class BinaryDataObjectConstructorModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "binaryDataObjectConstructor";
     private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
-    private static final Pattern DataObjectVersionFileName = Pattern.compile("^([a-zA-Z]*)_([0-9]+)_(.*)$");
+    private static final Pattern DataObjectVersionFileName = Pattern.compile("^__([a-zA-Z]*)_([0-9]+)_(.*)$");
+    private static final Pattern DataObjectShortVersionFileName = Pattern.compile("^__([a-zA-Z]*)_(.*)$");
+    private static final String DATAOBJECTVERSION_PARAMETER = "dataobjectversion";
+    private static final String DATAOBJECTVERSION_DEFAULT = "BinaryMaster";
     
     
     {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("dataobjectversion", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("BinaryMaster"));
+        INPUTSIGNATURE.put(DATAOBJECTVERSION_PARAMETER, new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DATAOBJECTVERSION_DEFAULT));
     }
     
     @Override
@@ -108,14 +111,21 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         bdotr.setFormatIdentification(new FormatIdentificationType());
         fit.setLastModified(XMLWriterUtils.getXMLGregorianCalendar(new Date(f.lastModified())));
         // Match the format <Usage>_<Version>_<File Name>
-        /*Matcher m = DataObjectVersionFileName.matcher(f.getName());
-        if (m.matches()){
-            bdotr.setDataObjectVersion(m.group(1)+"_"+m.group(2));
-            fit.setFilename(m.group(3));
-        }else{*/
-            bdotr.setDataObjectVersion((String) parameters.get("dataobjectversion"));
-            fit.setFilename(f.getName());
-        //}
+        Matcher m = DataObjectVersionFileName.matcher(f.getName());
+		if (m.matches()) {
+			bdotr.setDataObjectVersion(m.group(1) + "_" + m.group(2));
+			fit.setFilename(m.group(3));
+		} else {
+			// Match the format __<Usage>_<File Name>
+			m = DataObjectShortVersionFileName.matcher(f.getName());
+			if (m.matches()) {
+				bdotr.setDataObjectVersion(m.group(1));
+				fit.setFilename(m.group(2));
+			} else {
+				bdotr.setDataObjectVersion((String) parameters.get(DATAOBJECTVERSION_PARAMETER));
+				fit.setFilename(f.getName());
+			}
+		}
         bdotr.setFileInfo(fit);
         // Working attribute that is not put in the xml
         bdotr.setWorkingFilename(f.getPath());

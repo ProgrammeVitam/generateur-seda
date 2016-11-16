@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.FileSystems;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.json.JsonHandler;
@@ -61,7 +62,7 @@ public class ArchiveTransferConfig {
     /**
      * 
      * @param key
-     * @return
+     * @return the JsonNode below the first level key given
      */
     public JsonNode get(String key){
         if (scanConfig.has(key)){
@@ -69,4 +70,17 @@ public class ArchiveTransferConfig {
         }
         return globalConfig.get(key);
     }
+    /**
+     * 
+     * @param key
+     * @return the String at the first level key given if this is a String else return an empty string 
+     */
+    public String getString(String key){
+        if (has(key) && get(key).getNodeType().equals(JsonNodeType.STRING)) {
+            return get(key).textValue();
+        }else{
+            return "";
+        }
+    }
+    
 }

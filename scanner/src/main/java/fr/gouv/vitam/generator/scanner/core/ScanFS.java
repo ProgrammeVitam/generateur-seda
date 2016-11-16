@@ -57,7 +57,6 @@ import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.core.Playbook;
 import fr.gouv.vitam.generator.scheduler.core.PlaybookBuilder;
 import fr.gouv.vitam.generator.scheduler.core.SchedulerEngine;
-import fr.gouv.vitam.generator.scheduler.exception.VitamSchedulerException;
 import fr.gouv.vitam.generator.seda.core.ArchiveTransferConfig;
 import fr.gouv.vitam.generator.seda.core.ArchiveTransferGenerator;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
@@ -223,7 +222,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                 // Get the ID of the DataObjectGroup Directory Archive Unit 
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
                 // If the file is the BinaryMaster Version, set the Transacted, StartDate and EndDate in the Archive Unit
-                if (file.getFileName().toString().startsWith("BinaryMaster")){
+                if (file.getFileName().toString().startsWith("__BinaryMaster")){
                     atgi.setTransactedDate(fatherID, new Date(file.toFile().lastModified()));
                 }
             }

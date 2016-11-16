@@ -8,6 +8,7 @@ mkdir $CURRENTDIR/build/doc
 cp $CURRENTDIR/run* $CURRENTDIR/build
 cp $CURRENTDIR/sf.exe $CURRENTDIR/build
 cp $CURRENTDIR/../Readme.rst $CURRENTDIR/build
+cp $CURRENTDIR/../CHANGELOG $CURRENTDIR/build
 cp $CURRENTDIR/ArchiveTransferConfig.json $CURRENTDIR/build/conf
 cp $CURRENTDIR/playbook_BinaryDataObject.json $CURRENTDIR/build/conf
 cp $CURRENTDIR/logback.xml  $CURRENTDIR/build/conf
