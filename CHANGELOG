@@ -1,5 +1,6 @@
 SNAPSHOT
 * Add the support of SubmissionAgencyIdentifier and OriginatingAgencyIdentifier fields (extension of ManagementMetadata for Vitam)
+* Add the parameter ignoreUnknownFile in the SiegfriedModule so that the unknown file are not included in the SIP (in Vitam, an unknown file in a SIP causes a "business refusal" to all the SIP) . For retro-compatibilité, this feature is not activated by default
 * Update the documentation
 
 20161018
