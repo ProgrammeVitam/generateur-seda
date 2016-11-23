@@ -9,6 +9,7 @@ Le fichier conf/playbook_BinaryDataObject.json permet de gérer les modules que 
   * si on désire désactiver l'identification de format (via Siegfried), il suffit de supprimer la section json du module "siegfried"
   * si on désire rejeter du SIP les fichiers inconnus de Siegfried, il suffit de rajouter le paramètre ignoreUnknownFile à true aux paramètres du module siegfried (ex: "parameters" :{ "binarydataobject" : "@@binarydataobject@@" ,"siegfriedURL" : "http://localhost:5138" , "ignoreUnknownFile" : "true"}) 
   * si on désire changer l'algorithme de Digest pour le calcul d'empreinte, il suffit de changer la valeur du paramètre digest.algorithm du module digest. Les valeurs possibles sont MD5, SHA1, SHA256, SHA384 et SHA512 (sans "-")
+  * si on désire rejeter les fichiers ayant une extension contenant un caractère "url-encoded", il suffit de rajouter le paramètre ignoreSpecialCharExtension à true aux paramètres du module binaryDataObjectConstructor 
 
 Fichier de configuration des ArchiveTransfert
 ---------------------------------------------
