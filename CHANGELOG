@@ -3,6 +3,7 @@ SNAPSHOT
 * Add the parameter ignoreUnknownFile in the SiegfriedModule so that the unknown file are not included in the SIP (in Vitam, an unknown file in a SIP causes a "business refusal" to all the SIP) . For retro-compatibilité, this feature is not activated by default
 * Add the parameter ArchiveTransferConfig in the binaryDataObjectConstructor module so tha file with a special character in the extension will be rejected. For retrocompatibility, this feature is not activated by default
 * Update the documentation
+* For Windows installation, manage the installation in a directory where the full path contains an 'space' character
 
 20161018
 * Changed from SiegFried 1.5.0 64 bits to 1.6.5 32 bits (to have compatibility with 32 bits OS)
