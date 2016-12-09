@@ -45,7 +45,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -63,6 +62,7 @@ import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
+import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 /**
@@ -81,11 +81,13 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
     private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
     private static final int MAX_TRIES = 3;
     private static final long MILLI_SECONDS_BETWEEN_TRIES = 5000;
+    private static final String IGNOREUNKNOWNFILEPARAMETER = "ignoreUnknownFile";
     
     
     {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("siegfriedURL",new InputParameter().setObjectclass(String.class));
+        INPUTSIGNATURE.put(IGNOREUNKNOWNFILEPARAMETER, new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("false"));
     }
     
     @Override
@@ -111,19 +113,24 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
                 String responseSiegfried = callSiegfried((String) parameters.get("siegfriedURL"), file);        
                 JsonNode jsonNode = JsonHandler.getFromString(responseSiegfried);
                 JsonNode j=jsonNode.get("files").get(0).get("matches").get(0);
+                String formatId = j.get("id").asText();
+                if ("true".equals(parameters.get(IGNOREUNKNOWNFILEPARAMETER)) && "UNKNOWN".equals(formatId)){
+                    throw new VitamBinaryDataObjectException("Unknown file for Siegfried" + bdotr.getWorkingFilename());
+                }
+                if (formatId != null && formatId.length() > 0 ){
+                    format.setFormatId(formatId);
+                }
                 String mime = j.get("mime").asText();
                 if (mime != null && mime.length() >0){
                     format.setMimeType(mime);
-                }
-                String formatId = j.get("id").asText();
-                if (formatId != null && formatId.length() > 0 ){
-                    format.setFormatId(formatId);
                 }
                 String formatLitteral=j.get("format").asText();
                 if (formatLitteral != null && formatLitteral.length() >0){
                     format.setFormatLitteral(formatLitteral);
                 }
                 break;
+
+                
             } catch (InvalidParseOperationException e) {
                 if (tries > MAX_TRIES){
                     throw new VitamSedaException("Error on the Json got from Siegfried",e);

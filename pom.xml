@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.gouv.vitam.generator</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.10.0-SNAPSHOT</version>
+	<version>0.12.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>generator-parent</name>
 	<description>${project.artifactId}</description>
@@ -88,7 +88,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.common.version>0.10.0-SNAPSHOT</vitam.common.version>
+		<vitam.common.version>0.12.0-SNAPSHOT</vitam.common.version>
 
 
 		<!-- Build environment Properties -->

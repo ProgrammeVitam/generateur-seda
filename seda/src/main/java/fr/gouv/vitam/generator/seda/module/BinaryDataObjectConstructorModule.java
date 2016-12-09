@@ -30,6 +30,7 @@ package fr.gouv.vitam.generator.seda.module;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +54,11 @@ import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
  * <br>
  * Input:<br> 
  *  - file (String) : Full path of the Binary object which will be the reference of the BinaryDataObject<br>
+ *  - ignoreSpecialCharExtension (String) : ignore the file whose extension contains an "url-encoded" character<br>
+ *  - dataobjectversion (String) : default version of the DataObjectVersion field<br>
  * Output<br>
- *  - binarydataobject (BinaryDataObjectTypeRoot) : The built BinaryDataObject
+ *  - binarydataobject (BinaryDataObjectTypeRoot) : The built BinaryDataObject<br>
+ *  
  */
 
 public class BinaryDataObjectConstructorModule extends AbstractModule implements PublicModuleInterface {
@@ -64,11 +68,13 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
     private static final Pattern DataObjectShortVersionFileName = Pattern.compile("^__([a-zA-Z]*)_(.*)$");
     private static final String DATAOBJECTVERSION_PARAMETER = "dataobjectversion";
     private static final String DATAOBJECTVERSION_DEFAULT = "BinaryMaster";
+    private static final String IGNORESPECIALCHAREXTENSION = "ignoreSpecialCharExtension";
     
     
     {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
         INPUTSIGNATURE.put(DATAOBJECTVERSION_PARAMETER, new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DATAOBJECTVERSION_DEFAULT));
+        INPUTSIGNATURE.put(IGNORESPECIALCHAREXTENSION, new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("false"));
     }
     
     @Override
@@ -104,6 +110,9 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         int position = f.getName().lastIndexOf('.');
         if (position != -1){
             extension = f.getName().substring(position);
+        }
+        if (!extension.equals(URLEncoder.encode(extension)) && "true".equals(parameters.get(IGNORESPECIALCHAREXTENSION))){
+            throw new VitamBinaryDataObjectException(f.getPath()+" has specials characters in its extension");
         }
         bdotr.setUri("Content/"+id+extension);
         FileInfoType fit = new FileInfoType();
