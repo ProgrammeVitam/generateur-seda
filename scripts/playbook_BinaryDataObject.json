@@ -5,7 +5,7 @@
 		  "name" : "Create Binary Data Object",
 		  "module" : "binaryDataObjectConstructor",
 		  "parameters" :{ "file" : "@@file@@"} ,
-		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@"}
+		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@", "ignoreSpecialCharExtension" : "false"}
 		},
 		{ 
 		  "name" : "Calcul Digest du fichier",
@@ -16,7 +16,7 @@
 		{ 
 		  "name" : "Appel à siegfried",
 		  "module" : "siegfried",
-		  "parameters" :{ "binarydataobject" : "@@binarydataobject@@" ,"siegfriedURL" : "http://localhost:5138"} ,
+		  "parameters" :{ "binarydataobject" : "@@binarydataobject@@" ,"siegfriedURL" : "http://localhost:5138", "ignoreUnknownFile" : "false"} ,
 		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@"}
 		},
 		{ 
