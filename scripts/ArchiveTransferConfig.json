@@ -26,5 +26,6 @@
 		"Identifier" : "Identifier5"
 	},
 	"ManagementMetadata.OriginatingAgencyIdentifier" : "Service_producteur",
-	"ManagementMetadata.SubmissionAgencyIdentifier" : "Service_versant"
+	"ManagementMetadata.SubmissionAgencyIdentifier" : "Service_versant",
+	"ignore_patterns" : ["Thumbs.db","pagefile.sys"]
 }
