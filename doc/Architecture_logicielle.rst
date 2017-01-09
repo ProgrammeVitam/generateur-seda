@@ -6,14 +6,14 @@ Le générateur SEDA est constitué des différents modules suivants :
 
  * Point d'entrée principal du générateur SEDA : 
 
-   +  scanner : il s'agit du point d'entrée qui gére le parcours d'une arborescence de fichier. Il contient notamment les régles spécifiques de l'arborescence de fichier (Formalisme des répertoire des DOG, exclusions de fichiers etc)
+   +  scanner : il s'agit du point d'entrée qui gére le parcours d'une arborescence de fichiers. Il contient notamment les régles spécifiques de l'arborescence de fichiers (Formalisme des répertoire des DOG, exclusions de fichiers etc)
 
  * Bibliothèques associées : 
    +  scheduler : ce module est un ordonnanceur générique de tâches 
    +  seda : ce module contient 
 
       - la définition du schéma XML du SEDA 2.0
-      - les régles de gestions des objets composants le SEDA 
+      - les régles de gestions des objets composant le SEDA 
       - les modules pour le scheduler nécessaires à la gestion des BinaryDataObject
 
  * Projets extras utilisés en interne Vitam pour la recette (donc sans engagement de Vitam)

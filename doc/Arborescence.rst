@@ -4,7 +4,7 @@ Générateur de SEDA à partir d'une arborescence de fichiers
 Objectif de l'outil
 -------------------
 
-Dans le cadre de projet Vitam, il est nécessaire de générer des SIP sous forme de fichiers XML, conformes au standard SEDA 2.0 (http://www.archivesdefrance.culture.gouv.fr/seda/) de manière semi-automatique (au delà d'editeurs XML comme oxygen ou Eclipse) pour : 
+Dans le cadre du projet Vitam, il est nécessaire de générer des SIP contenant des bordereaux sous forme de fichiers XML, conformes au standard SEDA 2.0 (http://www.archivesdefrance.culture.gouv.fr/seda/) de manière semi-automatique (au delà d'editeurs XML comme oxygen ou Eclipse) pour : 
 
 * tester les développements 
 * éventuellement faciliter l'intégration dans Vitam en fournissant des outils dans la toolbox Vitam
@@ -22,9 +22,9 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
   + Répertoire dont le nom commence par __ et termine par __ , il s'agit d'un DataObjectGroup qui est rattaché à un ArchiveUnit virtuel de même nom 
   
     - Ce répertoire ne doit contenir que des fichiers. En cas de présence d'un répertoire, il s'agit d'une erreur bloquante lors du parsing de l'arborescence
-    - Les fichiers dans ce répertoire doivent avoir la forme suivante .
+    - Les fichiers dans ce répertoire doivent avoir la forme suivante.
 
-        - <Usage du SIP>_<Version du SIP>_<nom du fichier> . Remarque : le nom du fichier peut inclure une extension (si l'extension est manquante, l'extension .seda sera ajoutée)
+        - <Usage du SIP>_<Version du SIP>_<nom du fichier>. Remarque : le nom du fichier peut inclure une extension (si l'extension est manquante, l'extension .seda sera ajoutée)
         - la version du SIP ne peut pas être sous-entendue, même si la version est 1
         - Il n'y a pas de vérification sur l'adéquation des "Usages" par rapport à un référentiel
 
