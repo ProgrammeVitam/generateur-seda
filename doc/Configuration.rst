@@ -53,3 +53,4 @@ Attention :
 
   * Les métadonnées suivantes seront écrasées par le mécanisme de calcul automatique des dates : TransactedDate, StartDate et EndDate
 
+.. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)

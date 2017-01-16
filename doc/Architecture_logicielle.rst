@@ -21,3 +21,4 @@ Le générateur SEDA est constitué des différents modules suivants :
    + dag-generator : generation d'un SIP ayant un graphe acyclique orienté (DAG) fortement connecté
    + seda-invalid : ce module est à des fins de recette et n'a pas à être livré pour un usage opérationnel. Il fournit des modules pour le scheduler pour le traitement des BinaryDataObject permettant de fournir un SEDA fonctionnellement erronné (ex : mauvaise taille ou mauvaise empreinte d'un BinaryDataObject)
 
+.. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)

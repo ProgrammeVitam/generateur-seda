@@ -72,3 +72,4 @@ Pour le packaging, il faut :
   * lancer la compilation des classes : ``mvn clean package``
   * se positionner dans scripts et lancer ``sh generate_package.sh`` . Le résultat est dans scripts/build
 
+.. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)

@@ -127,3 +127,4 @@ Dans le fichier SEDA, les champs suivants sont gérés :
 
 Pour DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content, il est possible de surcharger ces méta-données via la mise en place d'un fichier ArchiveUnitMetadata.json dans le répertoire correspondant à l'archiveUnit. Voir le fichier doc/Configuration.rst pour plus d'informations
 
+.. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)
