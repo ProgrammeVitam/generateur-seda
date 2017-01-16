@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.gouv.vitam.generator</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.12.0-SNAPSHOT</version>
+	<version>0.11.1</version>
 	<packaging>pom</packaging>
 	<name>generator-parent</name>
 	<description>Generateur de SIP au format SEDA 2.0</description>
@@ -56,7 +56,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.common.version>0.12.0-SNAPSHOT</vitam.common.version>
+		<vitam.common.version>0.11.1</vitam.common.version>
 
 
 		<!-- Build environment Properties -->
@@ -157,7 +157,7 @@
 
 			<distributionManagement>
 				<repository>
-					<id>bintray-generateur-seda-release</id>
+					<id>bintray-releases</id>
 					<name>bintray-generateur-seda-release</name>
 					<url>https://api.bintray.com/maven/programmevitam/vitam-maven-release/generateur-seda/</url>
 				</repository>
