@@ -6,11 +6,15 @@
 	<version>0.12.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>generator-parent</name>
-	<description>${project.artifactId}</description>
+	<description>Generateur de SIP au format SEDA 2.0</description>
 
 	<organization>
 		<name>Vitam</name>
 	</organization>
+
+	<prerequisites>
+		<maven>3.3.9</maven>
+	</prerequisites>
 
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	<!-- Modules -->
@@ -25,16 +29,16 @@
 	</modules>
 
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-	<!-- Définition des SCM, ciManagement et distributionMngt -->
+	<!-- Définition des SCM, ciManagement -->
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<!-- Définition de l'url du gestionnaire de source à utiliser -->
 	<scm>
-		<connection>scm:git:https://dev.programmevitam.fr/gitlab/ecarriere/generator.git</connection>
-		<developerConnection>scm:git:https://dev.programmevitam.fr/gitlab/ecarriere/generator.git</developerConnection>
-		<url>https://dev.programmevitam.fr/gitlab/ecarriere/generator.git</url>
-	  <tag>HEAD</tag>
-         </scm>
+		<connection>scm:git:https://dev.programmevitam.fr/gitlab/vitam/generateur-seda.git</connection>
+		<developerConnection>scm:git:https://dev.programmevitam.fr/gitlab/vitam/generateur-seda.git</developerConnection>
+		<url>https://dev.programmevitam.fr/gitlab/vitam/generateur-seda.git</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<!-- Définition de l'url de l'intégration continue du projet -->
 	<ciManagement>
@@ -42,42 +46,6 @@
 		<url>https://dev.programmevitam.fr/jenkins/</url>
 	</ciManagement>
 
-	<!-- Dépôts Maven privés -->
-	<distributionManagement>
-		<repository>
-			<id>releases</id>
-			<url>https://dev.programmevitam.fr/nexus/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<url>https://dev.programmevitam.fr/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
-
-	<repositories>
-		<repository>
-			<id>vitam</id>
-			<url>https://dev.programmevitam.fr/nexus/content/groups/public/</url>
-		</repository>
-	</repositories>
-
-	<prerequisites>
-		<maven>3.3.9</maven>
-	</prerequisites>
-
-	<!-- Maven plugins repositories -->
-	<pluginRepositories>
-		<pluginRepository>
-			<id>vitam</id>
-			<url>https://dev.programmevitam.fr/nexus/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	<!-- Définition des properties -->
@@ -127,9 +95,80 @@
 	</properties>
 
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-	<!-- Définition des profils -->
+	<!-- Définition des profils de build -->
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-	<profiles/>
+
+	<profiles>
+		<profile>
+			<!-- Profile to use for all Vitam internal developers -->
+			<id>vitam</id>
+
+			<!-- Dépôts Maven privés -->
+			<distributionManagement>
+				<repository>
+					<id>releases</id>
+					<url>https://dev.programmevitam.fr/nexus/content/repositories/releases/</url>
+				</repository>
+				<snapshotRepository>
+					<id>snapshots</id>
+					<url>https://dev.programmevitam.fr/nexus/content/repositories/snapshots/</url>
+				</snapshotRepository>
+			</distributionManagement>
+
+			<repositories>
+				<repository>
+					<id>vitam</id>
+					<url>https://dev.programmevitam.fr/nexus/content/groups/public/</url>
+				</repository>
+			</repositories>
+
+			<!-- Maven plugins repositories -->
+			<pluginRepositories>
+				<pluginRepository>
+					<id>vitam</id>
+					<url>https://dev.programmevitam.fr/nexus/content/groups/public/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+
+		<profile>
+			<!-- Profile to use for upstream release & development -->
+			<id>bintray</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<repositories>
+                <repository>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>bintray-programmevitam-vitam-maven-release</id>
+                    <name>bintray</name>
+                    <url>http://dl.bintray.com/programmevitam/vitam-maven-release</url>
+                </repository>
+            </repositories>
+
+			<distributionManagement>
+				<repository>
+					<id>bintray-generateur-seda-release</id>
+					<name>bintray-generateur-seda-release</name>
+					<url>https://api.bintray.com/maven/programmevitam/vitam-maven-release/generateur-seda/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
+
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<!-- Définition des plugins -->
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<build>
 		<pluginManagement>
@@ -246,22 +285,6 @@
 					</configuration>
 				</plugin>
 
-				<plugin>
-					<!-- Build Docker Container from Project -->
-					<groupId>com.spotify</groupId>
-					<artifactId>docker-maven-plugin</artifactId>
-					<version>0.4.9</version>
-					<configuration>
-						<skipDockerBuild>true</skipDockerBuild> <!-- Skip build by default -->
-						<skipDockerTag>true</skipDockerTag> <!-- Skip tag by default -->
-						<imageTags>
-				           <imageTag>${project.version}</imageTag>
-				           <imageTag>latest</imageTag>
-				        </imageTags>
-				        <forceTags>true</forceTags> <!-- Allow to build the same docker name twice on the build machine -->
-				        <useConfigFile>true</useConfigFile> <!-- Use credentials of ~/.docker/config.json -->
-					</configuration>
-				</plugin>
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 				<!-- Reporting plugins : Plugins which generate reports, are configured 
 					as reports in the POM and run under the site generation lifecycle. -->
@@ -370,7 +393,6 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco-maven-plugin.version}</version>
 			</plugin>
 		</plugins>
 	</build>
