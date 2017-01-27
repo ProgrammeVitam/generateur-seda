@@ -1,4 +1,4 @@
-Générateur de SEDA à partir d'une arborescence de fichiers 
+Générateur de SEDA à partir d'une arborescence de fichiers
 ==========================================================
 
 Objectif de l'outil
@@ -22,8 +22,9 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
 
   + Répertoire dont le nom commence par ``__`` et termine par ``__`` , il s'agit d'un DataObjectGroup qui est rattaché à un ArchiveUnit virtuel de même nom :
   
-    - Ce répertoire ne doit contenir que des fichiers. En cas de présence d'un répertoire, il s'agit d'une erreur bloquante lors du parsing de l'arborescence
-    - Les fichiers dans ce répertoire doivent avoir la forme suivante : ``<Usage du SIP>_<Version du SIP>_<nom du fichier>``
+    - Ce répertoire ne doit contenir que des fichiers ou des dossiers définissant d'autres DOG (commencant et terminnant par ``__``).
+    - En cas de présence d'un répertoire standard, [[Comportement à définir: Erreur bloquante, Autre ??]]
+    - Les fichiers dans ce répertoire doivent avoir la forme suivante : ``__<Usage du SIP>_<Version du SIP>_<nom du fichier>``
 
       * le nom du fichier peut inclure une extension (si l'extension est manquante, l'extension .seda sera ajoutée)
       * la version du SIP ne peut pas être sous-entendue, même si la version est 1
@@ -32,6 +33,7 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
     - Si un fichier n'a pas le bon formalisme dans ce répertoire, il est ignoré
     - Le Title de l'ArchiveUnit associé à ce DataObjectGroup est le nom du répertoire auquel on retranche les ``__`` de début et de fin
     - L'ArchiveUnit virtuel a pour valeur du champ DescriptionLevel "Item"
+    - La date de transaction correspond à la date du dernier BinaryMaster du dossier traité.
 
   + Répertoire dans le cadre général
   
@@ -75,10 +77,15 @@ Arborescence sources
   Répertoire : /A/B/ArchiveUnitMetadata.json (ignoré dans le SEDA cible car fichier de paramètre)
   Fichier    : /A/B/b1
   Répertoire : /A/__C__
-  Fichier    : /A/__C__/c1
-  Fichier    : /A/__C__/c2
+  Fichier    : /A/__C__/__BinaryMaster_1_c1
+  Fichier    : /A/__C__/__BinaryMaster_2_c2
   Répertoire : /A/D
   Répertoire : /A/D/E
+  Répertoire : /A/__F__
+  Fichier    : /A/__F__/__BinaryMaster_1_f1
+  Répertoire : /A/__F__/__G__
+  Fichier    : /A/__F__/__G__/__BinaryMaster_1_g1
+  Fichier    : /A/__F__/__G__/__BinaryMaster_2_g2
 
 SEDA (sans les BinaryDataObject)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -94,11 +101,15 @@ SEDA (sans les BinaryDataObject)
   ArchiveUnit     : b1 (père : B)
   DataObjectGroup : dog_b1 (père:  b1), contient le BinaryDataObject b1
   ArchiveUnit     : C (père : A)
-  DataObjectGroup : dog_C (père:  C), contient les BinaryDataObject c1 et c2
+  DataObjectGroup : dog_C (père:  C), contient les BinaryDataObject c1 et c2 (Avec leur usage et version respectifs)
   ArchiveUnit     : D (père : A)
   ArchiveUnit     : E (père : D)
+  ArchiveUnit     : F (père : A)
+  DataObjectGroup : dog_F (père: F), contient le BinaryDataObject f1 (Avec son usage et sa version)
+  ArchiveUnit     : G (père : F)
+  DataObjectGroup : dog_G (père : G), contient les BinaryDataObject g1 et g2 (Avec leur usage et version respectifs)
 
-Couverture du SEDA 
+Couverture du SEDA
 ------------------
 
 Dans le fichier SEDA, les champs suivants sont gérés : 
@@ -124,7 +135,7 @@ Dans le fichier SEDA, les champs suivants sont gérés :
   + DescriptionLevel : Item s'il y a un DataObjectGroup comme fils, RecordGrp sinon
   + Title : nom du fichier ou répertoire
   + Description : chemin complet du fichier ou répertoire associé
-  + TransactedDate : pour les archiveUnit de type Item (père d'un DataObjectGroup), il s'agit de la date du dernier BinaryDataObject entré dans l'ArchiveUnit. Il s'agit d'un comportement non cible mais il reste à définir le comportement dans les différents cas de répertoires de type "DataObjectGroup" (avec ``__`` au début et à la fin du répertoire)
+  + TransactedDate : pour les archiveUnit de type Item (père d'un DataObjectGroup), il s'agit de la date du dernier BinaryMaster entré dans l'ArchiveUnit. Il s'agit d'un comportement non cible mais il reste à définir le comportement dans les différents cas de répertoires de type "DataObjectGroup" (avec ``__`` au début et à la fin du répertoire)
   + StartDate/EndDate : pour les ArchiveUnit de type RecordGrp, la StartDate est la TransactedDate la plus ancienne des fichiers du RecordGrp et la EndDate est la TransactedDate la plus récente des fichiers du RecordGrp
 
 Pour DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content, il est possible de surcharger ces métadonnées via la mise en place d'un fichier ``ArchiveUnitMetadata.json`` dans le répertoire correspondant à l'archiveUnit. Voir le fichier `Configuration.rst`_ pour plus d'information.

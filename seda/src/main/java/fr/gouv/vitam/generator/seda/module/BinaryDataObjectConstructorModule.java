@@ -119,7 +119,7 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         bdotr.setSize(new BigInteger(String.valueOf(f.length())));
         bdotr.setFormatIdentification(new FormatIdentificationType());
         fit.setLastModified(XMLWriterUtils.getXMLGregorianCalendar(new Date(f.lastModified())));
-        // Match the format <Usage>_<Version>_<File Name>
+        // Match the format __<Usage>_<Version>_<File Name>
         Matcher m = DataObjectVersionFileName.matcher(f.getName());
 		if (m.matches()) {
 			bdotr.setDataObjectVersion(m.group(1) + "_" + m.group(2));
