@@ -14,6 +14,10 @@
       <source>../CHANGELOG.md</source>
       <outputDirectory></outputDirectory>
     </file>
+    <file>
+      <source>${project.build.directory}/siegfried/win32/sf.exe</source>
+      <outputDirectory></outputDirectory>
+    </file>
   </files>
   <fileSets>
   	<!-- Add scripts -->
