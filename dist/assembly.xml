@@ -1,0 +1,50 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+  <!-- bundle is required for all punchplatform archives -->
+  <id>bundle</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <files>
+    <file>
+      <source>../README.rst</source>
+      <outputDirectory></outputDirectory>
+    </file>
+    <file>
+      <source>../CHANGELOG.md</source>
+      <outputDirectory></outputDirectory>
+    </file>
+    <file>
+      <source>${project.build.directory}/siegfried/win32/sf.exe</source>
+      <outputDirectory></outputDirectory>
+    </file>
+  </files>
+  <fileSets>
+  	<!-- Add scripts -->
+    <fileSet>
+      <directory>src/main/scripts</directory>
+      <outputDirectory></outputDirectory>
+      <fileMode>0550</fileMode>
+    </fileSet>
+    <!-- Add conf -->
+    <fileSet>
+      <directory>src/main/conf</directory>
+      <outputDirectory>conf</outputDirectory>
+    </fileSet>
+    <!-- Add documentation -->
+    <fileSet>
+      <directory>../doc</directory>
+      <outputDirectory>doc</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <!-- Add java-based vitam-product rpm -->
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <unpack>false</unpack>
+      <includes>
+        <include>*</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>
