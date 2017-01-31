@@ -433,6 +433,11 @@ public class ArchiveTransferGenerator {
         Date startDate = null;
         Date endDate = null;
         for (Object aut : autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()){
+            if (aut instanceof DataObjectRefType) {
+                // Do Nothing: No dates in DOG
+                continue;
+            }
+
             ArchiveUnitTypeRoot sonautr = mapArchiveUnit.get(((ArchiveUnitType) aut).getArchiveUnitRefId());
             if (sonautr != null){
 
@@ -440,7 +445,6 @@ public class ArchiveTransferGenerator {
                 // Take the minimum date of the sons
                 if (sonautr.getStartDate() != null && (startDate == null ||  sonautr.getStartDate().compareTo(startDate)<0)){
                     startDate = sonautr.getStartDate();
-
                 }
                 // Take the maximum date of the sons
                 if (sonautr.getEndDate() != null && (endDate == null || sonautr.getEndDate().compareTo(endDate)>0)){

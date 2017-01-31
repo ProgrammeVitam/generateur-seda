@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
@@ -72,9 +73,9 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     private static final String ARCHIVEUNITMETADATAFILE_NAME = "ArchiveUnitMetadata.json";
     private static final String IGNORE_PATTERNS_JSON_KEY = "ignore_patterns";
     private final ArchiveTransferGenerator atgi;
-    // null when the current directory is an ArchiveUnit and id of the current DataobjectGroup if the directory is an
-    // DataobjectGroup
-    private String dataObjectGroupOfCurrentDirectory;
+    // Contains IDs of current (First index) and parents(Others) directories if they are DataObjectGroup.
+    // List is empty in an ArchiveUnit directory.
+    private LinkedList<String> dataObjectGroupOfVisitedDirectories = new LinkedList<>();
     private final HashMap<String, String> mapArchiveUnitPath2Id;
     private final SchedulerEngine schedulerEngine;
     private final Playbook playbookBinary;
@@ -141,16 +142,16 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         if (new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+ARCHIVEUNITMETADATAFILE_NAME).isFile()){
             manifestPathName = new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+ARCHIVEUNITMETADATAFILE_NAME);
             LOGGER.debug(manifestPathName.toString());
-        }        
-        dataObjectGroupOfCurrentDirectory = null;
+        }
+
         // DataObjectGroup : The directory is a DataObjectGroup so we create a pseudo ArchiveUnitID
         if (dirName.startsWith("__") && dirName.endsWith("__")) {
-            dataObjectGroupOfCurrentDirectory = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
-            String archiveUnitID = atgi.addArchiveUnit(dir.getFileName().toString(), dir.toString(),manifestPathName);
+            dataObjectGroupOfVisitedDirectories.addFirst(atgi.getDataObjectGroupUsedMap().registerDataObjectGroup());
+            String archiveUnitID = atgi.addArchiveUnit(dirName.substring(2, dirName.length()-2), dir.toString(),manifestPathName);
             mapArchiveUnitPath2Id.put(dir.toString(),archiveUnitID);
             String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
             atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
-            atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupOfCurrentDirectory);
+            atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupOfVisitedDirectories.getFirst());
         // ArchiveUnit
         } else {
             String id = atgi.addArchiveUnit(dirName, dir.toString(),manifestPathName);
@@ -190,12 +191,12 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         String fatherID;
         
         // Archive Unit : we create the DataObjectGroup
-        if (dataObjectGroupOfCurrentDirectory == null){
+        if (dataObjectGroupOfVisitedDirectories.isEmpty()){
             dataObjectGroupID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
         } else {
             // The directory is a DataObjectGroup : the DataObjectGroup ID is known (has been defined previously
             // when we manage the father directory)
-            dataObjectGroupID = dataObjectGroupOfCurrentDirectory;
+            dataObjectGroupID = dataObjectGroupOfVisitedDirectories.getFirst();
         }
         // Prepare the parameters
         ParameterMap inputParameterMap=new ParameterMap();
@@ -205,7 +206,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         try {
             schedulerEngine.execute(playbookBinary, inputParameterMap);
             // Standard Directory
-            if (dataObjectGroupOfCurrentDirectory == null) {
+            if (dataObjectGroupOfVisitedDirectories.isEmpty()) {
                 // Create the Pseudo ArchiveUnit
                 archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
                     "Pseudo Archive Unit du fichier :" + file.toString());
@@ -219,7 +220,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                 atgi.setTransactedDate(archiveUnitID, new Date(file.toFile().lastModified()));
             // DataObjectGroup Directory
             }else{
-                // Get the ID of the DataObjectGroup Directory Archive Unit 
+                // Get the ID of the DataObjectGroup Directory Archive Unit
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
                 // If the file is the BinaryMaster Version, set the Transacted, StartDate and EndDate in the Archive Unit
                 if (file.getFileName().toString().startsWith("__BinaryMaster")){
@@ -244,9 +245,11 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     public FileVisitResult postVisitDirectory(Path dir,
         IOException exc) {
         // When in the ArchiveUnit Standard mode (not DOG), the start and endDate have to be calculated recursively
-        if (dataObjectGroupOfCurrentDirectory == null ) {           
+        if (dataObjectGroupOfVisitedDirectories.isEmpty()) {
              String auid = mapArchiveUnitPath2Id.get(dir.toString());
              atgi.addStartAndEndDate2ArchiveUnit(auid);
+        } else {
+            dataObjectGroupOfVisitedDirectories.removeFirst();
         }
         return FileVisitResult.CONTINUE;
     }
@@ -267,11 +270,22 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public void close() throws XMLStreamException, VitamSedaException {
         long binaryDataObjecttotalTime = System.currentTimeMillis()-beginTimeMS;
-        LOGGER.info("Managing BinaryDataObjects : "+ binaryDataObjecttotalTime + " ms for "+ numberBinaryDataObject +" BinaryDataObjects (time per BDO : "+ binaryDataObjecttotalTime/numberBinaryDataObject +" ms)");
+        if (numberBinaryDataObject != 0) {
+            LOGGER.info("Managing BinaryDataObjects : "+ binaryDataObjecttotalTime + " ms for "+ numberBinaryDataObject +" BinaryDataObjects (time per BDO : "+ binaryDataObjecttotalTime/numberBinaryDataObject +" ms)");
+        } else {
+            LOGGER.info("Managing BinaryDataObjects : "+ binaryDataObjecttotalTime + " ms for "+ numberBinaryDataObject +" BinaryDataObjects (No BDO)");
+        }
+
         long beginDescriptiveMetadateTime = System.currentTimeMillis();
         int nbArchiveUnits = atgi.writeDescriptiveMetadata();
         long descriptiveMetadataTotalTime = System.currentTimeMillis()-beginDescriptiveMetadateTime;
-        LOGGER.info("Writing ArchiveUnits : "+ descriptiveMetadataTotalTime + " ms for "+ nbArchiveUnits + " ArchiveUnits (time per AU : " + descriptiveMetadataTotalTime/nbArchiveUnits+" ms)");
+
+        if (nbArchiveUnits != 0) {
+            LOGGER.info("Writing ArchiveUnits : "+ descriptiveMetadataTotalTime + " ms for "+ nbArchiveUnits + " ArchiveUnits (time per AU : " + descriptiveMetadataTotalTime/nbArchiveUnits+" ms)");
+        } else {
+            LOGGER.info("Writing ArchiveUnits : "+ descriptiveMetadataTotalTime + " ms for "+ nbArchiveUnits + " ArchiveUnits (no AU)");
+        }
+
         atgi.writeManagementMetadata();
         atgi.closeDocument();
         schedulerEngine.printStatistics();
