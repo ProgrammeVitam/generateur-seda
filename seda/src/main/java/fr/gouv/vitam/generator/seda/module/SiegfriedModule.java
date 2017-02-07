@@ -160,7 +160,7 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
     private String callSiegfried(String siegfriedURL , File file) throws VitamSedaException,IOException{
         String returnSiegfriedValue = null;
         try{
-            HttpPost post = new HttpPost(siegfriedURL + "/identify");
+            HttpPost post = new HttpPost(siegfriedURL + "/identify?format=json");
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.addBinaryBody("file", file);
             HttpEntity entity = builder.build();
