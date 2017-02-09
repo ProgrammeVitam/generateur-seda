@@ -1,5 +1,5 @@
-*/target
-*/.*
+target
+.*
 scanner/output.zip
 scanner/output.err
 scanner/manifest.xml
@@ -7,5 +7,7 @@ seda/output.zip
 seda/manifest.xml
 .project
 .settings
+.idea
+*.iml
 **/*.class
 scripts/build

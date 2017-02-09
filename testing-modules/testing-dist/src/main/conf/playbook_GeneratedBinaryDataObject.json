@@ -1,0 +1,37 @@
+{
+	"name" : "Playbook Binary Data Object",
+	"tasks":[
+		{
+			"name" : "Generate file",
+			"module" : "binaryFileGenerator",
+			"parameters" :{ "file" : "@@file@@", "size" : "@@size@@" } ,
+			"registeredParameters": {}
+		},
+		{
+		  "name" : "Create Binary Data Object",
+		  "module" : "binaryDataObjectConstructor",
+		  "parameters" :{ "file" : "@@file@@"} ,
+		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@", "ignoreSpecialCharExtension" : "false"}
+		},
+		{ 
+		  "name" : "Calcul Digest du fichier",
+		  "module" : "digest",
+		  "parameters" :{ "binarydataobject" : "@@binarydataobject@@", "digest.algorithm": "SHA512"} ,
+		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@"}
+		},
+		{ 
+		  "name" : "Recupération des statistiques du fichier",
+		  "module" : "writeBinaryDataObject",
+		  "parameters" :{"binarydataobject" : "@@binarydataobject@@","dataobjectgroupID" : "@@dataobjectgroupID@@","archivetransfergenerator" : "@@archivetransfergenerator@@" } ,
+		  "registeredParameters": {}
+		},
+		{
+			"name" : "Remove tmp file",
+			"module" : "binaryFileCleaner",
+			"parameters" :{ "file" : "@@file@@" } ,
+			"registeredParameters": {}
+		}
+	]
+
+}
+
