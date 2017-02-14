@@ -26,54 +26,30 @@
  */
 package fr.gouv.culture.archivesdefrance.seda.v2;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType.Management;
+import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
+import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 /**
  * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
+ *
  */
-@XmlRootElement(name = "ManagementMetadata")
-public class ManagementMetadataTypeRoot extends ManagementMetadataType {
-    @XmlElement(name = "OriginatingAgencyIdentifier")
-    protected String originatingAgencyIdentifier;
-    
-    @XmlElement(name = "SubmissionAgencyIdentifier")
-    protected String submissionAgencyIdentifier;
 
-    /**
-     * @return the originatingAgencyIdentifier
-     */
-    public String getOriginatingAgencyIdentifier() {
-        return originatingAgencyIdentifier;
-    }
+@XmlRootElement(name = "Management")
+public class ManagementRoot extends Management {
 
-    /**
-     * @param originatingAgencyIdentifier the originatingAgencyIdentifier to set
-     *
-     * @return this
-     */
-    public ManagementMetadataTypeRoot setOriginatingAgencyIdentifier(String originatingAgencyIdentifier) {
-        this.originatingAgencyIdentifier = originatingAgencyIdentifier;
-        return this;
-    }
 
-    /**
-     * @return the submissionAgencyIdentifier
-     */
-    public String getSubmissionAgencyIdentifier() {
-        return submissionAgencyIdentifier;
-    }
-
-    /**
-     * @param submissionAgencyIdentifier the submissionAgencyIdentifier to set
-     *
-     * @return this
-     */
-    public ManagementMetadataTypeRoot setSubmissionAgencyIdentifier(String submissionAgencyIdentifier) {
-        this.submissionAgencyIdentifier = submissionAgencyIdentifier;
-        return this;
-    }
-    
     /**
      *  Postprocessing after the unmarshalling by Json of *Rule which is not correct for the reading by JaxB
      */
@@ -99,5 +75,6 @@ public class ManagementMetadataTypeRoot extends ManagementMetadataType {
             JsonMarshallerHelper.transformRuleMap(classificationRule.getRuleAndStartDate());
         }
     }
+    
 
 }

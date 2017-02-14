@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.gouv.vitam.generator</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.14.0-SNAPSHOT</version>
+	<version>0.15.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>generator-parent</name>
 	<description>Generateur de SIP au format SEDA 2.0</description>
@@ -56,7 +56,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.common.version>0.14.0-SNAPSHOT</vitam.common.version>
+		<vitam.common.version>0.15.0-SNAPSHOT</vitam.common.version>
 
 
 		<!-- Build environment Properties -->
@@ -90,7 +90,9 @@
 		<mockito.version>1.10.19</mockito.version>
 		<httpclient.version>4.5.2</httpclient.version>
 		<powermock.version>1.6.5</powermock.version>
-		<junit.system-rules.version>1.16.1</junit.system-rules.version>
+                <junit.system-rules.version>1.16.1</junit.system-rules.version>
+                <stax-api.version>3.1.2</stax-api.version>
+                <woodstox.version>4.4.1</woodstox.version>
 		<sonar.exclusions>file:**/generated-sources/**</sonar.exclusions>
 	</properties>
 
@@ -520,7 +522,16 @@
 				<version>${logback.version}</version>
 				<!--<scope>provided</scope> -->
 			</dependency>
-
+			<dependency>
+				<groupId>org.codehaus.woodstox</groupId>
+				<artifactId>stax2-api</artifactId>
+                                <version>${stax-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.woodstox</groupId>
+				<artifactId>woodstox-core-asl</artifactId>
+				<version>4.4.1</version>
+			</dependency>
 			<!-- ####################### Tests ####################### -->
 
 			<dependency>

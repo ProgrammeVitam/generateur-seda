@@ -71,6 +71,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ScanFS.class);
     // TODO Défini plusieurs fois => un common ?
     private static final String ARCHIVEUNITMETADATAFILE_NAME = "ArchiveUnitMetadata.json";
+    private static final String ARCHIVEUNITRAWCONTENTFILE_NAME = "ArchiveUnitContent.xml";
+    private static final String ARCHIVEUNITRAWMANAGEMENTFILE_NAME = "ArchiveUnitManagement.xml";
     private static final String IGNORE_PATTERNS_JSON_KEY = "ignore_patterns";
     private final ArchiveTransferGenerator atgi;
     // Contains IDs of current (First index) and parents(Others) directories if they are DataObjectGroup.
@@ -138,29 +140,28 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
         String dirName = dir.getFileName().toString();
-        File manifestPathName = null;
-        if (new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+ARCHIVEUNITMETADATAFILE_NAME).isFile()){
-            manifestPathName = new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+ARCHIVEUNITMETADATAFILE_NAME);
-            LOGGER.debug(manifestPathName.toString());
-        }
+        String archiveUnitID;
+        File manifestPathName = containsFileInDir(dir, ARCHIVEUNITMETADATAFILE_NAME);
 
         // DataObjectGroup : The directory is a DataObjectGroup so we create a pseudo ArchiveUnitID
         if (dirName.startsWith("__") && dirName.endsWith("__")) {
             dataObjectGroupOfVisitedDirectories.addFirst(atgi.getDataObjectGroupUsedMap().registerDataObjectGroup());
-            String archiveUnitID = atgi.addArchiveUnit(dirName.substring(2, dirName.length()-2), dir.toString(),manifestPathName);
+            archiveUnitID = atgi.addArchiveUnit(dirName.substring(2, dirName.length()-2), dir.toString(),manifestPathName);
             mapArchiveUnitPath2Id.put(dir.toString(),archiveUnitID);
             String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
             atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
             atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupOfVisitedDirectories.getFirst());
         // ArchiveUnit
         } else {
-            String id = atgi.addArchiveUnit(dirName, dir.toString(),manifestPathName);
-            mapArchiveUnitPath2Id.put(dir.toString(), id);
+            archiveUnitID = atgi.addArchiveUnit(dirName, dir.toString(),manifestPathName);
+            mapArchiveUnitPath2Id.put(dir.toString(), archiveUnitID);
             if (mapArchiveUnitPath2Id.containsKey(dir.getParent().toString())) {
                 String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
-                atgi.addArchiveUnit2ArchiveUnitReference(fatherID, id);
+                atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
             }
         }
+        atgi.addRawContentFile(archiveUnitID, containsFileInDir(dir, ARCHIVEUNITRAWCONTENTFILE_NAME));
+        atgi.addRawManagementFile(archiveUnitID, containsFileInDir(dir, ARCHIVEUNITRAWMANAGEMENTFILE_NAME));
         return FileVisitResult.CONTINUE;
     }
 
@@ -172,7 +173,11 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public FileVisitResult visitFile(Path file,
         BasicFileAttributes attr) {
-        if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) || file.getFileName().toString().equals(ARCHIVEUNITMETADATAFILE_NAME)){
+        if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) || 
+            file.getFileName().toString().equals(ARCHIVEUNITMETADATAFILE_NAME) ||
+            file.getFileName().toString().equals(ARCHIVEUNITRAWCONTENTFILE_NAME) ||
+            file.getFileName().toString().equals(ARCHIVEUNITRAWMANAGEMENTFILE_NAME)
+           ){
             return FileVisitResult.CONTINUE;
         }
         for(PathMatcher pm : excludeFileSet){
@@ -290,4 +295,14 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         atgi.closeDocument();
         schedulerEngine.printStatistics();
     }
+    
+    private File containsFileInDir(Path dir, String file){
+        File f=new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+file); 
+        if (f.isFile()){
+            return f;
+        }else{
+            return null;
+        }
+    }
+        
 }

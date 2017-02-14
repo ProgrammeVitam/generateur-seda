@@ -1,3 +1,15 @@
+## 0.15.0
+
+* Parametrization of the global ManagementMetadata block 
+* Parametrization of the Management block (in ArchiveUnit section)
+* Raw addition of Content and Management block (in ArchiveUnit section)
+
+## 0.14.0
+
+* Add the binary-generator in the testing-module
+* Rework on the packaging solution
+* Add the possibility to have ArchiveUnits sons a "DOG ArchiveUnit"
+
 ## 0.11.1
 
 * Add the license file (CeCill and CC-By-SA)

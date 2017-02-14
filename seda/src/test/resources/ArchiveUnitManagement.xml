@@ -1,0 +1,38 @@
+<Management>
+	<StorageRule>
+		<Rule id="43">STO_01</Rule>
+		<StartDate>2017-02-15T09:05:21.705+01:00</StartDate>
+		<PreventInheritance>true</PreventInheritance>
+		<RefNonRuleId id="43">STO_01</RefNonRuleId>
+		<FinalAction>Transfer</FinalAction>
+	</StorageRule>
+	<AppraisalRule>
+		<StartDate>2017-02-15T09:05:21.705+01:00</StartDate>
+		<Rule>APR_01</Rule>
+		<PreventInheritance>false</PreventInheritance>
+		<RefNonRuleId>APR_01</RefNonRuleId>
+		<FinalAction>Keep</FinalAction>
+	</AppraisalRule>
+	<AccessRule>
+		<Rule>ACC_01</Rule>
+		<StartDate>2017-02-15T09:05:21.705+01:00</StartDate>
+		<RefNonRuleId>ACC_01</RefNonRuleId>
+	</AccessRule>
+	<DisseminationRule>
+		<Rule>DIS_01</Rule>
+		<StartDate>2017-02-15T09:05:21.705+01:00</StartDate>
+		<RefNonRuleId>DIS_01</RefNonRuleId>
+	</DisseminationRule>
+	<ReuseRule>
+		<Rule>REU_01</Rule>
+		<StartDate>2017-02-15T09:05:21.705+01:00</StartDate>
+		<PreventInheritance>true</PreventInheritance>
+		<RefNonRuleId>REU_01</RefNonRuleId>
+	</ReuseRule>
+	<ClassificationRule>
+		<Rule>CLA_01</Rule>
+		<StartDate>2017-02-15T09:05:21.705+01:00</StartDate>
+		<RefNonRuleId>CLA_01</RefNonRuleId>
+	</ClassificationRule>
+	<NeedAuthorization>true</NeedAuthorization>
+</Management>
