@@ -36,9 +36,13 @@ package fr.gouv.vitam.generator.seda.core;
 
 import java.io.File;
 import java.nio.file.FileSystems;
+import java.util.HashMap;
+
+import javax.management.ObjectName;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.json.JsonHandler;
@@ -107,6 +111,14 @@ public class ArchiveTransferConfig {
         return globalConfig.get(key);
     }
 
+    private void set(String key, String value){
+        if (scanConfig != null){
+            ((ObjectNode) scanConfig).put(key, value);
+        }else{
+            ((ObjectNode) globalConfig).put(key, value);
+        }
+    }
+    
     /**
      *
      * @param key
@@ -119,5 +131,12 @@ public class ArchiveTransferConfig {
             return "";
         }
     }
-
+    
+    /**
+     * Override the messageIdentifier
+     * @param messageId
+     */
+    public void setMessageIdentifer(String messageId){
+        set("MessageIdentifier",messageId);
+    }
 }

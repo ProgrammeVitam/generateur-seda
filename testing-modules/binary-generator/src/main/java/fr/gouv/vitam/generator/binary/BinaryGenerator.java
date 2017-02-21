@@ -94,6 +94,7 @@ public class BinaryGenerator {
         Path playbookFileBDO = Paths.get(workingDir,"conf","playbook_GeneratedBinaryDataObject.json");
 
         ArchiveTransferConfig atc = new ArchiveTransferConfig(workingDir + "/conf", null);
+        atc.setMessageIdentifer("BinaryGenerator "+fileNumber+" - "+ fileSize);
         try {
             generateBinary(atc, playbookFileBDO, outputFile, fileNumber, fileSize);
         } catch (VitamSedaMissingFieldException e) { // NOSONAR : global catch of this exception
