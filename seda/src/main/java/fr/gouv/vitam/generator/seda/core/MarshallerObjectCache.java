@@ -45,7 +45,7 @@ import javax.xml.bind.Marshaller;
  * Cache the Marshaller Object as its initialization takes about 40ms 
  */
 public class MarshallerObjectCache {
-    private static Map<Class<?>[],Marshaller> marshallbyclass = new HashMap<>();
+    private static Map<Class<?>,Marshaller> marshallbyclass = new HashMap<>();
 
     private MarshallerObjectCache(){
         // Empty constructor
@@ -58,7 +58,7 @@ public class MarshallerObjectCache {
      * @throws JAXBException
      */
     
-    public static Marshaller getMarshaller(Class<?>[] c) throws JAXBException{
+    public static Marshaller getMarshaller(Class<?> c) throws JAXBException{
         if (marshallbyclass.get(c) == null){
             JAXBContext jc = JAXBContext.newInstance(c);
             Marshaller marshaller = jc.createMarshaller();
@@ -68,11 +68,4 @@ public class MarshallerObjectCache {
         return marshallbyclass.get(c);
         
     }
-    
-    
-    public static Marshaller getMarshaller(Class<?> c) throws JAXBException{
-         Class<?> [] temp = {c};
-         return MarshallerObjectCache.getMarshaller(temp);
-    }
-
 }
