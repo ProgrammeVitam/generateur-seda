@@ -26,10 +26,26 @@
  */
 package fr.gouv.culture.archivesdefrance.seda.v2;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Date;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.codehaus.stax2.XMLStreamWriter2;
+
+import fr.gouv.vitam.generator.seda.core.MarshallerObjectCache;
+import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
+import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 
 /**
  * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
@@ -40,6 +56,52 @@ public class ArchiveUnitTypeRoot extends ArchiveUnitType {
     private Date startDate;
     @XmlTransient
     private Date endDate;
+    @XmlTransient
+    private File rawContentFile;
+    @XmlTransient
+    private File rawManagementFile;
+    @XmlTransient
+    private static final int BUFFER_SIZE = 64 * 1024;
+    
+    /**
+     * Default constructor : do nothing (Pojo)
+     */
+    public ArchiveUnitTypeRoot() {
+        
+    }
+    
+    protected ArchiveUnitTypeRoot(ArchiveUnitType au){
+        this.id = au.getId();
+        this.archiveUnitRefId = au.archiveUnitRefId;
+    }
+    
+
+
+    /**
+     * @return the rawContentFile
+     */
+    public File getRawContentFile() {
+        return rawContentFile;
+    }
+    /**
+     * @param rawContentFile the rawContentFile to set
+     */
+    public void setRawContentFile(File rawContentFile) {
+        this.rawContentFile = rawContentFile;
+    }
+    /**
+     * @return the rawManagementFile
+     */
+    public File getRawManagementFile() {
+        return rawManagementFile;
+    }
+    /**
+     * @param rawManagementFile the rawMetadataFile to set
+     */
+    public void setRawManagementFile(File rawManagementFile) {
+        this.rawManagementFile = rawManagementFile;
+    }
+    
     /**
      * @return the startDate
      */
@@ -70,4 +132,95 @@ public class ArchiveUnitTypeRoot extends ArchiveUnitType {
         this.endDate = endDate;
         return this;
     }
+    
+    /**
+     * Custom marshalling to xml of the ArchiveUnit
+     * @param writer XMLStreamWrite on which we have to write
+     * @throws VitamSedaException
+     * @throws XMLStreamException
+     */
+    public void marshall(XMLStreamWriter2 writer) throws VitamSedaException,XMLStreamException{
+        if (rawContentFile != null || rawManagementFile  != null){
+            manualMarshall(writer);
+        }else{
+            writeXMLFragment(this, writer);
+        } 
+    }
+
+    private void writeFile(File file, XMLStreamWriter2 writer)
+        throws VitamSedaException, XMLStreamException {
+        char[] buffer = new char[BUFFER_SIZE];
+        int nbRead;
+        try (FileInputStream fis = new FileInputStream(file)) {
+            try(InputStreamReader isr = new InputStreamReader(fis,Charset.forName("UTF-8"))){
+                while ((nbRead = isr.read(buffer)) != -1) {
+                    writer.writeRaw(buffer,0,nbRead);
+                }    
+            }
+        } catch (IOException e) {
+            throw new VitamSedaException("Issue to write file" + file + "to XML stream", e);
+        }
+
+    }
+    
+    private void manualMarshall(XMLStreamWriter2 writer) throws VitamSedaException,XMLStreamException{
+        writer.writeStartElement("ArchiveUnit");
+        if (id != null){
+            writer.writeAttribute("id", id);
+        }
+        try{
+            if (archiveUnitRefId != null){
+                XMLWriterUtils.writeAttributeValue(writer, "ArchiveUnitRefId", archiveUnitRefId);
+            }
+        }catch(XMLStreamException e){
+            throw new VitamSedaException("Exception writing XML Stream",e);
+        }
+        if (archiveUnitProfile != null){
+            writeXMLFragment(archiveUnitProfile, writer);
+        }
+        if (rawManagementFile != null && rawManagementFile.exists()){
+            writeFile(rawManagementFile,writer);
+        }else if (management != null){
+            writeXMLFragment(management, writer);
+        }
+        
+        if (rawContentFile != null && rawContentFile.exists()){
+            writeFile(rawContentFile,writer);
+        }else if (content != null){
+            for (int i=0;i<content.size();i++){
+                writeXMLFragment(content.get(i), writer);
+            }
+        }
+        if (archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference != null){
+            
+            for(int i=0;i< archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference.size();i++){
+                Object obj = archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference.get(i);
+                if (obj != null){ 
+                    if (obj instanceof DataObjectRefType){
+                        writeXMLFragment(obj, writer);
+                    }
+                    if (obj instanceof ArchiveUnitType){
+                        writeXMLFragment(new ArchiveUnitTypeRoot((ArchiveUnitType) obj), writer);
+                    }
+                }
+            }
+        }
+        writer.writeEndElement();
+    }
+    
+    /**
+     * Serialize a Jaxb POJO object in the current XML stream
+     * @param jaxbPOJO
+     * @param writer
+     * @throws VitamSedaException
+     */
+    private void writeXMLFragment(Object jaxbPOJO,XMLStreamWriter writer) throws VitamSedaException{
+        try {
+            MarshallerObjectCache.getMarshaller(jaxbPOJO.getClass()).marshal(jaxbPOJO, writer);
+        } catch (JAXBException e) {
+            throw new VitamSedaException("Error on writing " + jaxbPOJO + "object", e);
+        }
+
+    }
+
 }

@@ -32,47 +32,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL 2.1 license and that you accept its terms.
  */
-package fr.gouv.vitam.generator.seda.core;
+package fr.gouv.culture.archivesdefrance.seda.v2;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Cache the Marshaller Object as its initialization takes about 40ms 
+ * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream 
  */
-public class MarshallerObjectCache {
-    private static Map<Class<?>[],Marshaller> marshallbyclass = new HashMap<>();
+@XmlRootElement(name = "Content")
+public class DescriptiveMetadataContentTypeRoot extends DescriptiveMetadataContentType {
 
-    private MarshallerObjectCache(){
-        // Empty constructor
-    }
-    
     /**
-     * Cache of the marshaller object
-     * @param c : class whom we want the JAXB Marshaller
-     * @return The JAXB Marshaller for the class given in argument
-     * @throws JAXBException
+     * 
      */
-    
-    public static Marshaller getMarshaller(Class<?>[] c) throws JAXBException{
-        if (marshallbyclass.get(c) == null){
-            JAXBContext jc = JAXBContext.newInstance(c);
-            Marshaller marshaller = jc.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            marshallbyclass.put(c, marshaller);
-        }
-        return marshallbyclass.get(c);
-        
-    }
-    
-    
-    public static Marshaller getMarshaller(Class<?> c) throws JAXBException{
-         Class<?> [] temp = {c};
-         return MarshallerObjectCache.getMarshaller(temp);
+    public DescriptiveMetadataContentTypeRoot() {
+        // TODO Auto-generated constructor stub
     }
 
 }

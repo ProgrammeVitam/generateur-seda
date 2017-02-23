@@ -57,8 +57,9 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
   + Les noms de fichiers suivants sont ignorés : 
 
     - Le fichier ``ArchiveTransferConfig.json`` à la racine de l'arborescence. Ce fichier contient les paramétrages globaux spécifiques pour cette arborescence
-    - Le fichier ``ArchiveUnitMetadata.json`` sur chaque répertoire. Ce fichier contient les métadonnées descriptives pour l'ArchiveUnit correspondant au répertoire auquel il appartient
-    - Le fichier ``ArchiveUnitMetadata.xml`` sur chaque répertoire. Ce nom est reservé pour des développements futurs
+    - Le fichier ``ArchiveUnitMetadata.json`` sur chaque répertoire. Ce fichier contient les métadonnées de gestion et les méta-données descriptives pour l'ArchiveUnit correspondant au répertoire auquel il appartient
+    - Le fichier ``ArchiveUnitContent.xml`` sur chaque répertoire. Le contenu de ce fichier est importé sans contrôle à la place de la balise <Content> (Ce fichier doit contenir <Content>.*</Content>) pour l'archiveUnit correspondant au répertoire auquel il appartient. 
+    - Le fichier ``ArchiveUnitManagement.xml`` sur chaque répertoire. Le contenu de ce fichier est importé sans contrôle à la place de la balise <Management> (Ce fichier doit contenir <Management>.*</Management>) pour l'archiveUnit correspondant au répertoire auquel il appartient. 
   
   + En cas de présence d'un fichier ``ArchiveUnitMetadata.xml`` et d'un fichier ``ArchiveUnitMetadata.json`` dans le même répertoire
 
@@ -125,10 +126,12 @@ Dans le fichier SEDA, les champs suivants sont gérés :
   + FormatIdentification : si le module Siegfried est activé, on positionne les 3 champs FormatLitteral, MimeType, FormatId
   + FileInfo : FileName et LastModified (mtime du fichier)
 
-* DataObjectPackage.ManagementMetadata : les champs suivants (extension du SEDA pour Vitam) sont gérés) : 
+* DataObjectPackage.ManagementMetadata : les champs du SEDA ainsi que les champs suivants d'extension du SEDA pour Vitam sont gérés) : 
 
   + OriginatingAgencyIdentifier : identifiant du service producteur
   + SubmissionAgencyIdentifer : identifiant du service versant
+
+* DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Management : la totalité des balises sont gérées via les fichier ``ArchiveUnitMetadata.json``
 
 * DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content :
  
@@ -138,6 +141,6 @@ Dans le fichier SEDA, les champs suivants sont gérés :
   + TransactedDate : pour les archiveUnit de type Item (père d'un DataObjectGroup), il s'agit de la date du dernier BinaryMaster entré dans l'ArchiveUnit. Il s'agit d'un comportement non cible mais il reste à définir le comportement dans les différents cas de répertoires de type "DataObjectGroup" (avec ``__`` au début et à la fin du répertoire)
   + StartDate/EndDate : pour les ArchiveUnit de type RecordGrp, la StartDate est la TransactedDate la plus ancienne des fichiers du RecordGrp et la EndDate est la TransactedDate la plus récente des fichiers du RecordGrp
 
-Pour DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content, il est possible de surcharger ces métadonnées via la mise en place d'un fichier ``ArchiveUnitMetadata.json`` dans le répertoire correspondant à l'archiveUnit. Voir le fichier `Configuration.rst`_ pour plus d'information.
+Pour DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content et Metadata, il est possible de surcharger ces métadonnées via la mise en place d'un fichier ``ArchiveUnitMetadata.json`` dans le répertoire correspondant à l'archiveUnit. Voir le fichier `Configuration.rst`_ pour plus d'information.
 
 .. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)

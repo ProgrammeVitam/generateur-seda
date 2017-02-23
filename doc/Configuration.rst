@@ -30,6 +30,7 @@ Pour les champs liés au SEDA, on a :
 * Les champs "MessageIdentifier", "ArchivalAgency" , "TransferringAgency" sont obligatoires dans le SEDA et sont donc nécessaires pour le générateur SEDA
 * Il en est de même pour les clés "ReplyCodeListVersion", "MessageDigestAlgorithmCodeListVersion" et "MessageDigestAlgorithmCodeListVersion" du bloc "CodeListVersions"
 * Les champs "Comment" et "ArchivalAgreement" sont facultatifs (au sens SEDA et Vitam)
+* Le champ "ManagementMetadata" est facultatifs. Son formalisme est identique à celui de la section Management du fichier `ArchiveUnitMetadata.json`_ . 
 * Les champs "ManagementMetadata.OriginatingAgencyIdentifier".et "ManagementMetadata.SubmissionAgencyIdentifier" sont des extensions du SEDA pour Vitam. Le premier est obligatoire pour Vitam.
 
 Pour les champs techniques, on a :
@@ -42,7 +43,9 @@ Fichier d'enrichissement des métadonnées
 
 Le fichier `ArchiveUnitMetadata.json`_ présent dans ce répertoire donne un apercu du format json attendu. 
 
-Attention :
+Il y a 2 sections dans ce fichier : 
+
++ Section Content (pour les métadonnées descriptives) : 
 
   * Ce format de fichier est fourni à titre provisoire et peut être modifié dans des versions ultérieures. 
   * Les champs Date (ex: CreatedDate) sont vus par le générateur SEDA comme des chaînes de caractères et le générateur les prend telles quelles. Il est donc de la responsabilité des utilisateurs de fournir des dates au format correct.
@@ -53,5 +56,6 @@ Attention :
     - AuthorizedAgent, Addressee, Recipient (problème dans la gestion du type SEDA AgentType)
 
   * Les métadonnées suivantes seront écrasées par le mécanisme de calcul automatique des dates : TransactedDate, StartDate et EndDate
++ Section Management (pour les méta-données de gestion) : L'ensemble du SEDA est géré via le formalisme JSON en dehors des extensions (OtherManagementAbstract) 
 
 .. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)

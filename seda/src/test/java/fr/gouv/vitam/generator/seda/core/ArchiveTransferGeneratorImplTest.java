@@ -40,23 +40,29 @@ import java.io.File;
 import java.math.BigInteger;
 import java.util.Date;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.junit.Test;
 
-import fr.gouv.culture.archivesdefrance.seda.v2.AgentType;
+import fr.gouv.culture.archivesdefrance.seda.v2.AccessRuleType;
+import fr.gouv.culture.archivesdefrance.seda.v2.AppraisalRuleType;
+import fr.gouv.culture.archivesdefrance.seda.v2.ClassificationRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.CoverageType;
 import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentType;
-import fr.gouv.culture.archivesdefrance.seda.v2.IdentifierType;
-import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentType.CustodialHistory;
+import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentTypeRoot;
+import fr.gouv.culture.archivesdefrance.seda.v2.DisseminationRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.EventType;
+import fr.gouv.culture.archivesdefrance.seda.v2.FinalActionAppraisalCodeType;
+import fr.gouv.culture.archivesdefrance.seda.v2.FinalActionStorageCodeType;
 import fr.gouv.culture.archivesdefrance.seda.v2.GpsType;
-import fr.gouv.culture.archivesdefrance.seda.v2.KeywordsType;
+import fr.gouv.culture.archivesdefrance.seda.v2.IdentifierType;
 import fr.gouv.culture.archivesdefrance.seda.v2.LevelType;
+import fr.gouv.culture.archivesdefrance.seda.v2.ManagementMetadataTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.OrganizationType;
+import fr.gouv.culture.archivesdefrance.seda.v2.ReuseRuleType;
+import fr.gouv.culture.archivesdefrance.seda.v2.RuleIdType;
+import fr.gouv.culture.archivesdefrance.seda.v2.StorageRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.exception.VitamException;
@@ -109,6 +115,8 @@ public class ArchiveTransferGeneratorImplTest {
             atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID3);
             atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID4);
             atgi.addArchiveUnit2DataObjectGroupReference(archiveSonID1, dataObjectGroup1ID);
+            atgi.addRawContentFile(archiveSonID4, new File(classLoader.getResource("ArchiveUnitContent.xml").getFile()));
+            atgi.addRawManagementFile(archiveFatherID, new File(classLoader.getResource("ArchiveUnitManagement.xml").getFile()));
             atgi.addStartAndEndDate2ArchiveUnit(archiveFatherID);
             atgi = addBinaryDataObject(atgi,headerPath, null);
             atgi.writeDescriptiveMetadata();
@@ -120,6 +128,22 @@ public class ArchiveTransferGeneratorImplTest {
         }
 
     }
+     
+    @Test 
+    public void importJsonMetadata(){
+        try{
+            ClassLoader classLoader = getClass().getClassLoader();
+            ArchiveTransferConfig atc = new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+            ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc,OUTPUT_FILE);
+            atgi.generateHeader();
+            File f = new File(classLoader.getResource("ArchiveUnitMetadata.json").getFile());
+            atgi.addArchiveUnit("test", "test", f);
+        }catch(Exception e){
+            LOGGER.error("Should not have an exception",e);
+            fail("Should not have an exception");
+        }
+    }
+    
     
     @Test
     public void emptyFile() {
@@ -138,8 +162,80 @@ public class ArchiveTransferGeneratorImplTest {
     }
 
     @Test
+    public void generateModelManagementMetadata(){
+        ManagementMetadataTypeRoot mmtr = new ManagementMetadataTypeRoot();
+        XMLGregorianCalendar xgc = null;
+        try{
+            xgc = XMLWriterUtils.getXMLGregorianCalendar(new Date());
+        }catch(VitamSedaException e){
+            e.printStackTrace();
+            fail();
+        }
+        StorageRuleType srt = new StorageRuleType();
+        RuleIdType rit = new RuleIdType();
+        rit.setId("43");
+        rit.setValue("STO_01");
+        srt.getRuleAndStartDate().add(rit);
+        srt.getRuleAndStartDate().add(xgc);
+        srt.setPreventInheritance(true);
+        srt.setFinalAction(FinalActionStorageCodeType.TRANSFER);
+        srt.getRefNonRuleId().add(rit);
+        mmtr.setStorageRule(srt);
+        AppraisalRuleType art = new AppraisalRuleType();
+        RuleIdType rit1 = new RuleIdType();
+        rit1.setValue("APR_01");
+        art.getRuleAndStartDate().add(xgc);
+        art.getRuleAndStartDate().add(rit1);
+        art.setPreventInheritance(false);
+        art.setFinalAction(FinalActionAppraisalCodeType.KEEP);
+        art.getRefNonRuleId().add(rit1);
+        mmtr.setAppraisalRule(art);
+        AccessRuleType acrt = new AccessRuleType();
+        RuleIdType rit2 = new RuleIdType();
+        rit2.setValue("ACC_01");
+        acrt.getRuleAndStartDate().add(rit2);
+        acrt.getRuleAndStartDate().add(xgc);
+        acrt.getRefNonRuleId().add(rit2);
+        mmtr.setAccessRule(acrt);
+        DisseminationRuleType drt = new DisseminationRuleType();
+        RuleIdType rit3 = new RuleIdType();
+        rit3.setValue("DIS_01");
+        drt.getRuleAndStartDate().add(rit3);
+        drt.getRuleAndStartDate().add(xgc);
+        drt.getRefNonRuleId().add(rit3);
+        mmtr.setDisseminationRule(drt);
+        
+        ReuseRuleType rrt = new ReuseRuleType();
+        RuleIdType rit4 = new RuleIdType();
+        rit4.setValue("REU_01");
+        rrt.getRuleAndStartDate().add(rit4);
+        rrt.getRuleAndStartDate().add(xgc);
+        rrt.getRefNonRuleId().add(rit4);
+        rrt.setPreventInheritance(true);
+        mmtr.setReuseRule(rrt);
+        
+        ClassificationRuleType crt = new ClassificationRuleType();
+        RuleIdType rit5 = new RuleIdType();
+        rit5.setValue("CLA_01");
+        crt.getRuleAndStartDate().add(rit5);
+        crt.getRuleAndStartDate().add(xgc);
+        crt.getRefNonRuleId().add(rit5);
+        mmtr.setClassificationRule(crt);
+        
+        mmtr.setNeedAuthorization(true);
+        
+
+        try{
+            System.out.println(JsonHandler.writeAsString(mmtr));
+        }catch(InvalidParseOperationException e){
+            e.printStackTrace();
+            fail();
+        }
+    }
+    
+    @Test
     public void generateModelContentMetadata(){
-        DescriptiveMetadataContentType dmct = new DescriptiveMetadataContentType();
+        DescriptiveMetadataContentTypeRoot dmct = new DescriptiveMetadataContentTypeRoot();
         XMLGregorianCalendar xgc = null;
         try{
             xgc = XMLWriterUtils.getXMLGregorianCalendar(new Date());

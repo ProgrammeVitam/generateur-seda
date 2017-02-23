@@ -38,9 +38,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+
+import org.codehaus.stax2.XMLOutputFactory2;
+import org.codehaus.stax2.XMLStreamWriter2;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,14 +49,17 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchivalAgencyTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
+//import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.CodeListVersionsTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.CodeType;
-import fr.gouv.culture.archivesdefrance.seda.v2.DataObjectRefType;
+import fr.gouv.culture.archivesdefrance.seda.v2.DataObjectRefTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentType;
+import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.IdentifierType;
 import fr.gouv.culture.archivesdefrance.seda.v2.LevelType;
 import fr.gouv.culture.archivesdefrance.seda.v2.ManagementMetadataTypeRoot;
+import fr.gouv.culture.archivesdefrance.seda.v2.ManagementRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.OrganizationWithIdType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TransferringAgencyTypeRoot;
@@ -83,7 +87,8 @@ public class ArchiveTransferGenerator {
     private final ZipFileWriter zipFile;
     private final DataObjectGroupUsedMap dataObjectGroupUsedMap;
     private final Map<String, ArchiveUnitTypeRoot> mapArchiveUnit;
-    private final XMLStreamWriter writer;
+    private final FileOutputStream writerFOS;
+    private final XMLStreamWriter2 writer;
     private final ArchiveTransferConfig archiveTransferConfig;
 
 
@@ -97,14 +102,14 @@ public class ArchiveTransferGenerator {
     public ArchiveTransferGenerator(ArchiveTransferConfig archiveTransferConfig,String zipFileName) throws VitamSedaException {
         ParametersChecker.checkParameter("archiveTransferConfig cannot be null", archiveTransferConfig);
         ParametersChecker.checkParameter("xmlname cannot be null", zipFileName);
-        XMLOutputFactory output = XMLOutputFactory.newInstance();
+        XMLOutputFactory2 output = (XMLOutputFactory2) XMLOutputFactory2.newInstance();
         dataObjectGroupUsedMap = new DataObjectGroupUsedMap();
         mapArchiveUnit = new LinkedHashMap<>();
         this.archiveTransferConfig = archiveTransferConfig;
         try {
             temporarySedaFilePath = System.getProperty("java.io.tmpdir")+"/"+SEDA_FILENAME;
-            FileOutputStream fos = new FileOutputStream(temporarySedaFilePath);
-            this.writer = output.createXMLStreamWriter(fos, ENCODING);
+            writerFOS = new FileOutputStream(temporarySedaFilePath);
+            this.writer = (XMLStreamWriter2) output.createXMLStreamWriter(writerFOS, ENCODING);
         } catch (IOException | XMLStreamException e) {
             throw new VitamSedaException("Error on writing to" + SEDA_FILENAME, e);
         }
@@ -182,16 +187,22 @@ public class ArchiveTransferGenerator {
         textTypeTitle.setValue(title);
         TextType textTypeDescription = new TextType();
         textTypeDescription.setValue(description);
-        DescriptiveMetadataContentType dmct = new DescriptiveMetadataContentType();
+        DescriptiveMetadataContentTypeRoot dmct = new DescriptiveMetadataContentTypeRoot();
+        ManagementRoot management = new ManagementRoot();
         try{
             if (metadataFile != null){
                 JsonNode jn = JsonHandler.getFromFile(metadataFile);
                 if (jn.has("Content")){
-                    dmct = JsonHandler.getFromJsonNode(jn.get("Content"), DescriptiveMetadataContentType.class);
+                    dmct = JsonHandler.getFromJsonNode(jn.get("Content"), DescriptiveMetadataContentTypeRoot.class);
+                }
+                if (jn.has("Management")){
+                    management = JsonHandler.getFromJsonNode(jn.get("Management"), ManagementRoot.class);
+                    management.unmarshallFromJson();
+                    autr.setManagement(management);
                 }
             }
         }catch(InvalidParseOperationException e){
-            LOGGER.warn("File "+metadataFile+ " is not a valid json File for Content Metadata",e);
+            LOGGER.warn("File "+metadataFile+ " is not a valid json File for Content or Management Metadata",e);
         }
         if (dmct.getTitle().isEmpty()) {
             dmct.getTitle().add(textTypeTitle);
@@ -208,7 +219,30 @@ public class ArchiveTransferGenerator {
         return id;
     }
 
-
+    /**
+     * Set the rawManagementFile
+     * @param archiveUnitID
+     * @param rawmetadataFile
+     */
+    public void addRawManagementFile(String archiveUnitID,File rawmetadataFile){
+        ArchiveUnitTypeRoot au = mapArchiveUnit.get(archiveUnitID);
+        if (au != null){
+            au.setRawManagementFile(rawmetadataFile);
+        }
+    }
+    
+    /**
+     * Set the rawContentFile
+     * @param archiveUnitID
+     * @param rawContentFile
+     */
+    public void addRawContentFile(String archiveUnitID,File rawContentFile){
+        ArchiveUnitTypeRoot au = mapArchiveUnit.get(archiveUnitID);
+        if (au != null){
+            au.setRawContentFile(rawContentFile);
+        }
+    }
+    
     /**
      * Set transactedDate to the ArchiveUnit Descriptive Metadata
      * @param id : id of the ArchiveUnit
@@ -267,7 +301,7 @@ public class ArchiveTransferGenerator {
         ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", archiveUnitFatherID);
         ParametersChecker.checkParameter("dataobjectGroupSonID cannot be null", dataobjectGroupSonID);
         ArchiveUnitTypeRoot autrFather = mapArchiveUnit.get(archiveUnitFatherID);
-        DataObjectRefType dort = new DataObjectRefType();
+        DataObjectRefTypeRoot dort = new DataObjectRefTypeRoot();
         //        dort.setId(XMLWriterUtils.getNextID());
         dort.setDataObjectGroupReferenceId(dataobjectGroupSonID);
         autrFather.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference().add(dort);
@@ -292,11 +326,12 @@ public class ArchiveTransferGenerator {
         }catch(XMLStreamException e){
             throw new VitamSedaException("Can't write Descriptive Medatadata", e); 
         }
-        for (ArchiveUnitTypeRoot autr : mapArchiveUnit.values()) {
-            writeXMLFragment(autr);
-            nbArchiveUnits++;
-        }
         try{
+            for (ArchiveUnitTypeRoot autr : mapArchiveUnit.values()) {
+                //writeXMLFragment(autr);
+                autr.marshall(writer);
+                nbArchiveUnits++;
+            }
             writer.writeEndElement();
             return nbArchiveUnits;
         }catch(XMLStreamException e){
@@ -312,6 +347,15 @@ public class ArchiveTransferGenerator {
 
     public void writeManagementMetadata() throws XMLStreamException {
         ManagementMetadataTypeRoot mmtr = new ManagementMetadataTypeRoot();
+        JsonNode mmjn = archiveTransferConfig.get("ManagementMetadata");
+        if (mmjn != null){
+            try{
+                mmtr = JsonHandler.getFromJsonNode(mmjn, ManagementMetadataTypeRoot.class);
+                mmtr.unmarshallFromJson();
+            }catch(InvalidParseOperationException e){
+                LOGGER.warn("ManagementMetadataKey in the config file is not a valid json File for ManagementMetadata Section",e);
+            }
+        }
         mmtr.setOriginatingAgencyIdentifier(archiveTransferConfig.getString("ManagementMetadata.OriginatingAgencyIdentifier"));
         mmtr.setSubmissionAgencyIdentifier(archiveTransferConfig.getString("ManagementMetadata.SubmissionAgencyIdentifier"));
         try{
@@ -336,6 +380,7 @@ public class ArchiveTransferGenerator {
         writer.writeEndDocument();
         writer.close();
         try{
+            writerFOS.close();
             zipFile.addFile(SEDA_FILENAME,temporarySedaFilePath);
             zipFile.closeZipFile();
             new File(temporarySedaFilePath).delete();
@@ -433,7 +478,7 @@ public class ArchiveTransferGenerator {
         Date startDate = null;
         Date endDate = null;
         for (Object aut : autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()){
-            if (aut instanceof DataObjectRefType) {
+            if (aut instanceof DataObjectRefTypeRoot) {
                 // Do Nothing: No dates in DOG
                 continue;
             }

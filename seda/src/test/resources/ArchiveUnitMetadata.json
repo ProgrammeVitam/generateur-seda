@@ -106,9 +106,15 @@
     "StorageRule": {
       "RuleAndStartDate": [
         {
-          "Value": "STO_01",
+          "Value": "STO_001",
           "Id": "43"
+        },{
+          "Value": "STO_002"
+        },{
+          "Value": "STO_003",
+          "Id": "45"
         },
+
         "2017-02-15T08:05:21.705+0000"
       ],
       "PreventInheritance": true,
