@@ -70,7 +70,7 @@ public class DataObjectGroupUsedMap {
      */
     public String registerDataObjectGroup() {
         String id = XMLWriterUtils.getNextID();
-        mapDataObjectGroup.put(id, new Boolean(false));
+        mapDataObjectGroup.put(id, false);
         return id;
     }
     
@@ -80,7 +80,7 @@ public class DataObjectGroupUsedMap {
      */
     public void setUsedDataObjectGroup(String id){
         if (existsDataObjectGroup(id)){
-            mapDataObjectGroup.put(id, new Boolean(true));
+            mapDataObjectGroup.put(id, true);
         }
     }
     

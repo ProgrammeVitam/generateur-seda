@@ -28,31 +28,21 @@
 
 package fr.gouv.vitam.generator.binary.module;
 
-import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
-import fr.gouv.culture.archivesdefrance.seda.v2.FileInfoType;
-import fr.gouv.culture.archivesdefrance.seda.v2.FormatIdentificationType;
-import fr.gouv.vitam.common.SystemPropertyUtil;
-import fr.gouv.vitam.common.VitamConfigurationParameters;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
-import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
-import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
-
-import java.io.*;
-import java.math.BigInteger;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Module : Generator for a binary object
@@ -92,7 +82,9 @@ public class BinaryFileGeneratorModule extends AbstractModule implements PublicM
         final Long length = (Long)parameters.get("size");
 
         try {
-            f.createNewFile();
+            if (!f.createNewFile()){
+                throw new VitamSedaException("Can't create temporary File"+f.getAbsolutePath());
+            }
             // Write file content : concatenation of the file name
             long remainingToWrite = length;
             byte[] content = (f.getName() + SEPARATOR).getBytes(Charset.defaultCharset());
@@ -106,7 +98,7 @@ public class BinaryFileGeneratorModule extends AbstractModule implements PublicM
                 writer.write(content, 0, (int)remainingToWrite);
             }
         } catch (IOException e) {
-            throw new VitamBinaryDataObjectException(f.getPath()+ "doesn't exist anymore");
+            throw new VitamBinaryDataObjectException(f.getPath()+ "doesn't exist anymore",e);
         }
 
         return new ParameterMap();

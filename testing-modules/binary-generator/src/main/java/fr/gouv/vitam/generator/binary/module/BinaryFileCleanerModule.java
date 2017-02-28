@@ -73,7 +73,7 @@ public class BinaryFileCleanerModule extends AbstractModule implements PublicMod
         if (f.exists()){
             boolean delete = f.delete();
             if (!delete) {
-
+                 throw new VitamSedaException("Unable to delete "+f.getAbsolutePath());
             }
         }
         return new ParameterMap();
