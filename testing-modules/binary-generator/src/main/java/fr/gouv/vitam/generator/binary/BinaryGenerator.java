@@ -60,6 +60,12 @@ import java.util.Date;
 public class BinaryGenerator {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(BinaryGenerator.class);
+    
+    /**
+     * Digit to text representation
+     */
+    private static final String[] DIGIT_NAMES = {"zero","one","two","three","four","five","six","seven","eight","nine"};
+
 
     private BinaryGenerator() {
     }
@@ -100,7 +106,7 @@ public class BinaryGenerator {
         } catch (VitamSedaMissingFieldException e) { // NOSONAR : global catch of this exception
             System.err.println("Champ manquant :" + e.getMessage()); // NOSONAR :
             System.exit(3);
-        } catch (VitamException e) {
+        } catch (VitamException e) {// NOSONAR : don't rethrow as we exit
             System.err.println("Erreur générale :" + e.getMessage()); // NOSONAR :
             System.exit(3);
         }
@@ -110,10 +116,13 @@ public class BinaryGenerator {
      * Generate a SIP with fully generated content.
      *
      * @param archiveTransferConfig : ATC configuration
+     * @param playbookFileBDO       : Path of the playbook that will be used to manage BinaryDataObject
      * @param outputFile            : path of the file to generate
      * @param fileNumber            : number of files to include inside this SIP
+     * @param fileSize              : size of the file that must be included
      * @throws VitamSedaException
      * @throws XMLStreamException
+     * @throws VitamException
      */
     public static void generateBinary(ArchiveTransferConfig archiveTransferConfig, Path playbookFileBDO, Path outputFile, int fileNumber, long fileSize) throws VitamException, XMLStreamException {
         SchedulerEngine schedulerEngine = new SchedulerEngine();
@@ -153,23 +162,20 @@ public class BinaryGenerator {
         schedulerEngine.printStatistics();
     }
 
-    /**
-     * Digit to text representation
-     */
-    private static final String[] DIGIT_NAMES = {"zero","one","two","three","four","five","six","seven","eight","nine"};
 
     /**
      * Convert an int into a literal string representation ; e.g. : 102 --> one zero two
      * @param i
      * @return
      */
-    private static String spellNumber(int i) {
+    private static String spellNumber(int number) {
+        int remainingNumber = number ;
         StringBuilder sb = new StringBuilder();
-        while (i >= 10) {
-            sb.append(DIGIT_NAMES[i % 10]).append(' ');
-            i = i/10;
+        while (remainingNumber >= 10) {
+            sb.append(DIGIT_NAMES[remainingNumber % 10]).append(' ');
+            remainingNumber = remainingNumber/10;
         }
-        sb.append(DIGIT_NAMES[i]);
+        sb.append(DIGIT_NAMES[remainingNumber]);
         return sb.toString();
 
     }

@@ -383,9 +383,12 @@ public class ArchiveTransferGenerator {
             writerFOS.close();
             zipFile.addFile(SEDA_FILENAME,temporarySedaFilePath);
             zipFile.closeZipFile();
-            new File(temporarySedaFilePath).delete();
+
         }catch(IOException e){
             throw new VitamSedaException("Error to write to zipFile",e);
+        }
+        if (!new File(temporarySedaFilePath).delete()){
+            throw new VitamSedaException("Error to remove temporary manifest file "+ temporarySedaFilePath);
         }
 
     }

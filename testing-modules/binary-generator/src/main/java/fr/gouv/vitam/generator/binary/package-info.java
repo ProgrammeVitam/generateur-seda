@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- *
+ * 
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -24,45 +24,7 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
-
-package fr.gouv.vitam.generator.binary;
-
 /**
- * Very simple progress bar ; accuracy : 1%
+ * Main classes of the binary generator
  */
-public class ProgressBar {
-    private static final char UPDATE_CHAR = '#';
-    private StringBuilder progress;
-    private static final String FORMAT = "\r%3d%% %s";
-
-    /**
-     * Initialize progress bar properties.
-     */
-    public ProgressBar() {
-        init();
-    }
-
-    /**
-     * Called whenever the progress bar needs to be updated.
-     *
-     * @param done  an int representing the work done so far
-     * @param total an int representing the total work
-     */
-    public void update(int done, int total) {
-        int percent = (done * 100) / total;
-        // Update progress bar with missing characters
-        for (int i = 0; i < (percent / 2) - this.progress.length(); i++) {
-            progress.append(UPDATE_CHAR);
-        }
-        System.out.printf(FORMAT, percent, progress);
-        if (done == total) {
-            System.out.flush();
-            System.out.println();
-            init();
-        }
-    }
-
-    private void init() {
-        this.progress = new StringBuilder(60);
-    }
-}
+package fr.gouv.vitam.generator.binary;

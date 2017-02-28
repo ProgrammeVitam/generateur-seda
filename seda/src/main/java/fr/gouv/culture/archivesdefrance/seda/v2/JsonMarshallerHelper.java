@@ -42,7 +42,7 @@ public class JsonMarshallerHelper {
                     XMLGregorianCalendar xgc = XMLWriterUtils.getXMLGregorianCalendar(date);
                     l1.add(xgc);
                 // This is a rule reference
-                }catch(ParseException | VitamSedaException e){
+                }catch(ParseException | VitamSedaException e){// NOSONAR : don't rethrow as the exception is a method to define the type of the input
                     RuleIdType rit = new RuleIdType();
                     rit.setValue((String) rule);
                     l1.add(rit);
