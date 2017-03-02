@@ -52,31 +52,34 @@ import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
  */
 public class InvalidSizeModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "InvalidSize";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
-    
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
+
     {
-        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
+            new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("file_regex", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("false_size", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("1"));
+        INPUTSIGNATURE.put("false_size",
+            new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("1"));
     }
-    
+
     @Override
-    public Map<String,InputParameter> getInputSignature(){
+    public Map<String, InputParameter> getInputSignature() {
         return INPUTSIGNATURE;
     }
-    
+
     @Override
     public String getModuleId() {
         return MODULE_NAME;
-    }    
-    
+    }
+
     @Override
     protected ParameterMap realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
         Pattern p = Pattern.compile((String) parameters.get("file_regex"));
-        BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
-        if (p.matcher(bdotr.getFileInfo().getFilename()).matches()){
-            BigInteger falseSize = new BigInteger((String)parameters.get("false_size"));
+        BinaryDataObjectTypeRoot bdotr =
+            (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+        if (p.matcher(bdotr.getFileInfo().getFilename()).matches()) {
+            BigInteger falseSize = new BigInteger((String) parameters.get("false_size"));
             bdotr.setSize(falseSize);
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);

@@ -46,20 +46,21 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.params.HttpParams;
 
 /**
- * 
+ *
  */
 public class CloseableHttpResponseMock implements CloseableHttpResponse {
     private HttpEntity httpEntity;
+
     /**
-     * 
+     *
      */
-    
+
     @Override
     public void setEntity(HttpEntity arg0) {
         httpEntity = arg0;
 
     }
-    
+
     @Override
     public HttpEntity getEntity() {
         return httpEntity;

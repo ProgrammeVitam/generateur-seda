@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ManagementMetadataTypeRoot extends ManagementMetadataType {
     @XmlElement(name = "OriginatingAgencyIdentifier")
     protected String originatingAgencyIdentifier;
-    
+
     @XmlElement(name = "SubmissionAgencyIdentifier")
     protected String submissionAgencyIdentifier;
 
@@ -73,29 +73,29 @@ public class ManagementMetadataTypeRoot extends ManagementMetadataType {
         this.submissionAgencyIdentifier = submissionAgencyIdentifier;
         return this;
     }
-    
+
     /**
      *  Postprocessing after the unmarshalling by Json of *Rule which is not correct for the reading by JaxB
      */
-    public void unmarshallFromJson(){
-        if (storageRule != null){
+    public void unmarshallFromJson() {
+        if (storageRule != null) {
             JsonMarshallerHelper.transformRuleMap(storageRule.getRuleAndStartDate());
         }
-        if (appraisalRule != null){
+        if (appraisalRule != null) {
             JsonMarshallerHelper.transformRuleMap(appraisalRule.getRuleAndStartDate());
         }
-        if (accessRule != null){
+        if (accessRule != null) {
             JsonMarshallerHelper.transformRuleMap(accessRule.getRuleAndStartDate());
         }
-        
-        if (disseminationRule != null){
+
+        if (disseminationRule != null) {
             JsonMarshallerHelper.transformRuleMap(disseminationRule.getRuleAndStartDate());
-            
+
         }
-        if (reuseRule != null){
+        if (reuseRule != null) {
             JsonMarshallerHelper.transformRuleMap(reuseRule.getRuleAndStartDate());
         }
-        if (classificationRule != null){
+        if (classificationRule != null) {
             JsonMarshallerHelper.transformRuleMap(classificationRule.getRuleAndStartDate());
         }
     }

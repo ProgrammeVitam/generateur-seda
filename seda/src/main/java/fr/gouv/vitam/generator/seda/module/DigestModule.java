@@ -55,40 +55,43 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
  */
 public class DigestModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "digest";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
-    
-    
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
+
+
     {
-        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
-        INPUTSIGNATURE.put("digest.algorithm",new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DigestType.SHA512));
+        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
+            new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+        INPUTSIGNATURE.put("digest.algorithm",
+            new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DigestType.SHA512));
 
     }
-    
+
     @Override
-    public Map<String,InputParameter> getInputSignature(){
+    public Map<String, InputParameter> getInputSignature() {
         return INPUTSIGNATURE;
     }
-    
-    
+
+
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
-        BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+        BinaryDataObjectTypeRoot bdotr =
+            (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         ParameterMap returnPM = new ParameterMap();
         File f = new File(bdotr.getWorkingFilename());
         try {
-            DigestType digestType = DigestType.valueOf((String)parameters.get("digest.algorithm"));
+            DigestType digestType = DigestType.valueOf((String) parameters.get("digest.algorithm"));
             MessageDigestBinaryObjectType mdbot = new MessageDigestBinaryObjectType();
             mdbot.setAlgorithm(digestType.getName());
-            String base16Digest=BaseXx.getBase16(Digest.digest(f, digestType).digest());
+            String base16Digest = BaseXx.getBase16(Digest.digest(f, digestType).digest());
             mdbot.setValue(base16Digest);
             bdotr.setMessageDigest(mdbot);
         } catch (IOException e) {
-            throw new VitamBinaryDataObjectException(f.toString()+ " has had an I/O exception" + e.getMessage(), e);
+            throw new VitamBinaryDataObjectException(f.toString() + " has had an I/O exception" + e.getMessage(), e);
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;

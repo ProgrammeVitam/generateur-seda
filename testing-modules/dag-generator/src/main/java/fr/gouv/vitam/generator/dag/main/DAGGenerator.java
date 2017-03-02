@@ -51,38 +51,39 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaMissingFieldException;
 
 /**
- * 
+ *
  */
 public class DAGGenerator {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(DAGGenerator.class);
-    
-    private DAGGenerator(){}
-    
+
+    private DAGGenerator() {
+    }
+
     /**
      * @param args
-     * @throws IOException 
-     * @throws XMLStreamException 
-     * @throws VitamSedaException 
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws VitamSedaException
      */
-    public static void main(String[] args) throws IOException, VitamSedaException, XMLStreamException{
-        if (args.length < 3){
+    public static void main(String[] args) throws IOException, VitamSedaException, XMLStreamException {
+        if (args.length < 3) {
             System.exit(1);
-        }            
+        }
         String workingDir = args[0];
         String currentDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-        String outputFile = workingDir+"/SIP-"+currentDate+".zip";
-        ArchiveTransferConfig atc = new ArchiveTransferConfig(workingDir+"/conf", null);
-        try{
+        String outputFile = workingDir + "/SIP-" + currentDate + ".zip";
+        ArchiveTransferConfig atc = new ArchiveTransferConfig(workingDir + "/conf", null);
+        try {
             Properties properties = PropertiesUtils.readProperties(PropertiesUtils.findFile("generator.properties"));
-            outputFile = properties.getProperty("outputFile",outputFile);
-        }catch(FileNotFoundException e){ // NOSONAR : It is OK not to have generator.properties file
+            outputFile = properties.getProperty("outputFile", outputFile);
+        } catch (FileNotFoundException e) { // NOSONAR : It is OK not to have generator.properties file
             LOGGER.debug("generator.properties is missing . Use default values");
         }
-        try{
-            generateDag(atc,outputFile,Integer.parseInt(args[1]),Integer.parseInt(args[2]));
-        }catch (VitamSedaMissingFieldException e){ // NOSONAR : global catch of this exception
-            System.err.println("Champ Manquant :" +  e.getMessage()); // NOSONAR : 
+        try {
+            generateDag(atc, outputFile, Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        } catch (VitamSedaMissingFieldException e) { // NOSONAR : global catch of this exception
+            System.err.println("Champ Manquant :" + e.getMessage()); // NOSONAR :
             System.exit(3);
         }
     }
@@ -93,25 +94,26 @@ public class DAGGenerator {
      * @param outputFile
      * @param levels : number of the levels in the DAG
      * @param levelLength : size of the level in the DAG
-     * @throws VitamSedaException 
+     * @throws VitamSedaException
      * @throws XMLStreamException
      */
-    public static void generateDag(ArchiveTransferConfig archiveTransferConfig,String outputFile, int levels, int levelLength) throws VitamSedaException, XMLStreamException{
-        String[] sortedNodes = new String [levels*levelLength];
+    public static void generateDag(ArchiveTransferConfig archiveTransferConfig, String outputFile, int levels,
+        int levelLength) throws VitamSedaException, XMLStreamException {
+        String[] sortedNodes = new String[levels * levelLength];
         ArchiveTransferGenerator atg = new ArchiveTransferGenerator(archiveTransferConfig, outputFile);
         atg.generateHeader();
         // Generate the node of the DAG
-        for (int i = 0;i < levels;i++){
-            for (int j=0;j < levelLength;j++){
-                String message = "Archive Unit ("+ i +"_" + j+")";
-                sortedNodes[i*levelLength + j ] = atg.addArchiveUnit(message, message);
+        for (int i = 0; i < levels; i++) {
+            for (int j = 0; j < levelLength; j++) {
+                String message = "Archive Unit (" + i + "_" + j + ")";
+                sortedNodes[i * levelLength + j] = atg.addArchiveUnit(message, message);
             }
         }
         // Create an edge between all node which are inferior on the topological order
         // The first level are independant roots
-        for (int i=0;i< (levels*levelLength);i++){
-            for (int j=Math.max(i+1,levels);j < (levels*levelLength);j++){
-                atg.addArchiveUnit2ArchiveUnitReference(sortedNodes[i],sortedNodes[j]);
+        for (int i = 0; i < (levels * levelLength); i++) {
+            for (int j = Math.max(i + 1, levels); j < (levels * levelLength); j++) {
+                atg.addArchiveUnit2ArchiveUnitReference(sortedNodes[i], sortedNodes[j]);
             }
         }
         atg.writeDescriptiveMetadata();

@@ -87,14 +87,14 @@ public class ArchiveTransferGeneratorImplTest {
 
     @Test
     public void correctSeda() {
-        try{
+        try {
             // TODO FORMAT (sur tous les fichiers)
 
             // TODO Helper dans PropertiesUtils
             ClassLoader classLoader = getClass().getClassLoader();
             String headerPath = classLoader.getResource("sip1.json").getFile();
             String configDir = classLoader.getResource("conf").getFile();
-            ArchiveTransferConfig atc = new ArchiveTransferConfig("/",configDir );
+            ArchiveTransferConfig atc = new ArchiveTransferConfig("/", configDir);
             ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
             atgi.generateHeader();
             String archiveFatherID = atgi.addArchiveUnit("Titre0", "Description0");
@@ -108,66 +108,70 @@ public class ArchiveTransferGeneratorImplTest {
 
             atgi.setTransactedDate(archiveSonID1, new Date());
             atgi.removeArchiveUnit(archiveSonID2);
-            String dataObjectGroup1ID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();	
-            atgi = addBinaryDataObject(atgi,headerPath,  dataObjectGroup1ID);
-            atgi = addBinaryDataObject(atgi,headerPath,  dataObjectGroup1ID);
+            String dataObjectGroup1ID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
+            atgi = addBinaryDataObject(atgi, headerPath, dataObjectGroup1ID);
+            atgi = addBinaryDataObject(atgi, headerPath, dataObjectGroup1ID);
             atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID1);
             atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID3);
             atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID4);
             atgi.addArchiveUnit2DataObjectGroupReference(archiveSonID1, dataObjectGroup1ID);
-            atgi.addRawContentFile(archiveSonID4, new File(classLoader.getResource("ArchiveUnitContent.xml").getFile()));
-            atgi.addRawManagementFile(archiveFatherID, new File(classLoader.getResource("ArchiveUnitManagement.xml").getFile()));
+            atgi.addRawContentFile(archiveSonID4,
+                new File(classLoader.getResource("ArchiveUnitContent.xml").getFile()));
+            atgi.addRawManagementFile(archiveFatherID,
+                new File(classLoader.getResource("ArchiveUnitManagement.xml").getFile()));
             atgi.addStartAndEndDate2ArchiveUnit(archiveFatherID);
-            atgi = addBinaryDataObject(atgi,headerPath, null);
+            atgi = addBinaryDataObject(atgi, headerPath, null);
             atgi.writeDescriptiveMetadata();
             atgi.writeManagementMetadata();
             atgi.closeDocument();
-        }catch(Exception e){
-            LOGGER.error("Should not have an exception",e);
+        } catch (Exception e) {
+            LOGGER.error("Should not have an exception", e);
             fail("Should not have an exception");
         }
 
     }
-     
-    @Test 
-    public void importJsonMetadata(){
-        try{
+
+    @Test
+    public void importJsonMetadata() {
+        try {
             ClassLoader classLoader = getClass().getClassLoader();
-            ArchiveTransferConfig atc = new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
-            ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc,OUTPUT_FILE);
+            ArchiveTransferConfig atc =
+                new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+            ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
             atgi.generateHeader();
             File f = new File(classLoader.getResource("ArchiveUnitMetadata.json").getFile());
             atgi.addArchiveUnit("test", "test", f);
-        }catch(Exception e){
-            LOGGER.error("Should not have an exception",e);
+        } catch (Exception e) {
+            LOGGER.error("Should not have an exception", e);
             fail("Should not have an exception");
         }
     }
-    
-    
+
+
     @Test
     public void emptyFile() {
-        try{
+        try {
             ClassLoader classLoader = getClass().getClassLoader();
-            ArchiveTransferConfig atc = new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
-            ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc,OUTPUT_FILE);
+            ArchiveTransferConfig atc =
+                new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+            ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
             atgi.generateHeader();
-            addBinaryDataObject(atgi, classLoader.getResource("empty").getFile() , null);
-        }catch(VitamBinaryDataObjectException e){
+            addBinaryDataObject(atgi, classLoader.getResource("empty").getFile(), null);
+        } catch (VitamBinaryDataObjectException e) {
             return;
-        }catch(VitamException|XMLStreamException e){
+        } catch (VitamException | XMLStreamException e) {
             fail("The empty file should raise an VitamBinaryDataObjectException");
         }
         fail("The empty file should raise an exception");
     }
 
     @Test
-    public void generateModelManagementMetadata(){
+    public void generateModelManagementMetadata() {
         ManagementMetadataTypeRoot mmtr = new ManagementMetadataTypeRoot();
         XMLGregorianCalendar xgc = null;
-        try{
+        try {
             xgc = XMLWriterUtils.getXMLGregorianCalendar(new Date());
-        }catch(VitamSedaException e){
+        } catch (VitamSedaException e) {
             e.printStackTrace();
             fail();
         }
@@ -204,7 +208,7 @@ public class ArchiveTransferGeneratorImplTest {
         drt.getRuleAndStartDate().add(xgc);
         drt.getRefNonRuleId().add(rit3);
         mmtr.setDisseminationRule(drt);
-        
+
         ReuseRuleType rrt = new ReuseRuleType();
         RuleIdType rit4 = new RuleIdType();
         rit4.setValue("REU_01");
@@ -213,7 +217,7 @@ public class ArchiveTransferGeneratorImplTest {
         rrt.getRefNonRuleId().add(rit4);
         rrt.setPreventInheritance(true);
         mmtr.setReuseRule(rrt);
-        
+
         ClassificationRuleType crt = new ClassificationRuleType();
         RuleIdType rit5 = new RuleIdType();
         rit5.setValue("CLA_01");
@@ -221,25 +225,25 @@ public class ArchiveTransferGeneratorImplTest {
         crt.getRuleAndStartDate().add(xgc);
         crt.getRefNonRuleId().add(rit5);
         mmtr.setClassificationRule(crt);
-        
-        mmtr.setNeedAuthorization(true);
-        
 
-        try{
+        mmtr.setNeedAuthorization(true);
+
+
+        try {
             System.out.println(JsonHandler.writeAsString(mmtr));
-        }catch(InvalidParseOperationException e){
+        } catch (InvalidParseOperationException e) {
             e.printStackTrace();
             fail();
         }
     }
-    
+
     @Test
-    public void generateModelContentMetadata(){
+    public void generateModelContentMetadata() {
         DescriptiveMetadataContentTypeRoot dmct = new DescriptiveMetadataContentTypeRoot();
         XMLGregorianCalendar xgc = null;
-        try{
+        try {
             xgc = XMLWriterUtils.getXMLGregorianCalendar(new Date());
-        }catch(VitamSedaException e){
+        } catch (VitamSedaException e) {
             e.printStackTrace();
             fail();
         }
@@ -335,16 +339,17 @@ public class ArchiveTransferGeneratorImplTest {
         dmct.setGps(gps);
         dmct.setRestrictionValue("Valeur de restrictionValue");
         dmct.setRestrictionEndDate(xgc);
-        try{
+        try {
             System.out.println(JsonHandler.writeAsString(dmct));
-        }catch(InvalidParseOperationException e){
+        } catch (InvalidParseOperationException e) {
             e.printStackTrace();
             fail();
         }
     }
 
-    private ArchiveTransferGenerator addBinaryDataObject(ArchiveTransferGenerator atgi,String filename, String dataObjectGroupID) throws VitamException{
-        ParameterMap pm = new ParameterMap() ;
+    private ArchiveTransferGenerator addBinaryDataObject(ArchiveTransferGenerator atgi, String filename,
+        String dataObjectGroupID) throws VitamException {
+        ParameterMap pm = new ParameterMap();
         pm.put("file", filename);
         pm.put("dataobjectgroupID", dataObjectGroupID);
         pm.put("archivetransfergenerator", atgi);

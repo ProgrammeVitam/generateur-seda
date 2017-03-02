@@ -26,21 +26,10 @@
  */
 package fr.gouv.culture.archivesdefrance.seda.v2;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType.Management;
-import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
-import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
+
 /**
  * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
  *
@@ -53,28 +42,28 @@ public class ManagementRoot extends Management {
     /**
      *  Postprocessing after the unmarshalling by Json of *Rule which is not correct for the reading by JaxB
      */
-    public void unmarshallFromJson(){
-        if (storageRule != null){
+    public void unmarshallFromJson() {
+        if (storageRule != null) {
             JsonMarshallerHelper.transformRuleMap(storageRule.getRuleAndStartDate());
         }
-        if (appraisalRule != null){
+        if (appraisalRule != null) {
             JsonMarshallerHelper.transformRuleMap(appraisalRule.getRuleAndStartDate());
         }
-        if (accessRule != null){
+        if (accessRule != null) {
             JsonMarshallerHelper.transformRuleMap(accessRule.getRuleAndStartDate());
         }
-        
-        if (disseminationRule != null){
+
+        if (disseminationRule != null) {
             JsonMarshallerHelper.transformRuleMap(disseminationRule.getRuleAndStartDate());
-            
+
         }
-        if (reuseRule != null){
+        if (reuseRule != null) {
             JsonMarshallerHelper.transformRuleMap(reuseRule.getRuleAndStartDate());
         }
-        if (classificationRule != null){
+        if (classificationRule != null) {
             JsonMarshallerHelper.transformRuleMap(classificationRule.getRuleAndStartDate());
         }
     }
-    
+
 
 }

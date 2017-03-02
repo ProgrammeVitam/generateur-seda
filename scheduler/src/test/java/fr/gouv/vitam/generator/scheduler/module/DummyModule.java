@@ -48,28 +48,28 @@ import fr.gouv.vitam.generator.scheduler.core.InputParameter;
  */
 public class DummyModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "dummy";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
-    
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
+
     {
         INPUTSIGNATURE.put("mandatory_argument", new InputParameter().setObjectclass(String.class));
         INPUTSIGNATURE.put("optional_argument", new InputParameter().setMandatory(false).setDefaultValue("test"));
         INPUTSIGNATURE.put("nullable_argument", new InputParameter().setNullable(true));
     }
-    
+
     @Override
-    public Map<String,InputParameter> getInputSignature(){
+    public Map<String, InputParameter> getInputSignature() {
         return INPUTSIGNATURE;
     }
-    
-    
-    
+
+
+
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
     @Override
-    public ParameterMap realExecute(ParameterMap parameters) throws VitamException{
+    public ParameterMap realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
         returnPM.put("test", "test");
         return returnPM;

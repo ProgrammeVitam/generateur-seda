@@ -39,6 +39,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
+
 /**
  * Helper to manage XMLStreamWriter 
  */
@@ -47,12 +48,13 @@ public class XMLWriterUtils {
 
     private static AtomicInteger sequenceID = new AtomicInteger();
 
-    private XMLWriterUtils(){
+    private XMLWriterUtils() {
         // Empty constructor
     }
+
     /**
      * Write an attribute with only one value
-     * 
+     *
      * @param writer : The XMLStreamWriter on which the attribute is written
      * @param attribute
      * @param value
@@ -80,7 +82,7 @@ public class XMLWriterUtils {
 
     /**
      * Add to the current element an unique ID with the xml prefix (xml:id)
-     * 
+     *
      * @param writer : the current XMLStreamWrite
      * @return the ID of the added attribute
      * @throws XMLStreamException
@@ -97,7 +99,7 @@ public class XMLWriterUtils {
      * @return the ID of the ID attribute
      * @throws XMLStreamException
      */
-    
+
     public static String setID(XMLStreamWriter writer, boolean prefix) throws XMLStreamException {
         String nextID = XMLWriterUtils.getNextID();
         if (prefix) {
@@ -111,7 +113,7 @@ public class XMLWriterUtils {
 
     /**
      * Get the current date in XML format
-     * 
+     *
      * @return a String which contains XML formated date of the current date
      */
 
@@ -121,7 +123,7 @@ public class XMLWriterUtils {
 
     /**
      * Get the date in XML format
-     * 
+     *
      * @param date
      * @return a String which contains XML formated date of the given date
      * Suggestion: LocalDateTime (LocalDateUtil) possède déjà le défaut ISO
@@ -137,7 +139,7 @@ public class XMLWriterUtils {
         }
         return sdf.format(d);
     }
-    
+
     /**
      * Convert a Date to XMLGregorianCalendar Object
      * @param date
@@ -146,15 +148,15 @@ public class XMLWriterUtils {
      * @throws VitamSedaException
      * @throws IllegalArgumentException if the date parameter is null
      */
-    public static XMLGregorianCalendar getXMLGregorianCalendar(Date date) throws VitamSedaException{
-        ParametersChecker.checkParameter("date cannot be null",date);
+    public static XMLGregorianCalendar getXMLGregorianCalendar(Date date) throws VitamSedaException {
+        ParametersChecker.checkParameter("date cannot be null", date);
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(date);
         XMLGregorianCalendar xgc = null;
-        try{
+        try {
             xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-        }catch (DatatypeConfigurationException e){
-            throw new VitamSedaException("Can't convert date "+ date + " in XMLGregorianCalendar",e);
+        } catch (DatatypeConfigurationException e) {
+            throw new VitamSedaException("Can't convert date " + date + " in XMLGregorianCalendar", e);
         }
         return xgc;
     }

@@ -48,16 +48,16 @@ import org.apache.http.protocol.HttpContext;
 
 public class CloseableHttpclientMock extends CloseableHttpClient {
     private CloseableHttpResponseMock closeableHttpResponseMock;
-    
-    
+
+
     public CloseableHttpclientMock() {
         closeableHttpResponseMock = new CloseableHttpResponseMock();
     }
 
-    protected void setResponseBody(String responseBody){
+    protected void setResponseBody(String responseBody) {
         closeableHttpResponseMock.setEntity(EntityBuilder.create().setText(responseBody).build());
     }
-    
+
     @Override
     public ClientConnectionManager getConnectionManager() {
         // Nothing to do it is mock

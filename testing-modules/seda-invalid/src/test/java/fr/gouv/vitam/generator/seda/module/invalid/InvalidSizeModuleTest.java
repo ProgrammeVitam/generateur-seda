@@ -63,19 +63,19 @@ public class InvalidSizeModuleTest {
         pm.put("false_size", FALSESIZE);
         pm.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         InvalidSizeModule ism = new InvalidSizeModule();
-        try{
+        try {
             ParameterMap returnParameters = ism.execute(pm);
-            bdotr= (BinaryDataObjectTypeRoot) returnParameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
-            if (!bdotr.getSize().toString().equals(FALSESIZE)){
+            bdotr = (BinaryDataObjectTypeRoot) returnParameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+            if (!bdotr.getSize().toString().equals(FALSESIZE)) {
                 fail("The size has not been changed ");
             }
-            
-        }catch(VitamException e){
+
+        } catch (VitamException e) {
             fail(e.getMessage());
         }
-        
+
     }
-   
+
     @Test
     public void invalidSizeNotMatchingFile() {
         ParameterMap pm = new ParameterMap();
@@ -88,18 +88,18 @@ public class InvalidSizeModuleTest {
         pm.put("false_size", FALSESIZE);
         pm.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         InvalidSizeModule ism = new InvalidSizeModule();
-        try{
+        try {
             ParameterMap returnParameters = ism.execute(pm);
-            bdotr= (BinaryDataObjectTypeRoot) returnParameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
-            if (bdotr.getSize().toString().equals(FALSESIZE)){
+            bdotr = (BinaryDataObjectTypeRoot) returnParameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+            if (bdotr.getSize().toString().equals(FALSESIZE)) {
                 fail("The size has been changed but the file is not matching the regex");
             }
-            
-        }catch(VitamException e){
+
+        } catch (VitamException e) {
             fail(e.getMessage());
         }
-        
+
     }
-    
-    
+
+
 }

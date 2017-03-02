@@ -36,12 +36,12 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name = "BinaryDataObject")
 public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
-    @XmlTransient 
+    @XmlTransient
     private String workingFilename;
 
     /**
      * @return the workingFilename
-     */ 
+     */
     public String getWorkingFilename() {
         return workingFilename;
     }
@@ -55,6 +55,6 @@ public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
         this.workingFilename = workingFilename;
         return this;
     }
-    
+
 
 }

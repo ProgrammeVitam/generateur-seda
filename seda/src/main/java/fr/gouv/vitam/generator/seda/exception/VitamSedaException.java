@@ -35,26 +35,28 @@ import fr.gouv.vitam.common.exception.VitamException;
 public class VitamSedaException extends VitamException {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -8737888724395849774L;
 
     /**
-     * 
+     *
      * @param message
      */
     public VitamSedaException(String message) {
         super(message);
     }
+
     /**
-     * 
+     *
      * @param cause
      */
     public VitamSedaException(Throwable cause) {
         super(cause);
     }
+
     /**
-     * 
+     *
      * @param message
      * @param cause
      */

@@ -58,83 +58,87 @@ import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
  *  - dataobjectversion (String) : default version of the DataObjectVersion field<br>
  * Output<br>
  *  - binarydataobject (BinaryDataObjectTypeRoot) : The built BinaryDataObject<br>
- *  
+ *
  */
 
 public class BinaryDataObjectConstructorModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "binaryDataObjectConstructor";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
     private static final Pattern DataObjectVersionFileName = Pattern.compile("^__([a-zA-Z]*)_([0-9]+)_(.*)$");
     private static final Pattern DataObjectShortVersionFileName = Pattern.compile("^__([a-zA-Z]*)_(.*)$");
     private static final String DATAOBJECTVERSION_PARAMETER = "dataobjectversion";
     private static final String DATAOBJECTVERSION_DEFAULT = "BinaryMaster";
     private static final String IGNORESPECIALCHAREXTENSION = "ignoreSpecialCharExtension";
-    
-    
+
+
     {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put(DATAOBJECTVERSION_PARAMETER, new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DATAOBJECTVERSION_DEFAULT));
-        INPUTSIGNATURE.put(IGNORESPECIALCHAREXTENSION, new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("false"));
+        INPUTSIGNATURE.put(DATAOBJECTVERSION_PARAMETER,
+            new InputParameter().setObjectclass(String.class).setMandatory(false)
+                .setDefaultValue(DATAOBJECTVERSION_DEFAULT));
+        INPUTSIGNATURE.put(IGNORESPECIALCHAREXTENSION,
+            new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("false"));
     }
-    
+
     @Override
-    public Map<String,InputParameter> getInputSignature(){
+    public Map<String, InputParameter> getInputSignature() {
         return INPUTSIGNATURE;
     }
-    
-    
+
+
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
-    @Override   
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
+    @Override
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
         ParameterMap returnPM = new ParameterMap();
         String id = XMLWriterUtils.getNextID();
-        File f = new File((String)parameters.get("file"));
-        if (!f.exists()){
-            throw new VitamBinaryDataObjectException(f.getPath()+ "doesn't exist anymore");
+        File f = new File((String) parameters.get("file"));
+        if (!f.exists()) {
+            throw new VitamBinaryDataObjectException(f.getPath() + "doesn't exist anymore");
         }
-        if (!f.canRead()){
-            throw new VitamBinaryDataObjectException(f.getPath()+ "is not readable");
+        if (!f.canRead()) {
+            throw new VitamBinaryDataObjectException(f.getPath() + "is not readable");
         }
-        if (f.length() == 0){
-            throw new VitamBinaryDataObjectException(f.getPath()+" is an empty file");
+        if (f.length() == 0) {
+            throw new VitamBinaryDataObjectException(f.getPath() + " is an empty file");
         }
         BinaryDataObjectTypeRoot bdotr = new BinaryDataObjectTypeRoot();
         bdotr.setId(id);
-        
-        
+
+
         String extension = ".seda";
         int position = f.getName().lastIndexOf('.');
-        if (position != -1){
+        if (position != -1) {
             extension = f.getName().substring(position);
         }
-        if (!extension.equals(URLEncoder.encode(extension)) && "true".equals(parameters.get(IGNORESPECIALCHAREXTENSION))){
-            throw new VitamBinaryDataObjectException(f.getPath()+" has specials characters in its extension");
+        if (!extension.equals(URLEncoder.encode(extension)) &&
+            "true".equals(parameters.get(IGNORESPECIALCHAREXTENSION))) {
+            throw new VitamBinaryDataObjectException(f.getPath() + " has specials characters in its extension");
         }
-        bdotr.setUri("Content/"+id+extension);
+        bdotr.setUri("Content/" + id + extension);
         FileInfoType fit = new FileInfoType();
         bdotr.setSize(new BigInteger(String.valueOf(f.length())));
         bdotr.setFormatIdentification(new FormatIdentificationType());
         fit.setLastModified(XMLWriterUtils.getXMLGregorianCalendar(new Date(f.lastModified())));
         // Match the format __<Usage>_<Version>_<File Name>
         Matcher m = DataObjectVersionFileName.matcher(f.getName());
-		if (m.matches()) {
-			bdotr.setDataObjectVersion(m.group(1) + "_" + m.group(2));
-			fit.setFilename(m.group(3));
-		} else {
-			// Match the format __<Usage>_<File Name>
-			m = DataObjectShortVersionFileName.matcher(f.getName());
-			if (m.matches()) {
-				bdotr.setDataObjectVersion(m.group(1));
-				fit.setFilename(m.group(2));
-			} else {
-				bdotr.setDataObjectVersion((String) parameters.get(DATAOBJECTVERSION_PARAMETER));
-				fit.setFilename(f.getName());
-			}
-		}
+        if (m.matches()) {
+            bdotr.setDataObjectVersion(m.group(1) + "_" + m.group(2));
+            fit.setFilename(m.group(3));
+        } else {
+            // Match the format __<Usage>_<File Name>
+            m = DataObjectShortVersionFileName.matcher(f.getName());
+            if (m.matches()) {
+                bdotr.setDataObjectVersion(m.group(1));
+                fit.setFilename(m.group(2));
+            } else {
+                bdotr.setDataObjectVersion((String) parameters.get(DATAOBJECTVERSION_PARAMETER));
+                fit.setFilename(f.getName());
+            }
+        }
         bdotr.setFileInfo(fit);
         // Working attribute that is not put in the xml
         bdotr.setWorkingFilename(f.getPath());

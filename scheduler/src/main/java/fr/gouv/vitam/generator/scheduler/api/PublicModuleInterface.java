@@ -27,7 +27,7 @@
 
 package fr.gouv.vitam.generator.scheduler.api;
 
-/** 
+/**
  * It is a SPI where all implementations are discovered via the ServiceLoader pattern
  */
 public interface PublicModuleInterface extends ModuleInterface {

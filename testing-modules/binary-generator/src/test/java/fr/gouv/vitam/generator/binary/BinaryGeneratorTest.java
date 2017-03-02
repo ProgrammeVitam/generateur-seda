@@ -14,6 +14,7 @@ public class BinaryGeneratorTest {
 
     /**
      * Test generation of file with small content (typically smaller than the file name)
+     *
      * @throws Exception
      */
     @Test
@@ -27,6 +28,7 @@ public class BinaryGeneratorTest {
 
     /**
      * Test generation of file with small content (typically greater than the file name)
+     *
      * @throws Exception
      */
     @Test

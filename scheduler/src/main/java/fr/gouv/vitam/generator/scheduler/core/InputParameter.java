@@ -39,18 +39,18 @@ package fr.gouv.vitam.generator.scheduler.core;
  */
 public class InputParameter {
     // Class of the input parameter
-    private  Class objectclass=Object.class;
+    private Class objectclass = Object.class;
     // Do this parameter can be nullable ?
-    private  boolean isNullable=false;
+    private boolean isNullable = false;
     // Is this parameter mandatory in the module ?
-    private  boolean isMandatory=true;
+    private boolean isMandatory = true;
     // If the module is not mandatory, what is the default value of the parameter ?
-    private  Object defaultValue=null;
-    
+    private Object defaultValue = null;
+
     public InputParameter() {
         //empty constructor
     }
-    
+
     /**
      * @return the objectclass
      */
@@ -72,12 +72,14 @@ public class InputParameter {
     public Object getDefaultValue() {
         return defaultValue;
     }
+
     /**
      * @return the isMandatory
      */
     public boolean isMandatory() {
         return isMandatory;
     }
+
     /**
      * @param objectclass the objectclass to set
      *
@@ -87,6 +89,7 @@ public class InputParameter {
         this.objectclass = objectclass;
         return this;
     }
+
     /**
      * @param isNullable the isNullable to set
      *
@@ -96,6 +99,7 @@ public class InputParameter {
         this.isNullable = isNullable;
         return this;
     }
+
     /**
      * @param isMandatory the isMandatory to set
      *
@@ -105,6 +109,7 @@ public class InputParameter {
         this.isMandatory = isMandatory;
         return this;
     }
+
     /**
      * @param defaultValue the defaultValue to set
      *

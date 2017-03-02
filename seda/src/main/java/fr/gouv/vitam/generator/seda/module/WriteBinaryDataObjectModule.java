@@ -53,20 +53,22 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 
 public class WriteBinaryDataObjectModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "writeBinaryDataObject";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
-    
-    
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
+
+
     {
-        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
-        INPUTSIGNATURE.put("archivetransfergenerator",new InputParameter().setObjectclass(ArchiveTransferGenerator.class));
+        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
+            new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+        INPUTSIGNATURE
+            .put("archivetransfergenerator", new InputParameter().setObjectclass(ArchiveTransferGenerator.class));
         INPUTSIGNATURE.put("dataobjectgroupID", new InputParameter().setObjectclass(String.class).setNullable(true));
     }
-    
+
     @Override
-    public Map<String,InputParameter> getInputSignature(){
+    public Map<String, InputParameter> getInputSignature() {
         return INPUTSIGNATURE;
     }
-    
+
 
     @Override
     public String getModuleId() {
@@ -74,8 +76,9 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
-        BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+        BinaryDataObjectTypeRoot bdotr =
+            (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         ParameterMap returnPM = new ParameterMap();
         String dataObjectGroupID = (String) parameters.get("dataobjectgroupID");
         ArchiveTransferGenerator atgi = (ArchiveTransferGenerator) parameters.get("archivetransfergenerator");
@@ -86,7 +89,7 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
         if (dataObjectGroupID == null || (!dogum.existsDataObjectGroup(dataObjectGroupID))) {
             String newID = dogum.registerDataObjectGroup();
             bdotr.setDataObjectGroupId(newID);
-            dogum.setUsedDataObjectGroup(newID);            
+            dogum.setUsedDataObjectGroup(newID);
             // The given dogID has already be used
         } else if (dogum.isDataObjectGroupUsed(dataObjectGroupID)) {
             bdotr.setDataObjectGroupReferenceId(dataObjectGroupID);
@@ -98,12 +101,12 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
 
         // Write BinaryDataObject
         atgi.writeXMLFragment(bdotr);
-        try{
+        try {
             atgi.getZipFile().addFile(bdotr.getUri(), bdotr.getWorkingFilename());
-        }catch(IOException e){
-            throw new VitamSedaException("Error to write to zipFile",e);
+        } catch (IOException e) {
+            throw new VitamSedaException("Error to write to zipFile", e);
         }
-        returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),bdotr);
+        returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;
     }
 

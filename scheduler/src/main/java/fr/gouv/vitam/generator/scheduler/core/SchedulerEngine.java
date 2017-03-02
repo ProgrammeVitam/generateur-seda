@@ -49,10 +49,11 @@ public class SchedulerEngine {
      * - static: all static final and already allocated and build from a static { } step but not in constructor
      * - non static: all non static but final and then in constructor
      */
-    private static Map<String,PublicModuleInterface> modulesList = null;
+    private static Map<String, PublicModuleInterface> modulesList = null;
     private ServiceLoader<PublicModuleInterface> moduleLoader = ServiceLoader.load(PublicModuleInterface.class);
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(SchedulerEngine.class);
     private static SchedulerMetrics sm = new SchedulerMetrics();
+
     /**
      * Enable the SPI discovery of the public modules 
      */
@@ -64,7 +65,7 @@ public class SchedulerEngine {
                 modulesList.put(module.getModuleId(), module);
                 sm.registerModule(module.getModuleId());
             }
-         
+
         }
     }
 
@@ -72,7 +73,7 @@ public class SchedulerEngine {
      * Accessor to the list of public modules
      * @return the list of public modules
      */
-    public Map<String,PublicModuleInterface> getModulesList() {
+    public Map<String, PublicModuleInterface> getModulesList() {
         return modulesList;
     }
 
@@ -83,7 +84,7 @@ public class SchedulerEngine {
      * @return the ParameterMaps of the playbook at the end of the execution 
      * @throws VitamException
      */
-    public ParameterMap execute(Playbook playbook, ParameterMap initialParameters) throws VitamException{
+    public ParameterMap execute(Playbook playbook, ParameterMap initialParameters) throws VitamException {
         ParameterMap pm = initialParameters;
         for (Task t : playbook.getTasks()) {
             executeTask(t, pm);
@@ -100,7 +101,7 @@ public class SchedulerEngine {
     private ParameterMap substitute(ParameterMap templateParameters, ParameterMap valuesParameters) {
         ParameterMap pm = new ParameterMap();
         Pattern pattern = Pattern.compile("^@@(.*)@@$");
-        for (Entry<String,Object> entry : templateParameters.entrySet()) {
+        for (Entry<String, Object> entry : templateParameters.entrySet()) {
             String value = (String) entry.getValue();
             Matcher matcher = pattern.matcher(value);
             if (matcher.find()) {
@@ -117,7 +118,7 @@ public class SchedulerEngine {
      * @param task
      * @param globalParameters
      */
-    private void executeTask(Task task, ParameterMap globalParameters) throws VitamException{
+    private void executeTask(Task task, ParameterMap globalParameters) throws VitamException {
         ParameterMap sentParameters;
         ParameterMap returnTaskParameters;
         String moduleID = task.getModule();
@@ -126,18 +127,19 @@ public class SchedulerEngine {
             sentParameters = substitute(task.getParameters(), globalParameters);
             LOGGER.debug("Launch Task " + moduleID + " sent parameters :  " + sentParameters);
             returnTaskParameters = modulesList.get(moduleID).execute(sentParameters);
-            LOGGER.debug("Launch Task " + moduleID + " return parameters :  "+ returnTaskParameters);
+            LOGGER.debug("Launch Task " + moduleID + " return parameters :  " + returnTaskParameters);
             globalParameters.putAll(substitute(task.getRegisteredParameters(), returnTaskParameters));
-            sm.addExecution(moduleID, System.currentTimeMillis() - start );
-        }else{
-            LOGGER.error(moduleID + " is Unknown. The task "+task.getName()+" will be skipped" );
+            sm.addExecution(moduleID, System.currentTimeMillis() - start);
+        } else {
+            LOGGER.error(moduleID + " is Unknown. The task " + task.getName() + " will be skipped");
         }
     }
+
     /**
      * Print the statistics of the Scheduler Engine
      */
-    public void printStatistics(){
+    public void printStatistics() {
         sm.printStatistics();
     }
-    
+
 }

@@ -43,19 +43,20 @@ import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scheduler.exception.VitamSchedulerException;
 
 /**
- * 
+ *
  */
 public class PlaybookImportTest {
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(PlaybookImportTest.class);
+
     @Test
     public void importJson() {
-        try{
+        try {
             ClassLoader classLoader = getClass().getClassLoader();
             String jsonFile = classLoader.getResource("task_playbook.json").getFile();
             PlaybookBuilder.getPlaybook(jsonFile);
-        }catch(VitamSchedulerException e){
+        } catch (VitamSchedulerException e) {
             fail(e.getMessage());
-            LOGGER.error("Error in the unit test",e);
+            LOGGER.error("Error in the unit test", e);
         }
     }
 

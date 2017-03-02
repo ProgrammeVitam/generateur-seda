@@ -46,12 +46,15 @@ import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 
 public class SiegfriedModuleTest {
-    
-    private static final String TESTFILE = SiegfriedModuleTest.class.getClassLoader().getResource("sip1.json").getFile();
-    private static final String SIEGFRIED_OK = "{\"siegfried\":\"1.5.0\",\"scandate\":\"2016-06-17T12:42:15+02:00\",\"signature\":\"default.sig\",\"created\":\"2016-03-11T17:35:06+11:00\",\"identifiers\":[{\"name\":\"pronom\",\"details\":\"DROID_SignatureFile_V84.xml; container-signature-20160121.xml\"}],\"files\":[{\"filename\":\"a.sh\",\"filesize\": 8882,\"modified\":\"\",\"errors\": \"\",\"matches\": [{\"ns\":\"pronom\",\"id\":\"x-fmt/111\",\"format\":\"Plain Text File\",\"version\":\"\",\"mime\":\"text/plain\",\"basis\":\"text match UTF-8 Unicode\",\"warning\":\"match on text only; extension mismatch\"}]}]}";
-    private static final String SIEGFRIED_NO_FORMAT_INFORMATION = "{\"siegfried\":\"1.5.0\",\"scandate\":\"2016-06-17T12:42:08+02:00\",\"signature\":\"default.sig\",\"created\":\"2016-03-11T17:35:06+11:00\",\"identifiers\":[{\"name\":\"pronom\",\"details\":\"DROID_SignatureFile_V84.xml; container-signature-20160121.xml\"}],\"files\":[{\"filename\":\"random\",\"filesize\": 10438,\"modified\":\"\",\"errors\": \"\",\"matches\": [{\"ns\":\"pronom\",\"id\":\"UNKNOWN\",\"format\":\"\",\"version\":\"\",\"mime\":\"\",\"basis\":\"\",\"warning\":\"no match\"}]}]}";
-    
-    
+
+    private static final String TESTFILE =
+        SiegfriedModuleTest.class.getClassLoader().getResource("sip1.json").getFile();
+    private static final String SIEGFRIED_OK =
+        "{\"siegfried\":\"1.5.0\",\"scandate\":\"2016-06-17T12:42:15+02:00\",\"signature\":\"default.sig\",\"created\":\"2016-03-11T17:35:06+11:00\",\"identifiers\":[{\"name\":\"pronom\",\"details\":\"DROID_SignatureFile_V84.xml; container-signature-20160121.xml\"}],\"files\":[{\"filename\":\"a.sh\",\"filesize\": 8882,\"modified\":\"\",\"errors\": \"\",\"matches\": [{\"ns\":\"pronom\",\"id\":\"x-fmt/111\",\"format\":\"Plain Text File\",\"version\":\"\",\"mime\":\"text/plain\",\"basis\":\"text match UTF-8 Unicode\",\"warning\":\"match on text only; extension mismatch\"}]}]}";
+    private static final String SIEGFRIED_NO_FORMAT_INFORMATION =
+        "{\"siegfried\":\"1.5.0\",\"scandate\":\"2016-06-17T12:42:08+02:00\",\"signature\":\"default.sig\",\"created\":\"2016-03-11T17:35:06+11:00\",\"identifiers\":[{\"name\":\"pronom\",\"details\":\"DROID_SignatureFile_V84.xml; container-signature-20160121.xml\"}],\"files\":[{\"filename\":\"random\",\"filesize\": 10438,\"modified\":\"\",\"errors\": \"\",\"matches\": [{\"ns\":\"pronom\",\"id\":\"UNKNOWN\",\"format\":\"\",\"version\":\"\",\"mime\":\"\",\"basis\":\"\",\"warning\":\"no match\"}]}]}";
+
+
     @Test
     public void siegfriedOK() {
         mockSiegfried(SIEGFRIED_OK);
@@ -62,27 +65,27 @@ public class SiegfriedModuleTest {
     public void siegfriedNoInformation() {
         mockSiegfried(SIEGFRIED_NO_FORMAT_INFORMATION);
     }
-   
-    
-    private void mockSiegfried(String mockResponseValue){
+
+
+    private void mockSiegfried(String mockResponseValue) {
         try {
             CloseableHttpclientMock mockHttpClient = new CloseableHttpclientMock();
             mockHttpClient.setResponseBody(mockResponseValue);
             ParameterMap pm = new ParameterMap();
             pm.put("siegfriedURL", "http://dummy");
-            BinaryDataObjectTypeRoot bdotr= new BinaryDataObjectTypeRoot();
+            BinaryDataObjectTypeRoot bdotr = new BinaryDataObjectTypeRoot();
             bdotr.setFormatIdentification(new FormatIdentificationType());
             bdotr.setWorkingFilename(TESTFILE);
             pm.put("binarydataobject", bdotr);
-            
+
             SiegfriedModule sm = new SiegfriedModule();
-            Field f= sm.getClass().getDeclaredField("httpclient");
+            Field f = sm.getClass().getDeclaredField("httpclient");
             f.setAccessible(true);
             f.set(sm, mockHttpClient);
             sm.execute(pm);
         } catch (NoSuchFieldException e) {
             fail("This should never happened as the testhttpclient exists");
-        } catch (SecurityException|IllegalArgumentException|IllegalAccessException e) {
+        } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace();
             fail("This exception should not happened (linked to the java reflection on  SiegfriedModule)");
         } catch (VitamException e) {

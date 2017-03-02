@@ -85,7 +85,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     private final Set<PathMatcher> excludeFileSet = new HashSet<>();
     private final ArchiveTransferConfig archiveTransferConfig;
     private final long beginTimeMS;
-    private int numberBinaryDataObject=0;
+    private int numberBinaryDataObject = 0;
+
     /**
      * Constructor for ScanFS
      * @param archiveTransferConfig : contains the aggregate configuration of the differents configurations sources
@@ -94,22 +95,23 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      * @param errFile : Path of the error/rejected File
      * @throws VitamException
      */
-    public ScanFS(ArchiveTransferConfig archiveTransferConfig, String playbookFileBDO,String outputFile,String errFile) throws VitamException {
+    public ScanFS(ArchiveTransferConfig archiveTransferConfig, String playbookFileBDO, String outputFile,
+        String errFile) throws VitamException {
         super();
         ParametersChecker.checkParameter("ConfigObject cannot be null", archiveTransferConfig);
         ParametersChecker.checkParameter("playbookBinaryFile cannot be null", playbookFileBDO);
         ParametersChecker.checkParameter("outputFile cannot be null", outputFile);
         ParametersChecker.checkParameter("errFile cannot be null", errFile);
-        this.atgi = new ArchiveTransferGenerator(archiveTransferConfig,outputFile);
+        this.atgi = new ArchiveTransferGenerator(archiveTransferConfig, outputFile);
         this.schedulerEngine = new SchedulerEngine();
         this.playbookBinary = PlaybookBuilder.getPlaybook(playbookFileBDO);
         this.archiveTransferConfig = archiveTransferConfig;
         try {
             this.errFileStream = new PrintStream(errFile, CharsetUtils.UTF_8);
-        }catch (UnsupportedEncodingException e){
-            throw new VitamException(CharsetUtils.UTF_8+" is not a valid Charset",e);
-        }catch (FileNotFoundException e){
-            throw new VitamException("Can't write the error file",e);
+        } catch (UnsupportedEncodingException e) {
+            throw new VitamException(CharsetUtils.UTF_8 + " is not a valid Charset", e);
+        } catch (FileNotFoundException e) {
+            throw new VitamException("Can't write the error file", e);
         }
         try {
             atgi.generateHeader();
@@ -120,17 +122,19 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         setExcludedFileList();
         beginTimeMS = System.currentTimeMillis();
     }
-    
-    private void setExcludedFileList(){
-        if (archiveTransferConfig.has(IGNORE_PATTERNS_JSON_KEY) && archiveTransferConfig.get(IGNORE_PATTERNS_JSON_KEY).isArray()){
+
+    private void setExcludedFileList() {
+        if (archiveTransferConfig.has(IGNORE_PATTERNS_JSON_KEY) &&
+            archiveTransferConfig.get(IGNORE_PATTERNS_JSON_KEY).isArray()) {
             ArrayNode ignorePatterns = (ArrayNode) archiveTransferConfig.get(IGNORE_PATTERNS_JSON_KEY);
             Iterator<JsonNode> itr = ignorePatterns.elements();
-            while(itr.hasNext()){
-                excludeFileSet.add(FileSystems.getDefault().getPathMatcher("glob:**/"+itr.next().textValue()));//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
+            while (itr.hasNext()) {
+                excludeFileSet.add(FileSystems.getDefault().getPathMatcher("glob:**/" + itr.next()
+                    .textValue()));//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
             }
-        }          
+        }
     }
-    
+
     /**
      * Action that occurs when we enter in a directory : - if the directory begins and ends with "__" it is an
      * DataObjectGroup . A virtual ArchiveUnit is created as the father of the DataObjectGroup This directory MUSTN'T
@@ -146,12 +150,13 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         // DataObjectGroup : The directory is a DataObjectGroup so we create a pseudo ArchiveUnitID
         if (dirName.startsWith("__") && dirName.endsWith("__")) {
             dataObjectGroupOfVisitedDirectories.addFirst(atgi.getDataObjectGroupUsedMap().registerDataObjectGroup());
-            archiveUnitID = atgi.addArchiveUnit(dirName.substring(2, dirName.length()-2), dir.toString(),manifestPathName);
-            mapArchiveUnitPath2Id.put(dir.toString(),archiveUnitID);
+            archiveUnitID =
+                atgi.addArchiveUnit(dirName.substring(2, dirName.length() - 2), dir.toString(), manifestPathName);
+            mapArchiveUnitPath2Id.put(dir.toString(), archiveUnitID);
             String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
             atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
             atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupOfVisitedDirectories.getFirst());
-        // ArchiveUnit
+            // ArchiveUnit
         } else {
             dataObjectGroupOfVisitedDirectories.addFirst(null);
             archiveUnitID = atgi.addArchiveUnit(dirName, dir.toString(),manifestPathName);
@@ -174,16 +179,17 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public FileVisitResult visitFile(Path file,
         BasicFileAttributes attr) {
-        if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) || 
+        if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) ||
             file.getFileName().toString().equals(ARCHIVEUNITMETADATAFILE_NAME) ||
             file.getFileName().toString().equals(ARCHIVEUNITRAWCONTENTFILE_NAME) ||
             file.getFileName().toString().equals(ARCHIVEUNITRAWMANAGEMENTFILE_NAME)
-           ){
+            ) {
             return FileVisitResult.CONTINUE;
         }
-        for(PathMatcher pm : excludeFileSet){
-            if (pm.matches(file)){
-                errFileStream.println("The file :"+ file + " has been rejected as matching a pattern in ArchiveTransferConfig.json file");
+        for (PathMatcher pm : excludeFileSet) {
+            if (pm.matches(file)) {
+                errFileStream.println("The file :" + file +
+                    " has been rejected as matching a pattern in ArchiveTransferConfig.json file");
                 return FileVisitResult.CONTINUE;
             }
         }
@@ -198,16 +204,16 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         String dataObjectGroupID = dataObjectGroupOfVisitedDirectories.getFirst();
         String archiveUnitID;
         String fatherID;
-        
+
         // Archive Unit : we create the DataObjectGroup
         if (dataObjectGroupID == null){
             dataObjectGroupID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
         }
 
         // Prepare the parameters
-        ParameterMap inputParameterMap=new ParameterMap();
-        inputParameterMap.put("file",file.toUri().getPath());
-        inputParameterMap.put("dataobjectgroupID",dataObjectGroupID);
+        ParameterMap inputParameterMap = new ParameterMap();
+        inputParameterMap.put("file", file.toUri().getPath());
+        inputParameterMap.put("dataobjectgroupID", dataObjectGroupID);
         inputParameterMap.put("archivetransfergenerator", atgi);
         try {
             schedulerEngine.execute(playbookBinary, inputParameterMap);
@@ -229,13 +235,13 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                 // Get the ID of the DataObjectGroup Directory Archive Unit
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
                 // If the file is the BinaryMaster Version, set the Transacted, StartDate and EndDate in the Archive Unit
-                if (file.getFileName().toString().startsWith("__BinaryMaster")){
+                if (file.getFileName().toString().startsWith("__BinaryMaster")) {
                     atgi.setTransactedDate(fatherID, new Date(file.toFile().lastModified()));
                 }
             }
             numberBinaryDataObject++;
-        } catch (VitamBinaryDataObjectException e){//NOSONAR : This exception is for BinaryDataObject rejected file
-            LOGGER.warn(file.toUri().getPath() + " has been rejected for the reason : "+ e.getMessage());
+        } catch (VitamBinaryDataObjectException e) {//NOSONAR : This exception is for BinaryDataObject rejected file
+            LOGGER.warn(file.toUri().getPath() + " has been rejected for the reason : " + e.getMessage());
             errFileStream.println(e.getMessage());
         } catch (VitamException e) {
             LOGGER.error(e);
@@ -263,46 +269,53 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      * Catch the possible IOException so that the scan is not stopped on an IOException
      */
     @Override
-    public FileVisitResult visitFileFailed(Path file,IOException e) {
+    public FileVisitResult visitFileFailed(Path file, IOException e) {
         LOGGER.error("Error on reading " + file + " : " + e.getMessage());
         return FileVisitResult.CONTINUE;
     }
-    
+
     /**
      * At the end of the scan we write the descriptive and Management metadata (the ArchiveUnit are in memory) and flush
      * all the buffers to close correctly the XML
      */
     @Override
     public void close() throws XMLStreamException, VitamSedaException {
-        long binaryDataObjecttotalTime = System.currentTimeMillis()-beginTimeMS;
+        long binaryDataObjecttotalTime = System.currentTimeMillis() - beginTimeMS;
         if (numberBinaryDataObject != 0) {
-            LOGGER.info("Managing BinaryDataObjects : "+ binaryDataObjecttotalTime + " ms for "+ numberBinaryDataObject +" BinaryDataObjects (time per BDO : "+ binaryDataObjecttotalTime/numberBinaryDataObject +" ms)");
+            LOGGER.info(
+                "Managing BinaryDataObjects : " + binaryDataObjecttotalTime + " ms for " + numberBinaryDataObject +
+                    " BinaryDataObjects (time per BDO : " + binaryDataObjecttotalTime / numberBinaryDataObject +
+                    " ms)");
         } else {
-            LOGGER.info("Managing BinaryDataObjects : "+ binaryDataObjecttotalTime + " ms for "+ numberBinaryDataObject +" BinaryDataObjects (No BDO)");
+            LOGGER.info(
+                "Managing BinaryDataObjects : " + binaryDataObjecttotalTime + " ms for " + numberBinaryDataObject +
+                    " BinaryDataObjects (No BDO)");
         }
 
         long beginDescriptiveMetadateTime = System.currentTimeMillis();
         int nbArchiveUnits = atgi.writeDescriptiveMetadata();
-        long descriptiveMetadataTotalTime = System.currentTimeMillis()-beginDescriptiveMetadateTime;
+        long descriptiveMetadataTotalTime = System.currentTimeMillis() - beginDescriptiveMetadateTime;
 
         if (nbArchiveUnits != 0) {
-            LOGGER.info("Writing ArchiveUnits : "+ descriptiveMetadataTotalTime + " ms for "+ nbArchiveUnits + " ArchiveUnits (time per AU : " + descriptiveMetadataTotalTime/nbArchiveUnits+" ms)");
+            LOGGER.info("Writing ArchiveUnits : " + descriptiveMetadataTotalTime + " ms for " + nbArchiveUnits +
+                " ArchiveUnits (time per AU : " + descriptiveMetadataTotalTime / nbArchiveUnits + " ms)");
         } else {
-            LOGGER.info("Writing ArchiveUnits : "+ descriptiveMetadataTotalTime + " ms for "+ nbArchiveUnits + " ArchiveUnits (no AU)");
+            LOGGER.info("Writing ArchiveUnits : " + descriptiveMetadataTotalTime + " ms for " + nbArchiveUnits +
+                " ArchiveUnits (no AU)");
         }
 
         atgi.writeManagementMetadata();
         atgi.closeDocument();
         schedulerEngine.printStatistics();
     }
-    
-    private File containsFileInDir(Path dir, String file){
-        File f=new File(dir.toFile().toString()+dir.getFileSystem().getSeparator()+file); 
-        if (f.isFile()){
+
+    private File containsFileInDir(Path dir, String file) {
+        File f = new File(dir.toFile().toString() + dir.getFileSystem().getSeparator() + file);
+        if (f.isFile()) {
             return f;
-        }else{
+        } else {
             return null;
         }
     }
-        
+
 }

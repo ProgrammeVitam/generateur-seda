@@ -66,7 +66,7 @@ public class Task {
 
 
     /**
-     * 
+     *
      * @return the parameters
      */
     public ParameterMap getParameters() {
@@ -74,7 +74,7 @@ public class Task {
     }
 
     /**
-     * 
+     *
      * @return the binding parameters
      */
     public ParameterMap getRegisteredParameters() {
