@@ -34,6 +34,13 @@
  */
 package fr.gouv.vitam.generator.binary;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
+
+import javax.xml.stream.XMLStreamException;
+
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
@@ -46,12 +53,6 @@ import fr.gouv.vitam.generator.seda.core.ArchiveTransferGenerator;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaMissingFieldException;
 
-import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Date;
-
 /**
  * Main class to launch a complete SIP from scratch, with everything generated.
  *
@@ -60,11 +61,12 @@ import java.util.Date;
 public class BinaryGenerator {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(BinaryGenerator.class);
-    
+
     /**
      * Digit to text representation
      */
-    private static final String[] DIGIT_NAMES = {"zero","one","two","three","four","five","six","seven","eight","nine"};
+    private static final String[] DIGIT_NAMES =
+        {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
 
 
     private BinaryGenerator() {
@@ -85,22 +87,23 @@ public class BinaryGenerator {
             fileNumber = -1;
             fileSize = -1;
             outputFile = null;
-            System.err.println("Arguments attendus : <nombre de binaryObject> <taille d'un binaryObject (octets)> [<chemin du fichier à générer>]");
+            System.err.println(
+                "Arguments attendus : <nombre de binaryObject> <taille d'un binaryObject (octets)> [<chemin du fichier à générer>]");
             System.exit(1);
         } else if (args.length < 4) {
             fileNumber = Integer.parseInt(args[1]);
             fileSize = Long.parseLong(args[2]);
-            outputFile = Paths.get(workingDir,"SIP-" + fileNumber + "-" + fileSize + ".zip");
+            outputFile = Paths.get(workingDir, "SIP-" + fileNumber + "-" + fileSize + ".zip");
         } else {
             fileNumber = Integer.parseInt(args[1]);
             fileSize = Long.parseLong(args[2]);
             outputFile = Paths.get(args[3]);
         }
 
-        Path playbookFileBDO = Paths.get(workingDir,"conf","playbook_GeneratedBinaryDataObject.json");
+        Path playbookFileBDO = Paths.get(workingDir, "conf", "playbook_GeneratedBinaryDataObject.json");
 
         ArchiveTransferConfig atc = new ArchiveTransferConfig(workingDir + "/conf", null);
-        atc.setMessageIdentifer("BinaryGenerator "+fileNumber+" - "+ fileSize);
+        atc.setMessageIdentifer("BinaryGenerator " + fileNumber + " - " + fileSize);
         try {
             generateBinary(atc, playbookFileBDO, outputFile, fileNumber, fileSize);
         } catch (VitamSedaMissingFieldException e) { // NOSONAR : global catch of this exception
@@ -116,15 +119,16 @@ public class BinaryGenerator {
      * Generate a SIP with fully generated content.
      *
      * @param archiveTransferConfig : ATC configuration
-     * @param playbookFileBDO       : Path of the playbook that will be used to manage BinaryDataObject
-     * @param outputFile            : path of the file to generate
-     * @param fileNumber            : number of files to include inside this SIP
-     * @param fileSize              : size of the file that must be included
+     * @param playbookFileBDO : Path of the playbook that will be used to manage BinaryDataObject
+     * @param outputFile : path of the file to generate
+     * @param fileNumber : number of files to include inside this SIP
+     * @param fileSize : size of the file that must be included
      * @throws VitamSedaException
      * @throws XMLStreamException
      * @throws VitamException
      */
-    public static void generateBinary(ArchiveTransferConfig archiveTransferConfig, Path playbookFileBDO, Path outputFile, int fileNumber, long fileSize) throws VitamException, XMLStreamException {
+    public static void generateBinary(ArchiveTransferConfig archiveTransferConfig, Path playbookFileBDO,
+        Path outputFile, int fileNumber, long fileSize) throws VitamException, XMLStreamException {
         SchedulerEngine schedulerEngine = new SchedulerEngine();
         Playbook playbookBinary = PlaybookBuilder.getPlaybook(playbookFileBDO.toString());
         // Initialize atg
@@ -139,7 +143,8 @@ public class BinaryGenerator {
         for (int i = 0; i < fileNumber; i++) {
             bar.update(i, fileNumber);
             // Generate AU + link with rootAU
-            final String auId = atg.addArchiveUnit("Generated Archive Unit (" + i + ")", "Generated Archive Unit "+spellNumber(i));
+            final String auId =
+                atg.addArchiveUnit("Generated Archive Unit (" + i + ")", "Generated Archive Unit " + spellNumber(i));
             atg.addArchiveUnit2ArchiveUnitReference(rootAuId, auId);
             // Generate GOT + link with AU
             String dataObjectGroupID = atg.getDataObjectGroupUsedMap().registerDataObjectGroup();
@@ -165,15 +170,16 @@ public class BinaryGenerator {
 
     /**
      * Convert an int into a literal string representation ; e.g. : 102 --> one zero two
+     *
      * @param i
      * @return
      */
     private static String spellNumber(int number) {
-        int remainingNumber = number ;
+        int remainingNumber = number;
         StringBuilder sb = new StringBuilder();
         while (remainingNumber >= 10) {
             sb.append(DIGIT_NAMES[remainingNumber % 10]).append(' ');
-            remainingNumber = remainingNumber/10;
+            remainingNumber = remainingNumber / 10;
         }
         sb.append(DIGIT_NAMES[remainingNumber]);
         return sb.toString();

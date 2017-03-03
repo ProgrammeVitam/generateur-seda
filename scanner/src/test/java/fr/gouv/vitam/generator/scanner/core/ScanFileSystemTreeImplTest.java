@@ -49,11 +49,11 @@ public class ScanFileSystemTreeImplTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String basedir = classLoader.getResource("sip1").getFile();
         String configDir = classLoader.getResource("conf").getFile();
-        ArchiveTransferConfig atc = new ArchiveTransferConfig("/",configDir );
+        ArchiveTransferConfig atc = new ArchiveTransferConfig("/", configDir);
         String playbookFile = classLoader.getResource("playbook_binary.json").getFile();
         try {
-            SedaGenerator.scan(basedir,atc,playbookFile,"output.zip","output.err");
-        }catch (Exception e){
+            SedaGenerator.scan(basedir, atc, playbookFile, "output.zip", "output.err");
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }

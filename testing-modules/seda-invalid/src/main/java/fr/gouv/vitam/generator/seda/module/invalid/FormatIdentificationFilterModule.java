@@ -34,7 +34,6 @@
  */
 package fr.gouv.vitam.generator.seda.module.invalid;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -52,15 +51,19 @@ import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
  */
 public class FormatIdentificationFilterModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "FormatIdentificationFilterModule";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
 
     {
-        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
+            new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("file_regex", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("displayFormatLitteral", new InputParameter().setObjectclass(Boolean.class).setMandatory(false).setDefaultValue(true));
-        INPUTSIGNATURE.put("displayMimeType", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("true"));
-        INPUTSIGNATURE.put("displayFormatId", new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("true"));
+        INPUTSIGNATURE.put("displayFormatLitteral",
+            new InputParameter().setObjectclass(Boolean.class).setMandatory(false).setDefaultValue(true));
+        INPUTSIGNATURE.put("displayMimeType",
+            new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("true"));
+        INPUTSIGNATURE.put("displayFormatId",
+            new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("true"));
     }
 
     @Override
@@ -77,15 +80,16 @@ public class FormatIdentificationFilterModule extends AbstractModule implements 
     protected ParameterMap realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
         Pattern p = Pattern.compile((String) parameters.get("file_regex"));
-        BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
-        if (p.matcher(bdotr.getFileInfo().getFilename()).matches()){
-            if (! Boolean.getBoolean((String) parameters.get("displayFormatLitteral"))){
+        BinaryDataObjectTypeRoot bdotr =
+            (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+        if (p.matcher(bdotr.getFileInfo().getFilename()).matches()) {
+            if (!Boolean.getBoolean((String) parameters.get("displayFormatLitteral"))) {
                 bdotr.getFormatIdentification().setFormatLitteral(null);
             }
-            if (! Boolean.getBoolean((String) parameters.get("displayMimeType"))){
+            if (!Boolean.getBoolean((String) parameters.get("displayMimeType"))) {
                 bdotr.getFormatIdentification().setMimeType(null);
             }
-            if (! Boolean.getBoolean((String) parameters.get("displayFormatId"))){
+            if (!Boolean.getBoolean((String) parameters.get("displayFormatId"))) {
                 bdotr.getFormatIdentification().setFormatId(null);
             }
         }

@@ -47,35 +47,36 @@ import fr.gouv.vitam.generator.scheduler.exception.VitamSchedulerException;
 public class PlaybookBuilder {
 
 
-    private PlaybookBuilder(){  
+    private PlaybookBuilder() {
         // Empty constructor
     }
+
     /**
      * Constructs a Playbook from a JSON File
      * @param jsonFile : contains the playbook definition
      * @return Playbook object constructed by the file 
      * @throws VitamSchedulerException
      */
-    
-    public static Playbook getPlaybook(File jsonFile) throws VitamSchedulerException{
+
+    public static Playbook getPlaybook(File jsonFile) throws VitamSchedulerException {
         ObjectMapper objectMapper = new ObjectMapper();
-        
+
         Playbook playbook = null;
-        try{
+        try {
             playbook = objectMapper.readValue(jsonFile, Playbook.class);
-        }catch(IOException e){
-            throw new VitamSchedulerException("Can't load the Playbook Definition", e);       
+        } catch (IOException e) {
+            throw new VitamSchedulerException("Can't load the Playbook Definition", e);
         }
         return playbook;
     }
-    
+
     /**
      * Constructs a Playbook from a JSON File
      * @param file : the file which contains the playbook definition
      * @return Playbook object constructed by the file 
      * @throws VitamSchedulerException
      */
-    public static Playbook getPlaybook(String file) throws VitamSchedulerException{
+    public static Playbook getPlaybook(String file) throws VitamSchedulerException {
         File jsonFile = new File(file);
         return getPlaybook(jsonFile);
     }

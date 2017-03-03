@@ -51,23 +51,23 @@ public class ZipFileWriter {
         this.zos = new ZipOutputStream(fos);
 
     }
-    
+
     /**
      * Create a directory in the ZIP File
      * @param directory
      * @throws IOException
      */
-    public void addDirectory(String directory) throws IOException{
+    public void addDirectory(String directory) throws IOException {
         zos.putNextEntry(new ZipEntry(directory));
     }
-    
+
     /**
      * Add a stream to the Zip 
      * @param filename : Name of the file in the Zip
      * @param is : Input Stream that will be added to the Zip
      * @throws IOException
      */
-    public void addFile(String filename,InputStream is) throws IOException{
+    public void addFile(String filename, InputStream is) throws IOException {
         // TODO nullity + file readability ?
         ZipEntry zipEntry = new ZipEntry(filename);
 
@@ -81,17 +81,17 @@ public class ZipFileWriter {
 
         zos.closeEntry();
     }
-    
+
     /**
      * Add a File to the Zip
      * @param filename : name of the file in the zip 
      * @param fullpath : name of the file on the filesystem whose data will be added to the zip 
      * @throws IOException
      */
-    public void addFile(String filename, String fullpath) throws IOException{
+    public void addFile(String filename, String fullpath) throws IOException {
         //TODO use autoCloseable property try (allocation) { addFile }
         FileInputStream fis = new FileInputStream(fullpath);
-        addFile(filename, fis);      
+        addFile(filename, fis);
     }
 
     /**
@@ -99,9 +99,9 @@ public class ZipFileWriter {
      * @param filename : name of the file inside and outside of the zip
      * @throws IOException
      */
-    public void addFile(String filename) throws IOException{
+    public void addFile(String filename) throws IOException {
         // Suppose que le filename est bien placé ? racine 
-        addFile(filename, filename);      
+        addFile(filename, filename);
     }
 
     /**
@@ -109,9 +109,9 @@ public class ZipFileWriter {
      * @throws IOException
      */
     // Suggestion implement AutoCloseable: permet de faire un try(ZipFileWriter zfw = new ZFW()) {} avec close implicit
-    public void closeZipFile() throws IOException{
+    public void closeZipFile() throws IOException {
         zos.flush();
         zos.close();
-    } 
+    }
 
 }

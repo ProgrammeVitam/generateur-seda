@@ -33,26 +33,28 @@ package fr.gouv.vitam.generator.seda.exception;
 public class VitamBinaryDataObjectException extends VitamSedaException {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -1212316418512647957L;
 
     /**
-     * 
+     *
      * @param message
      */
     public VitamBinaryDataObjectException(String message) {
         super(message);
     }
+
     /**
-     * 
+     *
      * @param cause
      */
     public VitamBinaryDataObjectException(Throwable cause) {
         super(cause);
     }
+
     /**
-     * 
+     *
      * @param message
      * @param cause
      */

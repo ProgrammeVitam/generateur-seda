@@ -42,44 +42,47 @@ import fr.gouv.vitam.generator.scheduler.api.ModuleInterface;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 
 /**
- * 
+ *
  */
-public abstract class AbstractModule implements ModuleInterface { 
+public abstract class AbstractModule implements ModuleInterface {
     @Override
     public abstract Map<String, InputParameter> getInputSignature();
-    
+
     @Override
-    public final ParameterMap execute(ParameterMap parameters) throws VitamException{
+    public final ParameterMap execute(ParameterMap parameters) throws VitamException {
         checkParameters(parameters);
         return realExecute(parameters);
     }
+
     /**
      * Verify the "strong typing" of the Module
      * @param parameters
      */
-    protected  void checkParameters(ParameterMap parameters) {
+    protected void checkParameters(ParameterMap parameters) {
         Map<String, InputParameter> inputParameters = getInputSignature();
-        for (Entry<String,InputParameter> e: inputParameters.entrySet()){ 
-            String prefixException= "parameter["+e.getKey()+"] for module"+getModuleId();
+        for (Entry<String, InputParameter> e : inputParameters.entrySet()) {
+            String prefixException = "parameter[" + e.getKey() + "] for module" + getModuleId();
             // Missing parameter . It the mandatory flag is present, exception, else we insert the default value
-            if (!parameters.containsKey(e.getKey())){
-                if (e.getValue().isMandatory()){
-                    throw new IllegalArgumentException(prefixException+" is missing");
-                }else{
+            if (!parameters.containsKey(e.getKey())) {
+                if (e.getValue().isMandatory()) {
+                    throw new IllegalArgumentException(prefixException + " is missing");
+                } else {
                     parameters.put(e.getKey(), e.getValue().getDefaultValue());
                 }
             }
             // Verify if the argument can be null
-            if (!e.getValue().isNullable() && parameters.get(e.getKey()) == null){
-                throw new IllegalArgumentException(prefixException+ " is null which is forbidden");
+            if (!e.getValue().isNullable() && parameters.get(e.getKey()) == null) {
+                throw new IllegalArgumentException(prefixException + " is null which is forbidden");
             }
             // Verify the type of the argument
-            if (parameters.get(e.getKey())!= null &&   !e.getValue().getObjectclass().isInstance(parameters.get(e.getKey()))){
-                throw new IllegalArgumentException(prefixException+ " is not of the class type" + e.getValue().getObjectclass().getCanonicalName());
+            if (parameters.get(e.getKey()) != null &&
+                !e.getValue().getObjectclass().isInstance(parameters.get(e.getKey()))) {
+                throw new IllegalArgumentException(
+                    prefixException + " is not of the class type" + e.getValue().getObjectclass().getCanonicalName());
             }
         }
     }
-    
+
     protected abstract ParameterMap realExecute(ParameterMap parameters) throws VitamException;
-    
+
 }

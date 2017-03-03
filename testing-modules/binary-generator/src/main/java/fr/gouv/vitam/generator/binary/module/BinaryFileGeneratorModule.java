@@ -57,48 +57,49 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
  */
 public class BinaryFileGeneratorModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "binaryFileGenerator";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
     private static final String SEPARATOR = "|";
 
     {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("size", new InputParameter().setObjectclass(Long.class).setMandatory(false).setDefaultValue(100));
+        INPUTSIGNATURE
+            .put("size", new InputParameter().setObjectclass(Long.class).setMandatory(false).setDefaultValue(100));
     }
 
     @Override
-    public Map<String,InputParameter> getInputSignature(){
+    public Map<String, InputParameter> getInputSignature() {
         return INPUTSIGNATURE;
     }
-    
-    
+
+
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
-    @Override   
-    protected ParameterMap realExecute(final ParameterMap parameters) throws VitamSedaException{
-        final File f = new File((String)parameters.get("file"));
-        final Long length = (Long)parameters.get("size");
+    @Override
+    protected ParameterMap realExecute(final ParameterMap parameters) throws VitamSedaException {
+        final File f = new File((String) parameters.get("file"));
+        final Long length = (Long) parameters.get("size");
 
         try {
-            if (!f.createNewFile()){
-                throw new VitamSedaException("Can't create temporary File"+f.getAbsolutePath());
+            if (!f.createNewFile()) {
+                throw new VitamSedaException("Can't create temporary File" + f.getAbsolutePath());
             }
             // Write file content : concatenation of the file name
             long remainingToWrite = length;
             byte[] content = (f.getName() + SEPARATOR).getBytes(Charset.defaultCharset());
-            try(OutputStream writer = new BufferedOutputStream(new FileOutputStream(f))) {
+            try (OutputStream writer = new BufferedOutputStream(new FileOutputStream(f))) {
                 // Write loop ; first as long as we can write everything fully
                 while (remainingToWrite > content.length) {
                     writer.write(content);
                     remainingToWrite -= content.length;
                 }
                 // Cast to int safe here, as we now that it is <= content.length
-                writer.write(content, 0, (int)remainingToWrite);
+                writer.write(content, 0, (int) remainingToWrite);
             }
         } catch (IOException e) {
-            throw new VitamBinaryDataObjectException(f.getPath()+ "doesn't exist anymore",e);
+            throw new VitamBinaryDataObjectException(f.getPath() + "doesn't exist anymore", e);
         }
 
         return new ParameterMap();

@@ -45,16 +45,17 @@ import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
  */
 public class DataObjectGroupUsedMap {
     private Map<String, Boolean> mapDataObjectGroup;
+
     /**
      * Empty constructor
      */
     public DataObjectGroupUsedMap() {
         mapDataObjectGroup = new HashMap<>();
     }
-    
+
     /**
      * Test if the given id is an existing DataObjectGroup
-     * 
+     *
      * @param id
      * @return true if the give id is an existing DataObjectGroup
      */
@@ -65,7 +66,7 @@ public class DataObjectGroupUsedMap {
 
     /**
      * Register a new DataObjectGroup
-     * 
+     *
      * @return ID of the DataObjectGroup
      */
     public String registerDataObjectGroup() {
@@ -73,24 +74,24 @@ public class DataObjectGroupUsedMap {
         mapDataObjectGroup.put(id, false);
         return id;
     }
-    
+
     /**
      *  Set the DataobjectGroup to used
      * @param id of the Data Object Group
      */
-    public void setUsedDataObjectGroup(String id){
-        if (existsDataObjectGroup(id)){
+    public void setUsedDataObjectGroup(String id) {
+        if (existsDataObjectGroup(id)) {
             mapDataObjectGroup.put(id, true);
         }
     }
-    
+
     /**
      * Check if the Data Object Group has already be used
      * @param id of the Data Object Group
      * @return true if already used
      */
     // TODO check null and exists
-    public boolean isDataObjectGroupUsed(String id){
+    public boolean isDataObjectGroupUsed(String id) {
         return mapDataObjectGroup.get(id).booleanValue();
     }
 

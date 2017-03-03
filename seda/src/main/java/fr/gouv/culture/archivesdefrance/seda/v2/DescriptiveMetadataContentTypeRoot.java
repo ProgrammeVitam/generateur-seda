@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DescriptiveMetadataContentTypeRoot extends DescriptiveMetadataContentType {
 
     /**
-     * 
+     *
      */
     public DescriptiveMetadataContentTypeRoot() {
         // TODO Auto-generated constructor stub

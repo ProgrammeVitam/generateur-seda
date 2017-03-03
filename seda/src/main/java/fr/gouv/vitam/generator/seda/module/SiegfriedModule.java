@@ -76,69 +76,72 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
  */
 public class SiegfriedModule extends AbstractModule implements PublicModuleInterface {
     // TODO : (probably) not Thread-Safe
-    private CloseableHttpClient httpclient=HttpClients.createDefault();
+    private CloseableHttpClient httpclient = HttpClients.createDefault();
     private static final String MODULE_NAME = "siegfried";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
     private static final int MAX_TRIES = 3;
     private static final long MILLI_SECONDS_BETWEEN_TRIES = 5000;
     private static final String IGNOREUNKNOWNFILEPARAMETER = "ignoreUnknownFile";
-    
-    
+
+
     {
-        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
-        INPUTSIGNATURE.put("siegfriedURL",new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put(IGNOREUNKNOWNFILEPARAMETER, new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("false"));
+        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
+            new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+        INPUTSIGNATURE.put("siegfriedURL", new InputParameter().setObjectclass(String.class));
+        INPUTSIGNATURE.put(IGNOREUNKNOWNFILEPARAMETER,
+            new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("false"));
     }
-    
+
     @Override
-    public Map<String,InputParameter> getInputSignature(){
+    public Map<String, InputParameter> getInputSignature() {
         return INPUTSIGNATURE;
     }
-    
+
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
         ParameterMap returnPM = new ParameterMap();
-        BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+        BinaryDataObjectTypeRoot bdotr =
+            (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         FormatIdentificationType format = bdotr.getFormatIdentification();
         File file = new File(bdotr.getWorkingFilename());
-        int tries=0;
-        while (true){
-            try{
-                tries+=1;
-                String responseSiegfried = callSiegfried((String) parameters.get("siegfriedURL"), file);        
+        int tries = 0;
+        while (true) {
+            try {
+                tries += 1;
+                String responseSiegfried = callSiegfried((String) parameters.get("siegfriedURL"), file);
                 JsonNode jsonNode = JsonHandler.getFromString(responseSiegfried);
-                JsonNode j=jsonNode.get("files").get(0).get("matches").get(0);
+                JsonNode j = jsonNode.get("files").get(0).get("matches").get(0);
                 String formatId = j.get("id").asText();
-                if ("true".equals(parameters.get(IGNOREUNKNOWNFILEPARAMETER)) && "UNKNOWN".equals(formatId)){
+                if ("true".equals(parameters.get(IGNOREUNKNOWNFILEPARAMETER)) && "UNKNOWN".equals(formatId)) {
                     throw new VitamBinaryDataObjectException("Unknown file for Siegfried" + bdotr.getWorkingFilename());
                 }
-                if (formatId != null && formatId.length() > 0 ){
+                if (formatId != null && formatId.length() > 0) {
                     format.setFormatId(formatId);
                 }
                 String mime = j.get("mime").asText();
-                if (mime != null && mime.length() >0){
+                if (mime != null && mime.length() > 0) {
                     format.setMimeType(mime);
                 }
-                String formatLitteral=j.get("format").asText();
-                if (formatLitteral != null && formatLitteral.length() >0){
+                String formatLitteral = j.get("format").asText();
+                if (formatLitteral != null && formatLitteral.length() > 0) {
                     format.setFormatLitteral(formatLitteral);
                 }
                 break;
 
-                
+
             } catch (InvalidParseOperationException e) {
-                if (tries > MAX_TRIES){
-                    throw new VitamSedaException("Error on the Json got from Siegfried",e);
+                if (tries > MAX_TRIES) {
+                    throw new VitamSedaException("Error on the Json got from Siegfried", e);
                 }
                 sleep(MILLI_SECONDS_BETWEEN_TRIES);
             } catch (IOException e) {
-                if (tries > MAX_TRIES){
-                    throw new VitamSedaException("I/O error during Siegfried Module",e);
+                if (tries > MAX_TRIES) {
+                    throw new VitamSedaException("I/O error during Siegfried Module", e);
                 }
                 sleep(MILLI_SECONDS_BETWEEN_TRIES);
             }
@@ -147,31 +150,31 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;
     }
-    
-    private void sleep(long ms){
+
+    private void sleep(long ms) {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {// NOSONAR : This should never happen
-            
+
         }
-        
+
     }
-    
-    private String callSiegfried(String siegfriedURL , File file) throws VitamSedaException,IOException{
+
+    private String callSiegfried(String siegfriedURL, File file) throws VitamSedaException, IOException {
         String returnSiegfriedValue = null;
-        try{
+        try {
             HttpPost post = new HttpPost(siegfriedURL + "/identify?format=json");
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.addBinaryBody("file", file);
             HttpEntity entity = builder.build();
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
-            returnSiegfriedValue= EntityUtils.toString(response.getEntity(), CharsetUtils.UTF8);
+            returnSiegfriedValue = EntityUtils.toString(response.getEntity(), CharsetUtils.UTF8);
             post.releaseConnection();
-        }catch(ClientProtocolException e){
-            throw new VitamSedaException("Error on the HTTP client sent to siegfried",e);
+        } catch (ClientProtocolException e) {
+            throw new VitamSedaException("Error on the HTTP client sent to siegfried", e);
         }
         return returnSiegfriedValue;
     }
-    
+
 }

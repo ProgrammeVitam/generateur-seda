@@ -36,9 +36,6 @@ package fr.gouv.vitam.generator.seda.core;
 
 import java.io.File;
 import java.nio.file.FileSystems;
-import java.util.HashMap;
-
-import javax.management.ObjectName;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -61,7 +58,6 @@ public class ArchiveTransferConfig {
     public static final String CONFIG_NAME = "ArchiveTransferConfig.json";
 
     /**
-     *
      * @param configDir
      * @param targetDir
      */
@@ -69,12 +65,14 @@ public class ArchiveTransferConfig {
         if (new File(configDir).isFile()) {
             globalConfig = readJsonFile(configDir);
         } else {
-            globalConfig = readJsonFile(configDir + FileSystems.getDefault().getSeparator() + CONFIG_NAME); // NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
+            globalConfig = readJsonFile(configDir + FileSystems.getDefault().getSeparator() +
+                CONFIG_NAME); // NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
         }
         if (targetDir != null && new File(targetDir).isFile()) {
             scanConfig = readJsonFile(targetDir);
         } else {
-            scanConfig = readJsonFile(targetDir + FileSystems.getDefault().getSeparator() + CONFIG_NAME);// NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
+            scanConfig = readJsonFile(targetDir + FileSystems.getDefault().getSeparator() +
+                CONFIG_NAME);// NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
         }
 
     }
@@ -91,7 +89,6 @@ public class ArchiveTransferConfig {
     }
 
     /**
-     *
      * @param key
      * @return
      */
@@ -100,7 +97,6 @@ public class ArchiveTransferConfig {
     }
 
     /**
-     *
      * @param key
      * @return the JsonNode below the first level key given
      */
@@ -111,18 +107,17 @@ public class ArchiveTransferConfig {
         return globalConfig.get(key);
     }
 
-    private void set(String key, String value){
-        if (scanConfig != null){
+    private void set(String key, String value) {
+        if (scanConfig != null) {
             ((ObjectNode) scanConfig).put(key, value);
-        }else{
+        } else {
             ((ObjectNode) globalConfig).put(key, value);
         }
     }
-    
+
     /**
-     *
      * @param key
-     * @return the String at the first level key given if this is a String else return an empty string 
+     * @return the String at the first level key given if this is a String else return an empty string
      */
     public String getString(String key) {
         if (has(key) && get(key).getNodeType().equals(JsonNodeType.STRING)) {
@@ -131,12 +126,13 @@ public class ArchiveTransferConfig {
             return "";
         }
     }
-    
+
     /**
      * Override the messageIdentifier
+     *
      * @param messageId
      */
-    public void setMessageIdentifer(String messageId){
-        set("MessageIdentifier",messageId);
+    public void setMessageIdentifer(String messageId) {
+        set("MessageIdentifier", messageId);
     }
 }

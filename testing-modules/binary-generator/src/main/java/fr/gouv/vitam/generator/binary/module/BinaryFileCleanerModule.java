@@ -28,15 +28,15 @@
 
 package fr.gouv.vitam.generator.binary.module;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Module : Remove an archived binary object
@@ -51,29 +51,30 @@ import java.util.Map;
 
 public class BinaryFileCleanerModule extends AbstractModule implements PublicModuleInterface {
     private static final String MODULE_NAME = "binaryFileCleaner";
-    private static final Map<String,InputParameter> INPUTSIGNATURE = new HashMap<>();
+    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
+
     {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
     }
-    
+
     @Override
-    public Map<String,InputParameter> getInputSignature(){
+    public Map<String, InputParameter> getInputSignature() {
         return INPUTSIGNATURE;
     }
-    
-    
+
+
     @Override
     public String getModuleId() {
         return MODULE_NAME;
     }
 
-    @Override   
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException{
-        File f = new File((String)parameters.get("file"));
-        if (f.exists()){
+    @Override
+    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+        File f = new File((String) parameters.get("file"));
+        if (f.exists()) {
             boolean delete = f.delete();
             if (!delete) {
-                 throw new VitamSedaException("Unable to delete "+f.getAbsolutePath());
+                throw new VitamSedaException("Unable to delete " + f.getAbsolutePath());
             }
         }
         return new ParameterMap();
