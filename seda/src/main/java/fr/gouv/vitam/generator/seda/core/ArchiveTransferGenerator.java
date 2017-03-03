@@ -32,6 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -109,7 +111,7 @@ public class ArchiveTransferGenerator {
         mapArchiveUnit = new LinkedHashMap<>();
         this.archiveTransferConfig = archiveTransferConfig;
         try {
-            temporarySedaFilePath = System.getProperty("java.io.tmpdir") + "/" + SEDA_FILENAME;
+            temporarySedaFilePath = System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator() + SEDA_FILENAME;
             writerFOS = new FileOutputStream(temporarySedaFilePath);
             this.writer = (XMLStreamWriter2) output.createXMLStreamWriter(writerFOS, ENCODING);
         } catch (IOException | XMLStreamException e) {
@@ -395,7 +397,7 @@ public class ArchiveTransferGenerator {
             throw new VitamSedaException("Error to write to zipFile", e);
         }
         if (!new File(temporarySedaFilePath).delete()) {
-            throw new VitamSedaException("Error to remove temporary manifest file " + temporarySedaFilePath);
+            LOGGER.warn("Error to remove temporary manifest file " + temporarySedaFilePath);
         }
 
     }
