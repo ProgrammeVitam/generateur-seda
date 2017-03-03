@@ -50,7 +50,7 @@ public class DummyModule extends AbstractModule implements PublicModuleInterface
     private static final String MODULE_NAME = "dummy";
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
-    {
+    static {
         INPUTSIGNATURE.put("mandatory_argument", new InputParameter().setObjectclass(String.class));
         INPUTSIGNATURE.put("optional_argument", new InputParameter().setMandatory(false).setDefaultValue("test"));
         INPUTSIGNATURE.put("nullable_argument", new InputParameter().setNullable(true));

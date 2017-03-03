@@ -45,17 +45,17 @@ public interface ModuleInterface {
      * @return a ParameterMap representing the returnvalue of the module
      * @throws VitamException
      */
-    public ParameterMap execute(ParameterMap parameters) throws VitamException;
+    ParameterMap execute(ParameterMap parameters) throws VitamException;
 
     /**
      * Return the moduleID which is the reference of the module
      * @return module
      */
-    public String getModuleId();
+    String getModuleId();
 
     /**
      * Get the input signature of the module
      * @return the input signature of the module
      */
-    public Map<String, InputParameter> getInputSignature();
+    Map<String, InputParameter> getInputSignature();
 }

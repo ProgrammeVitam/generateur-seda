@@ -54,7 +54,7 @@ public class InvalidSizeModule extends AbstractModule implements PublicModuleInt
     private static final String MODULE_NAME = "InvalidSize";
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
-    {
+    static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("file_regex", new InputParameter().setObjectclass(String.class));

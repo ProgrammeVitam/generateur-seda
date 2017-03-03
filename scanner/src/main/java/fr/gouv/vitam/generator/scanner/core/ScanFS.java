@@ -38,6 +38,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -77,7 +78,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     private final ArchiveTransferGenerator atgi;
     // Contains IDs of current (First index) and parents(Others) directories if they are DataObjectGroup.
     // Contains null for an AU
-    private LinkedList<String> dataObjectGroupOfVisitedDirectories = new LinkedList<>();
+    private Deque<String> dataObjectGroupOfVisitedDirectories = new LinkedList<>();
     private final HashMap<String, String> mapArchiveUnitPath2Id;
     private final SchedulerEngine schedulerEngine;
     private final Playbook playbookBinary;
@@ -177,8 +178,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      * a pseudo Archive Unit and a DataObjectGroup where will be attached the BinaryObjectGroup
      */
     @Override
-    public FileVisitResult visitFile(Path file,
-        BasicFileAttributes attr) {
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
         if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) ||
             file.getFileName().toString().equals(ARCHIVEUNITMETADATAFILE_NAME) ||
             file.getFileName().toString().equals(ARCHIVEUNITRAWCONTENTFILE_NAME) ||
@@ -254,8 +254,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      */
 
     @Override
-    public FileVisitResult postVisitDirectory(Path dir,
-        IOException exc) {
+    public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
         // When in the ArchiveUnit Standard mode (not DOG), the start and endDate have to be calculated recursively
         if (dataObjectGroupOfVisitedDirectories.getFirst() == null) {
              String auid = mapArchiveUnitPath2Id.get(dir.toString());

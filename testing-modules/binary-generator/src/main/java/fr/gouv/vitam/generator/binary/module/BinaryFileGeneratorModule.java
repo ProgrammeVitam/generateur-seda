@@ -60,7 +60,7 @@ public class BinaryFileGeneratorModule extends AbstractModule implements PublicM
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
     private static final String SEPARATOR = "|";
 
-    {
+    static {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
         INPUTSIGNATURE
             .put("size", new InputParameter().setObjectclass(Long.class).setMandatory(false).setDefaultValue(100));

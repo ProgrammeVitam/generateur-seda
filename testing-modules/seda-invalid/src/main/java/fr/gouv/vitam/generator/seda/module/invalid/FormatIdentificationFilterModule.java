@@ -54,7 +54,7 @@ public class FormatIdentificationFilterModule extends AbstractModule implements 
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
 
-    {
+    static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("file_regex", new InputParameter().setObjectclass(String.class));

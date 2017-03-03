@@ -171,7 +171,7 @@ public class BinaryGenerator {
     /**
      * Convert an int into a literal string representation ; e.g. : 102 --> one zero two
      *
-     * @param i
+     * @param number
      * @return
      */
     private static String spellNumber(int number) {

@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -58,12 +58,11 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
 
-    {
+    static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("digest.algorithm",
             new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DigestType.SHA512));
-
     }
 
     @Override
@@ -96,4 +95,5 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;
     }
+
 }

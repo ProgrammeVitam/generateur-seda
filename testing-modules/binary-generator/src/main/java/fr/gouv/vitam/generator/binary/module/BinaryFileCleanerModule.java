@@ -53,7 +53,7 @@ public class BinaryFileCleanerModule extends AbstractModule implements PublicMod
     private static final String MODULE_NAME = "binaryFileCleaner";
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
-    {
+    static {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
     }
 

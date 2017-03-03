@@ -65,7 +65,6 @@ public class SchedulerEngine {
                 modulesList.put(module.getModuleId(), module);
                 sm.registerModule(module.getModuleId());
             }
-
         }
     }
 
@@ -85,11 +84,10 @@ public class SchedulerEngine {
      * @throws VitamException
      */
     public ParameterMap execute(Playbook playbook, ParameterMap initialParameters) throws VitamException {
-        ParameterMap pm = initialParameters;
         for (Task t : playbook.getTasks()) {
-            executeTask(t, pm);
+            executeTask(t, initialParameters);
         }
-        return pm;
+        return initialParameters;
     }
 
     /**

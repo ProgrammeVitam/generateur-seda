@@ -84,7 +84,7 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
     private static final String IGNOREUNKNOWNFILEPARAMETER = "ignoreUnknownFile";
 
 
-    {
+    static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("siegfriedURL", new InputParameter().setObjectclass(String.class));

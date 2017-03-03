@@ -56,7 +56,7 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
 
-    {
+    static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE

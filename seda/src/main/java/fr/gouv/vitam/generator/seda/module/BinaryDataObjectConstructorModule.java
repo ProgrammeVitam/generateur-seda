@@ -25,7 +25,6 @@
  * accept its terms.
  */
 
-
 package fr.gouv.vitam.generator.seda.module;
 
 import java.io.File;
@@ -70,8 +69,7 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
     private static final String DATAOBJECTVERSION_DEFAULT = "BinaryMaster";
     private static final String IGNORESPECIALCHAREXTENSION = "ignoreSpecialCharExtension";
 
-
-    {
+    static {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
         INPUTSIGNATURE.put(DATAOBJECTVERSION_PARAMETER,
             new InputParameter().setObjectclass(String.class).setMandatory(false)
@@ -145,4 +143,5 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         return returnPM;
     }
+
 }

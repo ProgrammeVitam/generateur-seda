@@ -191,14 +191,13 @@ public class ArchiveUnitTypeRoot extends ArchiveUnitType {
         if (rawContentFile != null && rawContentFile.exists()) {
             writeFile(rawContentFile, writer);
         } else if (content != null) {
-            for (int i = 0; i < content.size(); i++) {
-                writeXMLFragment(content.get(i), writer);
+            for (DescriptiveMetadataContentType aContent : content) {
+                writeXMLFragment(aContent, writer);
             }
         }
         if (archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference != null) {
 
-            for (int i = 0; i < archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference.size(); i++) {
-                Object obj = archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference.get(i);
+            for (Object obj : archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference) {
                 if (obj != null) {
                     if (obj instanceof DataObjectRefType) {
                         writeXMLFragment(obj, writer);
