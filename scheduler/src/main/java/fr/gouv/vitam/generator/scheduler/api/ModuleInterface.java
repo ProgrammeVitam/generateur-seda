@@ -42,10 +42,10 @@ public interface ModuleInterface {
     /**
      * Execute the module
      * @param parameters (Entry parameter of the module)
-     * @return a ParameterMap representing the returnvalue of the module
+     * @return information of a task
      * @throws VitamException
      */
-    ParameterMap execute(ParameterMap parameters) throws VitamException;
+    TaskInfo execute(ParameterMap parameters) throws VitamException;
 
     /**
      * Return the moduleID which is the reference of the module

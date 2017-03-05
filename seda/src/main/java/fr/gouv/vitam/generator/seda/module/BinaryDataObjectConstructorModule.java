@@ -27,6 +27,8 @@
 
 package fr.gouv.vitam.generator.seda.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URLEncoder;
@@ -41,6 +43,8 @@ import fr.gouv.culture.archivesdefrance.seda.v2.FileInfoType;
 import fr.gouv.culture.archivesdefrance.seda.v2.FormatIdentificationType;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
+import fr.gouv.vitam.generator.scheduler.api.TaskStatus;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
@@ -90,7 +94,7 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+    protected TaskInfo realExecute(ParameterMap parameters) throws VitamSedaException {
         ParameterMap returnPM = new ParameterMap();
         String id = XMLWriterUtils.getNextID();
         File f = new File((String) parameters.get("file"));
@@ -141,7 +145,7 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         // Working attribute that is not put in the xml
         bdotr.setWorkingFilename(f.getPath());
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
-        return returnPM;
+        return new TaskInfo(CONTINUE, returnPM);
     }
 
 }

@@ -2,8 +2,8 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
- * This software is a computer program whose purpose is to implement a digital 
+ *
+ * This software is a computer program whose purpose is to implement a digital
  * archiving back-office system managing high volumetry securely and efficiently.
  *
  * This software is governed by the CeCILL 2.1 license under French law and
@@ -34,6 +34,8 @@
  */
 package fr.gouv.vitam.generator.seda.module.invalid;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +45,7 @@ import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
@@ -73,7 +76,7 @@ public class InvalidSizeModule extends AbstractModule implements PublicModuleInt
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamException {
+    protected TaskInfo realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
         Pattern p = Pattern.compile((String) parameters.get("file_regex"));
         BinaryDataObjectTypeRoot bdotr =
@@ -83,7 +86,7 @@ public class InvalidSizeModule extends AbstractModule implements PublicModuleInt
             bdotr.setSize(falseSize);
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
-        return returnPM;
+        return new TaskInfo(CONTINUE, returnPM);
     }
 
 }

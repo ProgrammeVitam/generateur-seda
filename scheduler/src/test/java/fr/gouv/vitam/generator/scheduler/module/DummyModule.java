@@ -34,12 +34,15 @@
  */
 package fr.gouv.vitam.generator.scheduler.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 
@@ -69,10 +72,10 @@ public class DummyModule extends AbstractModule implements PublicModuleInterface
     }
 
     @Override
-    public ParameterMap realExecute(ParameterMap parameters) throws VitamException {
+    public TaskInfo realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
         returnPM.put("test", "test");
-        return returnPM;
+        return new TaskInfo(CONTINUE, returnPM);
     }
 
 }

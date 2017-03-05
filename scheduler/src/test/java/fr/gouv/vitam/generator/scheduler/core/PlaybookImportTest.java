@@ -46,6 +46,7 @@ import fr.gouv.vitam.generator.scheduler.exception.VitamSchedulerException;
  *
  */
 public class PlaybookImportTest {
+
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(PlaybookImportTest.class);
 
     @Test

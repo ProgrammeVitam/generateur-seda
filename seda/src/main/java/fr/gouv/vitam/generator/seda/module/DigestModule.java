@@ -27,6 +27,8 @@
 
 package fr.gouv.vitam.generator.seda.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ import fr.gouv.vitam.common.digest.Digest;
 import fr.gouv.vitam.common.digest.DigestType;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
@@ -77,7 +80,7 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+    protected TaskInfo realExecute(ParameterMap parameters) throws VitamSedaException {
         BinaryDataObjectTypeRoot bdotr =
             (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         ParameterMap returnPM = new ParameterMap();
@@ -93,7 +96,7 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
             throw new VitamBinaryDataObjectException(f.toString() + " has had an I/O exception" + e.getMessage(), e);
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
-        return returnPM;
+        return new TaskInfo(CONTINUE, returnPM);
     }
 
 }

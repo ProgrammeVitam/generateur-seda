@@ -56,5 +56,4 @@ public class BinaryDataObjectTypeRoot extends BinaryDataObjectType {
         return this;
     }
 
-
 }

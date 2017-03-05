@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -28,12 +28,15 @@
 
 package fr.gouv.vitam.generator.binary.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
@@ -43,10 +46,9 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
  * <br>
  * Input:
  * <ul>
- *  <li>file (String) : Full path of the Binary object to delete</li>
+ * <li>file (String) : Full path of the Binary object to delete</li>
  * </ul>
  * Output: nothing<br>
- *
  */
 
 public class BinaryFileCleanerModule extends AbstractModule implements PublicModuleInterface {
@@ -69,7 +71,7 @@ public class BinaryFileCleanerModule extends AbstractModule implements PublicMod
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+    protected TaskInfo realExecute(ParameterMap parameters) throws VitamSedaException {
         File f = new File((String) parameters.get("file"));
         if (f.exists()) {
             boolean delete = f.delete();
@@ -77,6 +79,7 @@ public class BinaryFileCleanerModule extends AbstractModule implements PublicMod
                 throw new VitamSedaException("Unable to delete " + f.getAbsolutePath());
             }
         }
-        return new ParameterMap();
+        return new TaskInfo(CONTINUE, new ParameterMap());
     }
+
 }

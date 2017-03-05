@@ -2,8 +2,8 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
- * This software is a computer program whose purpose is to implement a digital 
+ *
+ * This software is a computer program whose purpose is to implement a digital
  * archiving back-office system managing high volumetry securely and efficiently.
  *
  * This software is governed by the CeCILL 2.1 license under French law and
@@ -34,7 +34,7 @@
  */
 package fr.gouv.vitam.generator.seda.module;
 
-
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +59,7 @@ import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.json.JsonHandler;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
@@ -103,7 +104,7 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+    protected TaskInfo realExecute(ParameterMap parameters) throws VitamSedaException {
         ParameterMap returnPM = new ParameterMap();
         BinaryDataObjectTypeRoot bdotr =
             (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
@@ -148,7 +149,7 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
         }
         bdotr.setFormatIdentification(format);
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
-        return returnPM;
+        return new TaskInfo(CONTINUE, returnPM);
     }
 
     private void sleep(long ms) {
@@ -161,7 +162,7 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
     }
 
     private String callSiegfried(String siegfriedURL, File file) throws VitamSedaException, IOException {
-        String returnSiegfriedValue = null;
+        String returnSiegfriedValue;
         try {
             HttpPost post = new HttpPost(siegfriedURL + "/identify?format=json");
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -170,7 +171,7 @@ public class SiegfriedModule extends AbstractModule implements PublicModuleInter
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
             returnSiegfriedValue = EntityUtils.toString(response.getEntity(), CharsetUtils.UTF8);
-            post.releaseConnection();
+            post.reset();
         } catch (ClientProtocolException e) {
             throw new VitamSedaException("Error on the HTTP client sent to siegfried", e);
         }
