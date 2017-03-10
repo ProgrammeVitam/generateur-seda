@@ -110,7 +110,6 @@ public class BinaryDataObjectConstructorModule extends AbstractModule implements
         BinaryDataObjectTypeRoot bdotr = new BinaryDataObjectTypeRoot();
         bdotr.setId(id);
 
-
         String extension = ".seda";
         int position = f.getName().lastIndexOf('.');
         if (position != -1) {

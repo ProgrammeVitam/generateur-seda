@@ -60,7 +60,6 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
     private static final String MODULE_NAME = "digest";
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
-
     static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));

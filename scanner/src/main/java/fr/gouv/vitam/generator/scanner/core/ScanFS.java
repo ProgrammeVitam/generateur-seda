@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -90,6 +90,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
 
     /**
      * Constructor for ScanFS
+     *
      * @param archiveTransferConfig : contains the aggregate configuration of the differents configurations sources
      * @param playbookFileBDO : Path of the file which contains the Playbook for Binary Data Object
      * @param outputFile : Path of the ZIP Seda File
@@ -152,7 +153,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         if (dirName.startsWith("__") && dirName.endsWith("__")) {
             dataObjectGroupOfVisitedDirectories.addFirst(atgi.getDataObjectGroupUsedMap().registerDataObjectGroup());
             archiveUnitID =
-                atgi.addArchiveUnit(dirName.substring(2, dirName.length() - 2), dir.toString(), manifestPathName);
+                atgi.addArchiveUnit(dirName.substring(2, dirName.length() - 2), dir.toString(), manifestPathName,
+                    dir.toString());
             mapArchiveUnitPath2Id.put(dir.toString(), archiveUnitID);
             String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
             atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
@@ -160,7 +162,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
             // ArchiveUnit
         } else {
             dataObjectGroupOfVisitedDirectories.addFirst(null);
-            archiveUnitID = atgi.addArchiveUnit(dirName, dir.toString(),manifestPathName);
+            archiveUnitID = atgi.addArchiveUnit(dirName, dir.toString(), manifestPathName, dir.toString());
             mapArchiveUnitPath2Id.put(dir.toString(), archiveUnitID);
             if (mapArchiveUnitPath2Id.containsKey(dir.getParent().toString())) {
                 String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
@@ -206,7 +208,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         String fatherID;
 
         // Archive Unit : we create the DataObjectGroup
-        if (dataObjectGroupID == null){
+        if (dataObjectGroupID == null) {
             dataObjectGroupID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
         }
 
@@ -219,18 +221,25 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
             schedulerEngine.execute(playbookBinary, inputParameterMap);
             // Standard Directory
             if (dataObjectGroupOfVisitedDirectories.getFirst() == null) {
-                // Create the Pseudo ArchiveUnit
-                archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
-                    "Pseudo Archive Unit du fichier :" + file.toString());
                 // Get the ID of the parent ArchiveUnit
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
-                // Add the relation between father and son
-                atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
-                // Add the relation between son AU and DataObjectGroup
-                atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupID);
-                // Calculate TransactedDate,StartDate and EndDate
-                atgi.setTransactedDate(archiveUnitID, new Date(file.toFile().lastModified()));
-            // DataObjectGroup Directory
+
+                if (inputParameterMap.containsKey("windowsShortcut") &&
+                    inputParameterMap.get("windowsShortcut") != null) {
+                    String windowsShortcut = (String) inputParameterMap.get("windowsShortcut");
+                    atgi.addEdge(fatherID, windowsShortcut);
+                } else {
+                    // Create the Pseudo ArchiveUnit
+                    archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
+                        "Pseudo Archive Unit du fichier :" + file.toString(), file.toString());
+                    // Add the relation between father and son
+                    atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
+                    // Add the relation between son AU and DataObjectGroup
+                    atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupID);
+                    // Calculate TransactedDate,StartDate and EndDate
+                    atgi.setTransactedDate(archiveUnitID, new Date(file.toFile().lastModified()));
+                }
+                // DataObjectGroup Directory
             } else {
                 // Get the ID of the DataObjectGroup Directory Archive Unit
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
@@ -257,8 +266,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
         // When in the ArchiveUnit Standard mode (not DOG), the start and endDate have to be calculated recursively
         if (dataObjectGroupOfVisitedDirectories.getFirst() == null) {
-             String auid = mapArchiveUnitPath2Id.get(dir.toString());
-             atgi.addStartAndEndDate2ArchiveUnit(auid);
+            String auid = mapArchiveUnitPath2Id.get(dir.toString());
+            atgi.addStartAndEndDate2ArchiveUnit(auid);
         }
         dataObjectGroupOfVisitedDirectories.removeFirst();
         return FileVisitResult.CONTINUE;
@@ -305,6 +314,10 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
 
         atgi.writeManagementMetadata();
         atgi.closeDocument();
+        atgi.writeUnusedWindowsShortCut(errFileStream);
+
+        errFileStream.flush();
+        errFileStream.close();
         schedulerEngine.printStatistics();
     }
 

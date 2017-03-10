@@ -19,6 +19,12 @@
 		  "parameters" :{ "binarydataobject" : "@@binarydataobject@@" ,"siegfriedURL" : "http://localhost:5138", "ignoreUnknownFile" : "false"} ,
 		  "registeredParameters": {"binarydataobject" : "@@binarydataobject@@"}
 		},
+		{
+			"name" : "Récupération des liens windows",
+			"module" : "windowsShortCut",
+			"parameters" :{ "binarydataobject" : "@@binarydataobject@@"} ,
+			"registeredParameters": {"binarydataobject" : "@@binarydataobject@@", "windowsShortcut" : "@@windowsShortcut@@"}
+		},
 		{ 
 		  "name" : "Recupération des statistiques du fichier",
 		  "module" : "writeBinaryDataObject",

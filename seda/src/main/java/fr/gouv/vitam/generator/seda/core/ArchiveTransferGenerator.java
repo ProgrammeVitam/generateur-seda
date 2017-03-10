@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -27,14 +27,19 @@
 package fr.gouv.vitam.generator.seda.core;
 
 
+import static com.google.common.collect.ImmutableList.copyOf;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,6 +53,11 @@ import org.codehaus.stax2.XMLStreamWriter2;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchivalAgencyTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
@@ -77,6 +87,7 @@ import fr.gouv.vitam.generator.seda.helper.ZipFileWriter;
 
 //import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
 
+
 /**
  * This class manages the creation of the SEDA ArchiveTransfer file .It creates the PKZIP file with the manifest.xml SEDA file and the Binary Objects
  */
@@ -94,6 +105,8 @@ public class ArchiveTransferGenerator {
     private final XMLStreamWriter2 writer;
     private final ArchiveTransferConfig archiveTransferConfig;
 
+    private Multimap<String, String> windowsShortLinkById = ArrayListMultimap.create();
+    private Map<String, String> fileById = new HashMap<>();
 
     /**
      * @param archiveTransferConfig : contains the global configuration of the ArchiveTransfer
@@ -111,7 +124,8 @@ public class ArchiveTransferGenerator {
         mapArchiveUnit = new LinkedHashMap<>();
         this.archiveTransferConfig = archiveTransferConfig;
         try {
-            temporarySedaFilePath = System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator() + SEDA_FILENAME;
+            temporarySedaFilePath =
+                System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator() + SEDA_FILENAME;
             writerFOS = new FileOutputStream(temporarySedaFilePath);
             this.writer = (XMLStreamWriter2) output.createXMLStreamWriter(writerFOS, ENCODING);
         } catch (IOException | XMLStreamException e) {
@@ -127,6 +141,7 @@ public class ArchiveTransferGenerator {
             throw new VitamSedaException("Can't create /Content directory in the zipFile", e);
         }
     }
+
 
     /**
      * Generate the Head of the xml Seda File : All elements up to DataObjectPackage (excluded)
@@ -160,7 +175,6 @@ public class ArchiveTransferGenerator {
         XMLWriterUtils.setID(writer);
     }
 
-
     /**
      * Define an archive with 2 elements : title and description
      *
@@ -173,17 +187,35 @@ public class ArchiveTransferGenerator {
     public String addArchiveUnit(String title, String description) {
         ParametersChecker.checkParameter("title cannot be null", title);
         ParametersChecker.checkParameter("description cannot be null", description);
-        return addArchiveUnit(title, description, null);
+        return addArchiveUnit(title, description, null, null);
+    }
+
+    /**
+     * Define an archive with 2 elements : title and description
+     *
+     * @param title
+     * @param description
+     * @param path
+     * @return the XML:ID of the archive Unit
+     * @throws IllegalArgumentException if title or description is null
+     */
+
+    public String addArchiveUnit(String title, String description, String path) {
+        ParametersChecker.checkParameter("title cannot be null", title);
+        ParametersChecker.checkParameter("description cannot be null", description);
+        return addArchiveUnit(title, description, null, path);
     }
 
     /**
      * efine an archive with 3 elements : title and description and a json metadata File
+     *
      * @param title
      * @param description
      * @param metadataFile
+     * @param path
      * @return the XML:ID of the archive Unit
      */
-    public String addArchiveUnit(String title, String description, File metadataFile) {
+    public String addArchiveUnit(String title, String description, File metadataFile, String path) {
         ParametersChecker.checkParameter("title cannot be null", title);
         ParametersChecker.checkParameter("description cannot be null", description);
         String id = XMLWriterUtils.getNextID();
@@ -221,11 +253,16 @@ public class ArchiveTransferGenerator {
         autr.getContent().add(dmct);
         autr.setId(id);
         mapArchiveUnit.put(id, autr);
+        if (path != null) {
+            LOGGER.info("add info on path: {}, {}", path, id);
+            fileById.put(path, id);
+        }
         return id;
     }
 
     /**
      * Set the rawManagementFile
+     *
      * @param archiveUnitID
      * @param rawmetadataFile
      */
@@ -238,6 +275,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Set the rawContentFile
+     *
      * @param archiveUnitID
      * @param rawContentFile
      */
@@ -250,6 +288,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Set transactedDate to the ArchiveUnit Descriptive Metadata
+     *
      * @param id : id of the ArchiveUnit
      * @param date : Date to be set
      * @throws IllegalArgumentException if id is null or isn't a valid ArchiveUnit Id
@@ -268,8 +307,9 @@ public class ArchiveTransferGenerator {
     }
 
     /**
-     * Remove an ArchiveUnit from the collection . 
+     * Remove an ArchiveUnit from the collection .
      * It doesn't destroy the relation with other ArchiveUnits
+     *
      * @param id
      * @throws IllegalArgumentException if id is null
      */
@@ -321,6 +361,7 @@ public class ArchiveTransferGenerator {
     /**
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
      * Management Metadata
+     *
      * @return number of written archive units
      * @throws VitamSedaException
      */
@@ -334,6 +375,9 @@ public class ArchiveTransferGenerator {
         try {
             for (ArchiveUnitTypeRoot autr : mapArchiveUnit.values()) {
                 //writeXMLFragment(autr);
+                if (windowsShortLinkById.containsKey(autr.getId())) {
+                    writeArchiveUnitLink(autr);
+                }
                 autr.marshall(writer);
                 nbArchiveUnits++;
             }
@@ -342,6 +386,26 @@ public class ArchiveTransferGenerator {
         } catch (XMLStreamException e) {
             throw new VitamSedaException("Can't write Descriptive Medatadata", e);
         }
+    }
+
+    private void writeArchiveUnitLink(ArchiveUnitTypeRoot autr) {
+        ImmutableCollection<String> links = copyOf(windowsShortLinkById.get(autr.getId()));
+        links.stream()
+            .filter(value -> fileById.get(value) != null)
+            .forEach(value -> {
+                String fileId = fileById.get(value);
+                ArchiveUnitType archiveUnitArc = new ArchiveUnitType();
+                String id = XMLWriterUtils.getNextID();
+                archiveUnitArc.setId(id);
+                LOGGER.info("read info of windows link:" + value);
+                LOGGER.info("result is:" + fileId);
+                archiveUnitArc.setArchiveUnitRefId(fileId);
+
+                autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()
+                    .add(archiveUnitArc);
+
+                windowsShortLinkById.remove(autr.getId(), value);
+            });
     }
 
     /**
@@ -405,6 +469,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Serialize a Jaxb POJO object in the current XML stream
+     *
      * @param jaxbPOJO
      * @throws VitamSedaException
      */
@@ -487,6 +552,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Calculate the Start and End Date of an ArchiveUnit
+     *
      * @param archiveUnitID
      */
     public void addStartAndEndDate2ArchiveUnit(String archiveUnitID) {
@@ -542,4 +608,21 @@ public class ArchiveTransferGenerator {
         return zipFile;
     }
 
+    @VisibleForTesting
+    Map<String, ArchiveUnitTypeRoot> getMapArchiveUnit() {
+        return mapArchiveUnit;
+    }
+
+    public void addEdge(String archiveUnitFatherID, String path) {
+        ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", archiveUnitFatherID);
+        ParametersChecker.checkParameter("path cannot be null", path);
+
+        windowsShortLinkById.put(archiveUnitFatherID, path);
+    }
+
+    public void writeUnusedWindowsShortCut(PrintStream errFileStream) {
+        for (String link : windowsShortLinkById.values()) {
+            errFileStream.printf("The file :%s is an invalid link%n", link);
+        }
+    }
 }
