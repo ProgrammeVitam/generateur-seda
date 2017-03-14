@@ -43,12 +43,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
@@ -80,6 +83,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     // Contains null for an AU
     private Deque<String> dataObjectGroupOfVisitedDirectories = new LinkedList<>();
     private final HashMap<String, String> mapArchiveUnitPath2Id;
+    private Multimap<String, String> windowsShortLinkById = ArrayListMultimap.create();
+
     private final SchedulerEngine schedulerEngine;
     private final Playbook playbookBinary;
     private final PrintStream errFileStream;
@@ -153,8 +158,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         if (dirName.startsWith("__") && dirName.endsWith("__")) {
             dataObjectGroupOfVisitedDirectories.addFirst(atgi.getDataObjectGroupUsedMap().registerDataObjectGroup());
             archiveUnitID =
-                atgi.addArchiveUnit(dirName.substring(2, dirName.length() - 2), dir.toString(), manifestPathName,
-                    dir.toString());
+                atgi.addArchiveUnit(dirName.substring(2, dirName.length() - 2), dir.toString(), manifestPathName);
             mapArchiveUnitPath2Id.put(dir.toString(), archiveUnitID);
             String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
             atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
@@ -162,7 +166,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
             // ArchiveUnit
         } else {
             dataObjectGroupOfVisitedDirectories.addFirst(null);
-            archiveUnitID = atgi.addArchiveUnit(dirName, dir.toString(), manifestPathName, dir.toString());
+            archiveUnitID = atgi.addArchiveUnit(dirName, dir.toString(), manifestPathName);
             mapArchiveUnitPath2Id.put(dir.toString(), archiveUnitID);
             if (mapArchiveUnitPath2Id.containsKey(dir.getParent().toString())) {
                 String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
@@ -227,11 +231,11 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                 if (inputParameterMap.containsKey("windowsShortcut") &&
                     inputParameterMap.get("windowsShortcut") != null) {
                     String windowsShortcut = (String) inputParameterMap.get("windowsShortcut");
-                    atgi.addEdge(fatherID, windowsShortcut);
+                    windowsShortLinkById.put(fatherID, windowsShortcut);
                 } else {
                     // Create the Pseudo ArchiveUnit
                     archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
-                        "Pseudo Archive Unit du fichier :" + file.toString(), file.toString());
+                        "Pseudo Archive Unit du fichier :" + file.toString());
                     // Add the relation between father and son
                     atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
                     // Add the relation between son AU and DataObjectGroup
@@ -300,6 +304,16 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                     " BinaryDataObjects (No BDO)");
         }
 
+        // resolve link
+        for (Map.Entry<String, String> fatherWithLinks : windowsShortLinkById.entries()) {
+            String value = fatherWithLinks.getValue();
+            if (mapArchiveUnitPath2Id.containsKey(value)) {
+                atgi.addEdge(fatherWithLinks.getKey(), mapArchiveUnitPath2Id.get(value));
+            } else {
+                errFileStream.printf("The file :%s is an invalid link%n", value);
+            }
+        }
+
         long beginDescriptiveMetadateTime = System.currentTimeMillis();
         int nbArchiveUnits = atgi.writeDescriptiveMetadata();
         long descriptiveMetadataTotalTime = System.currentTimeMillis() - beginDescriptiveMetadateTime;
@@ -314,7 +328,6 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
 
         atgi.writeManagementMetadata();
         atgi.closeDocument();
-        atgi.writeUnusedWindowsShortCut(errFileStream);
 
         errFileStream.flush();
         errFileStream.close();

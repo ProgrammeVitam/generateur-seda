@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL 2.1 license and that you accept its terms.
  */
-package fr.gouv.vitam.generator.seda.module;
+package fr.gouv.vitam.generator.scanner.module;
 
 import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.ABORT;
 import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
@@ -49,13 +49,13 @@ import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
+import fr.gouv.vitam.generator.scanner.helper.WindowsLinkResolver;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
 import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
-import fr.gouv.vitam.generator.seda.helper.WindowsLinkResolver;
 
 /**
  * Module to find windows shortcut.

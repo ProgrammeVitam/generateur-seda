@@ -39,16 +39,13 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.nio.file.Path;
 import java.util.Date;
 import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.stream.XMLStreamException;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.AccessRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.AppraisalRuleType;
@@ -147,7 +144,7 @@ public class ArchiveTransferGeneratorTest {
             ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
             atgi.generateHeader();
             File f = new File(classLoader.getResource("ArchiveUnitMetadata.json").getFile());
-            atgi.addArchiveUnit("test", "test", f, null);
+            atgi.addArchiveUnit("test", "test", f);
         } catch (Exception e) {
             LOGGER.error("Should not have an exception", e);
             fail("Should not have an exception");
@@ -362,12 +359,12 @@ public class ArchiveTransferGeneratorTest {
 
         ArchiveTransferGenerator archiveTransferGenerator =
             new ArchiveTransferGenerator(atc, "output.zip");
-        String father = archiveTransferGenerator.addArchiveUnit("father", "parent directory", "/dir");
-        String child1 = archiveTransferGenerator.addArchiveUnit("child1", "directory 1", "/dir/child1");
+        String father = archiveTransferGenerator.addArchiveUnit("father", "parent directory");
+        String child1 = archiveTransferGenerator.addArchiveUnit("child1", "directory 1");
         String subChild1 =
-            archiveTransferGenerator.addArchiveUnit("subChild1", "child directory", "/dir/child1/subchild");
+            archiveTransferGenerator.addArchiveUnit("subChild1", "child directory");
 
-        archiveTransferGenerator.addEdge(subChild1, "/dir/child1");
+        archiveTransferGenerator.addEdge(subChild1, child1);
 
         // When
         int numberOfArchiveUnit = archiveTransferGenerator.writeDescriptiveMetadata();

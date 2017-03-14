@@ -27,19 +27,14 @@
 package fr.gouv.vitam.generator.seda.core;
 
 
-import static com.google.common.collect.ImmutableList.copyOf;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.FileSystems;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,8 +50,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchivalAgencyTypeRoot;
@@ -105,8 +98,7 @@ public class ArchiveTransferGenerator {
     private final XMLStreamWriter2 writer;
     private final ArchiveTransferConfig archiveTransferConfig;
 
-    private Multimap<String, String> windowsShortLinkById = ArrayListMultimap.create();
-    private Map<String, String> fileById = new HashMap<>();
+    private Multimap<String, String> edges = ArrayListMultimap.create();
 
     /**
      * @param archiveTransferConfig : contains the global configuration of the ArchiveTransfer
@@ -187,23 +179,7 @@ public class ArchiveTransferGenerator {
     public String addArchiveUnit(String title, String description) {
         ParametersChecker.checkParameter("title cannot be null", title);
         ParametersChecker.checkParameter("description cannot be null", description);
-        return addArchiveUnit(title, description, null, null);
-    }
-
-    /**
-     * Define an archive with 2 elements : title and description
-     *
-     * @param title
-     * @param description
-     * @param path
-     * @return the XML:ID of the archive Unit
-     * @throws IllegalArgumentException if title or description is null
-     */
-
-    public String addArchiveUnit(String title, String description, String path) {
-        ParametersChecker.checkParameter("title cannot be null", title);
-        ParametersChecker.checkParameter("description cannot be null", description);
-        return addArchiveUnit(title, description, null, path);
+        return addArchiveUnit(title, description, null);
     }
 
     /**
@@ -212,10 +188,9 @@ public class ArchiveTransferGenerator {
      * @param title
      * @param description
      * @param metadataFile
-     * @param path
      * @return the XML:ID of the archive Unit
      */
-    public String addArchiveUnit(String title, String description, File metadataFile, String path) {
+    public String addArchiveUnit(String title, String description, File metadataFile) {
         ParametersChecker.checkParameter("title cannot be null", title);
         ParametersChecker.checkParameter("description cannot be null", description);
         String id = XMLWriterUtils.getNextID();
@@ -253,10 +228,6 @@ public class ArchiveTransferGenerator {
         autr.getContent().add(dmct);
         autr.setId(id);
         mapArchiveUnit.put(id, autr);
-        if (path != null) {
-            LOGGER.info("add info on path: {}, {}", path, id);
-            fileById.put(path, id);
-        }
         return id;
     }
 
@@ -375,8 +346,18 @@ public class ArchiveTransferGenerator {
         try {
             for (ArchiveUnitTypeRoot autr : mapArchiveUnit.values()) {
                 //writeXMLFragment(autr);
-                if (windowsShortLinkById.containsKey(autr.getId())) {
-                    writeArchiveUnitLink(autr);
+                if (edges.containsKey(autr.getId())) {
+                    Collection<String> references = edges.get(autr.getId());
+
+                    for (String reference : references) {
+                        ArchiveUnitType archiveUnitArc = new ArchiveUnitType();
+                        String id = XMLWriterUtils.getNextID();
+                        archiveUnitArc.setId(id);
+                        archiveUnitArc.setArchiveUnitRefId(reference);
+
+                        autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()
+                            .add(archiveUnitArc);
+                    }
                 }
                 autr.marshall(writer);
                 nbArchiveUnits++;
@@ -386,26 +367,6 @@ public class ArchiveTransferGenerator {
         } catch (XMLStreamException e) {
             throw new VitamSedaException("Can't write Descriptive Medatadata", e);
         }
-    }
-
-    private void writeArchiveUnitLink(ArchiveUnitTypeRoot autr) {
-        ImmutableCollection<String> links = copyOf(windowsShortLinkById.get(autr.getId()));
-        links.stream()
-            .filter(value -> fileById.get(value) != null)
-            .forEach(value -> {
-                String fileId = fileById.get(value);
-                ArchiveUnitType archiveUnitArc = new ArchiveUnitType();
-                String id = XMLWriterUtils.getNextID();
-                archiveUnitArc.setId(id);
-                LOGGER.info("read info of windows link:" + value);
-                LOGGER.info("result is:" + fileId);
-                archiveUnitArc.setArchiveUnitRefId(fileId);
-
-                autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()
-                    .add(archiveUnitArc);
-
-                windowsShortLinkById.remove(autr.getId(), value);
-            });
     }
 
     /**
@@ -613,16 +574,11 @@ public class ArchiveTransferGenerator {
         return mapArchiveUnit;
     }
 
-    public void addEdge(String archiveUnitFatherID, String path) {
-        ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", archiveUnitFatherID);
-        ParametersChecker.checkParameter("path cannot be null", path);
+    public void addEdge(String fatherId, String archiveUnitRefId) {
+        ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", fatherId);
+        ParametersChecker.checkParameter("archiveUnitRefId cannot be null", archiveUnitRefId);
 
-        windowsShortLinkById.put(archiveUnitFatherID, path);
+        edges.put(fatherId, archiveUnitRefId);
     }
 
-    public void writeUnusedWindowsShortCut(PrintStream errFileStream) {
-        for (String link : windowsShortLinkById.values()) {
-            errFileStream.printf("The file :%s is an invalid link%n", link);
-        }
-    }
 }

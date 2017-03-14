@@ -24,25 +24,56 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
-package fr.gouv.vitam.generator.seda.helper;
+package fr.gouv.vitam.generator.scanner.helper;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static java.lang.String.format;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.junit.Test;
+import com.google.common.base.Throwables;
+
+import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
+import mslinks.ShellLink;
+import mslinks.ShellLinkException;
 
 /**
- * test for WindowsLinkResolver
+ * Helper for windows link
  */
-public class WindowsLinkResolverTest {
+public class WindowsLinkResolver {
 
-    private WindowsLinkResolver windowsLinkResolver = new WindowsLinkResolver();
+    public static final String WINDOWS_SHORTCUT_EXTENSION = ".lnk";
 
-    @Test
-    public void should_validate_if_a_path_is_a_windows_shortcut() {
-        assertThat(windowsLinkResolver.windowsLink(Paths.get("validLink.lnk"))).isTrue();
-        assertThat(windowsLinkResolver.windowsLink(Paths.get("invalidLink.bag"))).isFalse();
+    public Path resolve(Path path) throws VitamBinaryDataObjectException {
+        return resolve(path, new HashSet<>());
+    }
+
+    private Path resolve(Path path, Set<Path> pathAlreadyFollow) throws VitamBinaryDataObjectException {
+        try {
+            ShellLink shellLink = new ShellLink(path);
+            Path target = Paths.get(shellLink.resolveTarget());
+
+            if (pathAlreadyFollow.contains(target)) {
+                throw new VitamBinaryDataObjectException(format("link are circular, interruption: %s", target));
+            }
+
+            if (windowsLink(target)) {
+                pathAlreadyFollow.add(target);
+                return resolve(target, pathAlreadyFollow);
+            }
+
+            return target;
+
+        } catch (IOException | ShellLinkException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    public boolean windowsLink(Path path) {
+        return path.toString().endsWith(WINDOWS_SHORTCUT_EXTENSION);
     }
 
 }
