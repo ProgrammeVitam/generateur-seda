@@ -95,7 +95,7 @@ public class SchedulerEngine {
         for (Task task : playbook.getTasks()) {
             TaskStatus taskStatus = executeTask(task, initialParameters);
             if (taskStatus == ABORT) {
-                LOGGER.warn("Task {} has abort status. The next tasks will be skipped", task.getModule());
+                LOGGER.debug("Task {} has abort status. The next tasks will be skipped", task.getModule());
                 break;
             }
         }

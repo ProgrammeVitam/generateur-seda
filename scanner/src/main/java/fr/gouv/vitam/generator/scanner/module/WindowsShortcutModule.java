@@ -81,7 +81,7 @@ public class WindowsShortcutModule extends AbstractModule implements PublicModul
 
     public WindowsShortcutModule(WindowsLinkResolver windowsLinkResolver) {
         this.windowsLinkResolver = windowsLinkResolver;
-        LOGGER.info("load module WindowsShortcutModule");
+        LOGGER.debug("load module WindowsShortcutModule");
     }
 
     @Override
@@ -107,7 +107,7 @@ public class WindowsShortcutModule extends AbstractModule implements PublicModul
         if (windowsLinkResolver.windowsLink(path)) {
 
             Path target = windowsLinkResolver.resolve(path).toAbsolutePath();
-            LOGGER.info("{} is resolved as a link, target is {}", path, target.toString());
+            LOGGER.debug("{} is resolved as a link, target is {}", path, target.toString());
             if (!target.toFile().exists()) {
                 throw new VitamBinaryDataObjectException(
                     format("file %s doesn't exist, %sis an invalid link", target, path.toString()));
