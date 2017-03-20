@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -26,51 +26,57 @@
  */
 package fr.gouv.vitam.generator.scheduler.core;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.ABORT;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ServiceLoader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
+import fr.gouv.vitam.generator.scheduler.api.TaskStatus;
 
 /**
- *  SchedulerEngine
+ * SchedulerEngine
  */
 public class SchedulerEngine {
-    /*
-     * TODO either choose static or not static
-     * For instance:
-     * - static: all static final and already allocated and build from a static { } step but not in constructor
-     * - non static: all non static but final and then in constructor
-     */
-    private static Map<String, PublicModuleInterface> modulesList = null;
-    private ServiceLoader<PublicModuleInterface> moduleLoader = ServiceLoader.load(PublicModuleInterface.class);
+
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(SchedulerEngine.class);
+
+    private Map<String, PublicModuleInterface> modulesList;
     private static SchedulerMetrics sm = new SchedulerMetrics();
 
     /**
-     * Enable the SPI discovery of the public modules 
+     * Enable the SPI discovery of the public modules
      */
     public SchedulerEngine() {
-        if (modulesList == null) {
-            modulesList = new HashMap<>();
-            moduleLoader.reload();
-            for (PublicModuleInterface module : moduleLoader) {
-                modulesList.put(module.getModuleId(), module);
-                sm.registerModule(module.getModuleId());
-            }
-
+        modulesList = new HashMap<>();
+        ServiceLoader<PublicModuleInterface> moduleLoader = ServiceLoader.load(PublicModuleInterface.class);
+        for (PublicModuleInterface module : moduleLoader) {
+            modulesList.put(module.getModuleId(), module);
+            sm.registerModule(module.getModuleId());
         }
     }
 
     /**
+     *
+     * @param modulesList list of modules
+     */
+    @VisibleForTesting
+    SchedulerEngine(Map<String, PublicModuleInterface> modulesList) {
+        this.modulesList = modulesList;
+        this.modulesList.forEach((key, value) -> sm.registerModule(key));
+    }
+
+    /**
      * Accessor to the list of public modules
+     *
      * @return the list of public modules
      */
     public Map<String, PublicModuleInterface> getModulesList() {
@@ -79,59 +85,43 @@ public class SchedulerEngine {
 
     /**
      * Execute a plugin
+     *
      * @param playbook
      * @param initialParameters
-     * @return the ParameterMaps of the playbook at the end of the execution 
+     * @return the ParameterMaps of the playbook at the end of the execution
      * @throws VitamException
      */
     public ParameterMap execute(Playbook playbook, ParameterMap initialParameters) throws VitamException {
-        ParameterMap pm = initialParameters;
-        for (Task t : playbook.getTasks()) {
-            executeTask(t, pm);
-        }
-        return pm;
-    }
-
-    /**
-     * Templating of the ParameterMap
-     * @param templateParameters : a template parameter map with @@ @@ pattern 
-     * @param valuesParameters : the values to valuate the template
-     * @return the valuated ParameterMap
-     */
-    private ParameterMap substitute(ParameterMap templateParameters, ParameterMap valuesParameters) {
-        ParameterMap pm = new ParameterMap();
-        Pattern pattern = Pattern.compile("^@@(.*)@@$");
-        for (Entry<String, Object> entry : templateParameters.entrySet()) {
-            String value = (String) entry.getValue();
-            Matcher matcher = pattern.matcher(value);
-            if (matcher.find()) {
-                pm.put(entry.getKey(), valuesParameters.get(matcher.group(1)));
-            } else {
-                pm.put(entry.getKey(), value);
+        for (Task task : playbook.getTasks()) {
+            TaskStatus taskStatus = executeTask(task, initialParameters);
+            if (taskStatus == ABORT) {
+                LOGGER.warn("Task {} has abort status. The next tasks will be skipped", task.getModule());
+                break;
             }
         }
-        return pm;
+        return initialParameters;
     }
 
     /**
      * Execute a task of a playbook
+     *
      * @param task
      * @param globalParameters
      */
-    private void executeTask(Task task, ParameterMap globalParameters) throws VitamException {
-        ParameterMap sentParameters;
-        ParameterMap returnTaskParameters;
+    private TaskStatus executeTask(Task task, ParameterMap globalParameters) throws VitamException {
         String moduleID = task.getModule();
         if (modulesList.containsKey(moduleID)) {
             long start = System.currentTimeMillis();
-            sentParameters = substitute(task.getParameters(), globalParameters);
+            ParameterMap sentParameters = task.substituteParameters(globalParameters);
             LOGGER.debug("Launch Task " + moduleID + " sent parameters :  " + sentParameters);
-            returnTaskParameters = modulesList.get(moduleID).execute(sentParameters);
-            LOGGER.debug("Launch Task " + moduleID + " return parameters :  " + returnTaskParameters);
-            globalParameters.putAll(substitute(task.getRegisteredParameters(), returnTaskParameters));
+            TaskInfo taskInfo = modulesList.get(moduleID).execute(sentParameters);
+            LOGGER.debug("Launch Task " + moduleID + " return parameters :  " + taskInfo);
+            globalParameters.putAll(task.substituteRegisteredParameters(taskInfo.getParameterMap()));
             sm.addExecution(moduleID, System.currentTimeMillis() - start);
+            return taskInfo.getStatus();
         } else {
             LOGGER.error(moduleID + " is Unknown. The task " + task.getName() + " will be skipped");
+            return TaskStatus.CONTINUE;
         }
     }
 

@@ -32,27 +32,43 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL 2.1 license and that you accept its terms.
  */
-package fr.gouv.vitam.generator.seda.api;
+package fr.gouv.vitam.generator.scheduler.api;
 
 /**
- * List of parameters used by Seda Module
+ * return type of a task execution
  */
+public class TaskInfo {
 
-public enum SedaModuleParameter {
-    // TODO Question: name = lowercase ou UpperCamelCase comme dans le SEDA ?
-    BINARYDATAOBJECT("binarydataobject");
+    /**
+     * status of the task
+     */
+    private TaskStatus status;
 
-    private String name;
+    /**
+     * list of parameters returned by the task
+     */
+    private ParameterMap parameterMap;
 
-    SedaModuleParameter(String name) {
-        this.name = name;
+    /**
+     * @param status status of the task
+     * @param parameterMap list of parameters returned by the task
+     */
+    public TaskInfo(TaskStatus status, ParameterMap parameterMap) {
+        this.status = status;
+        this.parameterMap = parameterMap;
     }
 
     /**
-     * @return the Module Parameter name
+     * @return status of the task
      */
-    public String getName() {
-        return name;
+    public TaskStatus getStatus() {
+        return status;
     }
 
+    /**
+     * @return a list of parameters returned by the task
+     */
+    public ParameterMap getParameterMap() {
+        return parameterMap;
+    }
 }

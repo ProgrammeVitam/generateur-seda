@@ -59,9 +59,21 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
     - Le fichier ``ArchiveTransferConfig.json`` à la racine de l'arborescence. Ce fichier contient les paramétrages globaux spécifiques pour cette arborescence
     - Le fichier ``ArchiveUnitMetadata.json`` sur chaque répertoire. Ce fichier contient les métadonnées de gestion et les méta-données descriptives pour l'ArchiveUnit correspondant au répertoire auquel il appartient
     - Le fichier ``ArchiveUnitContent.xml`` sur chaque répertoire. Le contenu de ce fichier est importé sans contrôle à la place de la balise <Content> (Ce fichier doit contenir <Content>.*</Content>) pour l'archiveUnit correspondant au répertoire auquel il appartient. 
-    - Le fichier ``ArchiveUnitManagement.xml`` sur chaque répertoire. Le contenu de ce fichier est importé sans contrôle à la place de la balise <Management> (Ce fichier doit contenir <Management>.*</Management>) pour l'archiveUnit correspondant au répertoire auquel il appartient. 
+    - Le fichier ``ArchiveUnitManagement.xml`` sur chaque répertoire. Le contenu de ce fichier est importé sans contrôle à la place de la balise <Management> (Ce fichier doit contenir <Management>.*</Management>) pour l'archiveUnit correspondant au répertoire auquel il appartient.
+    - les fichiers ``*.lnk`` définissent des liens entre deux unités archivistiques (fonctionne uniquement sous windows).
   
   + En cas de présence d'un fichier ``ArchiveUnitMetadata.xml`` et d'un fichier ``ArchiveUnitMetadata.json`` dans le même répertoire
+
+* Cas particulier au niveau de la gestion des liens
+
+  + Si le lien pointe vers un raccourci Windows, on continue de manière récursive jusqu'à aboutissement de la châine ou bouclage (un algorithme de vérification de cycle doit éviter les boucles)
+  + Le lien est rejeté (mis dans le fichier rejeté avec une erreur)
+    - Si le path pointé par le raccourci est incorrect (le lien pointe dans le vide)
+    - Si le path pointé existe , que le path pointé n'est pas un raccourci Windows et pointe en dehors de l'arborescence du SIP
+    - Si le path pointé existe , que le path pointé n'est pas un raccourci Windows et est un fichier rejeté pour différentes raisons par le SIP (y compris pour les fichiers de "configuration" du générateur SEDA)
+    - Si le path pointé existe , que le path pointé est un fichier dans un répertoire de type DOG
+  + Si le raccourci pointe vers un répertoire de l'arboresence du SIP => création d'un lien entre l'AU du répertoire contenant le lien et l'AU du répertoire pointé
+  + Si le raccourci pointe vers un fichier d'un répertoire non DOG => création d'un lien entre l'AU du répertoire contenant et la pseudo-AU du fichier pointé
 
 Exemple d'arborescence
 ----------------------

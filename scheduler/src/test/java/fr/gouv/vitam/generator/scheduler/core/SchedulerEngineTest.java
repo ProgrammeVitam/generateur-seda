@@ -2,8 +2,8 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
- * This software is a computer program whose purpose is to implement a digital 
+ *
+ * This software is a computer program whose purpose is to implement a digital
  * archiving back-office system managing high volumetry securely and efficiently.
  *
  * This software is governed by the CeCILL 2.1 license under French law and
@@ -34,17 +34,32 @@
  */
 package fr.gouv.vitam.generator.scheduler.core;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.ABORT;
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
 import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import fr.gouv.vitam.common.exception.VitamException;
-import fr.gouv.vitam.common.logging.VitamLogger;
-import fr.gouv.vitam.common.logging.VitamLoggerFactory;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
+import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 
 public class SchedulerEngineTest {
-    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(SchedulerEngineTest.class);
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @Test
     public void nominal() {
@@ -54,6 +69,33 @@ public class SchedulerEngineTest {
         launchPlaybook(input, "");
     }
 
+    @Test
+    public void should_skip_next_task_when_a_task_is_abort() throws VitamException {
+        // Given
+        ParameterMap input = new ParameterMap();
+
+        PublicModuleInterface moduleContinue = mock(PublicModuleInterface.class);
+        PublicModuleInterface moduleAbort = mock(PublicModuleInterface.class);
+
+        Map<String, PublicModuleInterface> modules = new HashMap<>();
+        modules.put("dummy", moduleContinue);
+        modules.put("abort", moduleAbort);
+
+        given(moduleContinue.execute(input)).willReturn(new TaskInfo(CONTINUE, input));
+        given(moduleAbort.execute(input)).willReturn(new TaskInfo(ABORT, input));
+
+        SchedulerEngine se = new SchedulerEngine(modules);
+        Playbook playbook = new Playbook();
+        playbook.getTasks().add(new Task("abort"));
+        playbook.getTasks().add(new Task("dummy"));
+
+        // When
+        se.execute(playbook, input);
+
+        // Then
+        verify(moduleAbort).execute(any(ParameterMap.class));
+        verify(moduleContinue, never()).execute(any(ParameterMap.class));
+    }
 
     @Test
     public void missingMandatoryArgument() {
@@ -69,9 +111,7 @@ public class SchedulerEngineTest {
         launchPlaybook(input, "parameter[mandatory_argument] for moduledummy is not of the class typejava.lang.String");
     }
 
-
-
-    private Playbook initatePlaybook() {
+    private Playbook initiatePlaybook() {
         Playbook pb = new Playbook();
         Task taskDummy = new Task();
         taskDummy.setName("DummyModule");
@@ -89,7 +129,7 @@ public class SchedulerEngineTest {
 
     private void launchPlaybook(ParameterMap input, String expected) {
         SchedulerEngine se = new SchedulerEngine();
-        Playbook pb = initatePlaybook();
+        Playbook pb = initiatePlaybook();
         try {
             se.execute(pb, input);
             se.printStatistics();

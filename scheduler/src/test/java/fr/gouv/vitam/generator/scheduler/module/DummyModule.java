@@ -34,12 +34,15 @@
  */
 package fr.gouv.vitam.generator.scheduler.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 
@@ -50,7 +53,7 @@ public class DummyModule extends AbstractModule implements PublicModuleInterface
     private static final String MODULE_NAME = "dummy";
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
-    {
+    static {
         INPUTSIGNATURE.put("mandatory_argument", new InputParameter().setObjectclass(String.class));
         INPUTSIGNATURE.put("optional_argument", new InputParameter().setMandatory(false).setDefaultValue("test"));
         INPUTSIGNATURE.put("nullable_argument", new InputParameter().setNullable(true));
@@ -69,10 +72,10 @@ public class DummyModule extends AbstractModule implements PublicModuleInterface
     }
 
     @Override
-    public ParameterMap realExecute(ParameterMap parameters) throws VitamException {
+    public TaskInfo realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
         returnPM.put("test", "test");
-        return returnPM;
+        return new TaskInfo(CONTINUE, returnPM);
     }
 
 }

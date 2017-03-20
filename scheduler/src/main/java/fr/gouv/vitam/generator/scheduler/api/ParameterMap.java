@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -28,11 +28,36 @@
 package fr.gouv.vitam.generator.scheduler.api;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Definition of a Type Alias for the parameters passed and returned by the execution of tasks
  */
 public class ParameterMap extends HashMap<String, Object> {
     private static final long serialVersionUID = -8501319445037778743L;
+
+    private final static Pattern PATTERN = Pattern.compile("^@@(.*)@@$");
+
+
+    /**
+     * Templating of the ParameterMap
+     *
+     * @param valuesParameters : the values to valuate the template
+     * @return the valuated ParameterMap
+     */
+    public ParameterMap substitute(ParameterMap valuesParameters) {
+        ParameterMap pm = new ParameterMap();
+        for (Entry<String, Object> entry : entrySet()) {
+            String value = (String) entry.getValue();
+            Matcher matcher = PATTERN.matcher(value);
+            if (matcher.find()) {
+                pm.put(entry.getKey(), valuesParameters.get(matcher.group(1)));
+            } else {
+                pm.put(entry.getKey(), value);
+            }
+        }
+        return pm;
+    }
 
 }

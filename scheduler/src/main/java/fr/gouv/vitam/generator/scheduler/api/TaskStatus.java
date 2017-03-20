@@ -32,27 +32,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL 2.1 license and that you accept its terms.
  */
-package fr.gouv.vitam.generator.seda.api;
+package fr.gouv.vitam.generator.scheduler.api;
 
 /**
- * List of parameters used by Seda Module
+ * specify if the workflow can be continued or stop
  */
-
-public enum SedaModuleParameter {
-    // TODO Question: name = lowercase ou UpperCamelCase comme dans le SEDA ?
-    BINARYDATAOBJECT("binarydataobject");
-
-    private String name;
-
-    SedaModuleParameter(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the Module Parameter name
-     */
-    public String getName() {
-        return name;
-    }
-
+public enum TaskStatus {
+    CONTINUE,
+    ABORT
 }

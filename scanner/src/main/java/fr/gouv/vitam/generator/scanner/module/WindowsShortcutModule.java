@@ -32,41 +32,56 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL 2.1 license and that you accept its terms.
  */
-package fr.gouv.vitam.generator.seda.module.invalid;
+package fr.gouv.vitam.generator.scanner.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.ABORT;
 import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+import static fr.gouv.vitam.generator.seda.api.SedaModuleParameter.BINARYDATAOBJECT;
+import static java.lang.String.format;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.vitam.common.exception.VitamException;
+import fr.gouv.vitam.common.logging.VitamLogger;
+import fr.gouv.vitam.common.logging.VitamLoggerFactory;
+import fr.gouv.vitam.generator.scanner.helper.WindowsLinkResolver;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
 import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
-import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
+import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 
 /**
- * Module that will filter information on the FormatIdentification arguments of the BinaryDataObject
+ * Module to find windows shortcut.
  */
-public class FormatIdentificationFilterModule extends AbstractModule implements PublicModuleInterface {
-    private static final String MODULE_NAME = "FormatIdentificationFilterModule";
-    private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
+public class WindowsShortcutModule extends AbstractModule implements PublicModuleInterface {
 
+    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(WindowsShortcutModule.class);
+
+    private static final String MODULE_NAME = "windowsShortCut";
+
+    private static final Map<String, InputParameter> INPUT_SIGNATURE = new HashMap<>();
+
+    private WindowsLinkResolver windowsLinkResolver;
 
     static {
-        INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
+        INPUT_SIGNATURE.put(BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
-        INPUTSIGNATURE.put("file_regex", new InputParameter().setObjectclass(String.class));
-        INPUTSIGNATURE.put("displayFormatLitteral",
-            new InputParameter().setObjectclass(Boolean.class).setMandatory(false).setDefaultValue(true));
-        INPUTSIGNATURE.put("displayMimeType",
-            new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("true"));
-        INPUTSIGNATURE.put("displayFormatId",
-            new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue("true"));
+    }
+
+    public WindowsShortcutModule() {
+        this(new WindowsLinkResolver());
+    }
+
+    public WindowsShortcutModule(WindowsLinkResolver windowsLinkResolver) {
+        this.windowsLinkResolver = windowsLinkResolver;
+        LOGGER.info("load module WindowsShortcutModule");
     }
 
     @Override
@@ -76,27 +91,31 @@ public class FormatIdentificationFilterModule extends AbstractModule implements 
 
     @Override
     public Map<String, InputParameter> getInputSignature() {
-        return INPUTSIGNATURE;
+        return INPUT_SIGNATURE;
     }
 
     @Override
     protected TaskInfo realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
-        Pattern p = Pattern.compile((String) parameters.get("file_regex"));
         BinaryDataObjectTypeRoot bdotr =
-            (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
-        if (p.matcher(bdotr.getFileInfo().getFilename()).matches()) {
-            if (!Boolean.getBoolean((String) parameters.get("displayFormatLitteral"))) {
-                bdotr.getFormatIdentification().setFormatLitteral(null);
+            (BinaryDataObjectTypeRoot) parameters.get(BINARYDATAOBJECT.getName());
+
+        Path path = Paths.get(bdotr.getWorkingFilename());
+
+        returnPM.put(BINARYDATAOBJECT.getName(), bdotr);
+
+        if (windowsLinkResolver.windowsLink(path)) {
+
+            Path target = windowsLinkResolver.resolve(path).toAbsolutePath();
+            LOGGER.info("{} is resolved as a link, target is {}", path, target.toString());
+            if (!target.toFile().exists()) {
+                throw new VitamBinaryDataObjectException(
+                    format("file %s doesn't exist, %sis an invalid link", target, path.toString()));
             }
-            if (!Boolean.getBoolean((String) parameters.get("displayMimeType"))) {
-                bdotr.getFormatIdentification().setMimeType(null);
-            }
-            if (!Boolean.getBoolean((String) parameters.get("displayFormatId"))) {
-                bdotr.getFormatIdentification().setFormatId(null);
-            }
+            returnPM.put("windowsShortcut", target.toString());
+            return new TaskInfo(ABORT, returnPM);
         }
-        returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
+
         return new TaskInfo(CONTINUE, returnPM);
     }
 

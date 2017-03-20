@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -24,38 +24,25 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
+package fr.gouv.vitam.generator.scanner.helper;
 
-package fr.gouv.vitam.generator.scheduler.api;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import java.util.Map;
+import java.nio.file.Paths;
 
-import fr.gouv.vitam.common.exception.VitamException;
-import fr.gouv.vitam.generator.scheduler.core.InputParameter;
+import org.junit.Test;
 
 /**
- * High level interface for the Module of the Scheduler Engine 
- *
+ * test for WindowsLinkResolver
  */
+public class WindowsLinkResolverTest {
 
-public interface ModuleInterface {
+    private WindowsLinkResolver windowsLinkResolver = new WindowsLinkResolver();
 
-    /**
-     * Execute the module
-     * @param parameters (Entry parameter of the module)
-     * @return information of a task
-     * @throws VitamException
-     */
-    TaskInfo execute(ParameterMap parameters) throws VitamException;
+    @Test
+    public void should_validate_if_a_path_is_a_windows_shortcut() {
+        assertThat(windowsLinkResolver.windowsLink(Paths.get("validLink.lnk"))).isTrue();
+        assertThat(windowsLinkResolver.windowsLink(Paths.get("invalidLink.bag"))).isFalse();
+    }
 
-    /**
-     * Return the moduleID which is the reference of the module
-     * @return module
-     */
-    String getModuleId();
-
-    /**
-     * Get the input signature of the module
-     * @return the input signature of the module
-     */
-    Map<String, InputParameter> getInputSignature();
 }

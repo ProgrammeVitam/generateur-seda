@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -27,6 +27,8 @@
 
 package fr.gouv.vitam.generator.seda.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ import fr.gouv.vitam.common.digest.Digest;
 import fr.gouv.vitam.common.digest.DigestType;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
@@ -57,13 +60,11 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
     private static final String MODULE_NAME = "digest";
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
-
-    {
+    static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE.put("digest.algorithm",
             new InputParameter().setObjectclass(String.class).setMandatory(false).setDefaultValue(DigestType.SHA512));
-
     }
 
     @Override
@@ -78,7 +79,7 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+    protected TaskInfo realExecute(ParameterMap parameters) throws VitamSedaException {
         BinaryDataObjectTypeRoot bdotr =
             (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         ParameterMap returnPM = new ParameterMap();
@@ -94,6 +95,7 @@ public class DigestModule extends AbstractModule implements PublicModuleInterfac
             throw new VitamBinaryDataObjectException(f.toString() + " has had an I/O exception" + e.getMessage(), e);
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
-        return returnPM;
+        return new TaskInfo(CONTINUE, returnPM);
     }
+
 }

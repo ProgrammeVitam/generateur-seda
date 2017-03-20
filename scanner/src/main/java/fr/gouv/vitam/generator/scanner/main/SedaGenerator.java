@@ -128,7 +128,7 @@ public class SedaGenerator {
         try (ScanFS sfs = new ScanFS(archiveTransferConfig, playbookFileBDO, outputFile, errFile)) {
             Path p = FileSystems.getDefault().getPath(
                 scanDir);//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
-            Files.walkFileTree(p, sfs);
+            Files.walkFileTree(p.toRealPath(), sfs);
         }
     }
 }

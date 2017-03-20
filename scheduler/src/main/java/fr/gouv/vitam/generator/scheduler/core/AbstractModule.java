@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scheduler.api.ModuleInterface;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 
 /**
  *
@@ -49,7 +50,7 @@ public abstract class AbstractModule implements ModuleInterface {
     public abstract Map<String, InputParameter> getInputSignature();
 
     @Override
-    public final ParameterMap execute(ParameterMap parameters) throws VitamException {
+    public final TaskInfo execute(ParameterMap parameters) throws VitamException {
         checkParameters(parameters);
         return realExecute(parameters);
     }
@@ -83,6 +84,6 @@ public abstract class AbstractModule implements ModuleInterface {
         }
     }
 
-    protected abstract ParameterMap realExecute(ParameterMap parameters) throws VitamException;
+    protected abstract TaskInfo realExecute(ParameterMap parameters) throws VitamException;
 
 }

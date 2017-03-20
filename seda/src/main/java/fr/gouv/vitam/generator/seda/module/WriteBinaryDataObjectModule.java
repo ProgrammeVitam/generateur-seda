@@ -27,6 +27,8 @@
 
 package fr.gouv.vitam.generator.seda.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,7 @@ import java.util.Map;
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
@@ -56,7 +59,7 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
 
 
-    {
+    static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
             new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE
@@ -76,7 +79,7 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
     }
 
     @Override
-    protected ParameterMap realExecute(ParameterMap parameters) throws VitamSedaException {
+    protected TaskInfo realExecute(ParameterMap parameters) throws VitamSedaException {
         BinaryDataObjectTypeRoot bdotr =
             (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         ParameterMap returnPM = new ParameterMap();
@@ -107,7 +110,7 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
             throw new VitamSedaException("Error to write to zipFile", e);
         }
         returnPM.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
-        return returnPM;
+        return new TaskInfo(CONTINUE, returnPM);
     }
 
 }

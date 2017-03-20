@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -32,8 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,6 +48,9 @@ import org.codehaus.stax2.XMLStreamWriter2;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchivalAgencyTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
@@ -77,6 +80,7 @@ import fr.gouv.vitam.generator.seda.helper.ZipFileWriter;
 
 //import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
 
+
 /**
  * This class manages the creation of the SEDA ArchiveTransfer file .It creates the PKZIP file with the manifest.xml SEDA file and the Binary Objects
  */
@@ -94,6 +98,7 @@ public class ArchiveTransferGenerator {
     private final XMLStreamWriter2 writer;
     private final ArchiveTransferConfig archiveTransferConfig;
 
+    private Multimap<String, String> edges = ArrayListMultimap.create();
 
     /**
      * @param archiveTransferConfig : contains the global configuration of the ArchiveTransfer
@@ -111,7 +116,8 @@ public class ArchiveTransferGenerator {
         mapArchiveUnit = new LinkedHashMap<>();
         this.archiveTransferConfig = archiveTransferConfig;
         try {
-            temporarySedaFilePath = System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator() + SEDA_FILENAME;
+            temporarySedaFilePath =
+                System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator() + SEDA_FILENAME;
             writerFOS = new FileOutputStream(temporarySedaFilePath);
             this.writer = (XMLStreamWriter2) output.createXMLStreamWriter(writerFOS, ENCODING);
         } catch (IOException | XMLStreamException e) {
@@ -127,6 +133,7 @@ public class ArchiveTransferGenerator {
             throw new VitamSedaException("Can't create /Content directory in the zipFile", e);
         }
     }
+
 
     /**
      * Generate the Head of the xml Seda File : All elements up to DataObjectPackage (excluded)
@@ -160,7 +167,6 @@ public class ArchiveTransferGenerator {
         XMLWriterUtils.setID(writer);
     }
 
-
     /**
      * Define an archive with 2 elements : title and description
      *
@@ -178,6 +184,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * efine an archive with 3 elements : title and description and a json metadata File
+     *
      * @param title
      * @param description
      * @param metadataFile
@@ -226,6 +233,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Set the rawManagementFile
+     *
      * @param archiveUnitID
      * @param rawmetadataFile
      */
@@ -238,6 +246,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Set the rawContentFile
+     *
      * @param archiveUnitID
      * @param rawContentFile
      */
@@ -250,6 +259,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Set transactedDate to the ArchiveUnit Descriptive Metadata
+     *
      * @param id : id of the ArchiveUnit
      * @param date : Date to be set
      * @throws IllegalArgumentException if id is null or isn't a valid ArchiveUnit Id
@@ -268,8 +278,9 @@ public class ArchiveTransferGenerator {
     }
 
     /**
-     * Remove an ArchiveUnit from the collection . 
+     * Remove an ArchiveUnit from the collection .
      * It doesn't destroy the relation with other ArchiveUnits
+     *
      * @param id
      * @throws IllegalArgumentException if id is null
      */
@@ -321,6 +332,7 @@ public class ArchiveTransferGenerator {
     /**
      * Write the Description MetaData section . It must be done when all the Archive unit have been added but before the
      * Management Metadata
+     *
      * @return number of written archive units
      * @throws VitamSedaException
      */
@@ -334,6 +346,19 @@ public class ArchiveTransferGenerator {
         try {
             for (ArchiveUnitTypeRoot autr : mapArchiveUnit.values()) {
                 //writeXMLFragment(autr);
+                if (edges.containsKey(autr.getId())) {
+                    Collection<String> references = edges.get(autr.getId());
+
+                    for (String reference : references) {
+                        ArchiveUnitType archiveUnitArc = new ArchiveUnitType();
+                        String id = XMLWriterUtils.getNextID();
+                        archiveUnitArc.setId(id);
+                        archiveUnitArc.setArchiveUnitRefId(reference);
+
+                        autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()
+                            .add(archiveUnitArc);
+                    }
+                }
                 autr.marshall(writer);
                 nbArchiveUnits++;
             }
@@ -405,6 +430,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Serialize a Jaxb POJO object in the current XML stream
+     *
      * @param jaxbPOJO
      * @throws VitamSedaException
      */
@@ -487,6 +513,7 @@ public class ArchiveTransferGenerator {
 
     /**
      * Calculate the Start and End Date of an ArchiveUnit
+     *
      * @param archiveUnitID
      */
     public void addStartAndEndDate2ArchiveUnit(String archiveUnitID) {
@@ -540,6 +567,18 @@ public class ArchiveTransferGenerator {
      */
     public ZipFileWriter getZipFile() {
         return zipFile;
+    }
+
+    @VisibleForTesting
+    Map<String, ArchiveUnitTypeRoot> getMapArchiveUnit() {
+        return mapArchiveUnit;
+    }
+
+    public void addEdge(String fatherId, String archiveUnitRefId) {
+        ParametersChecker.checkParameter("archiveUnitFatherID cannot be null", fatherId);
+        ParametersChecker.checkParameter("archiveUnitRefId cannot be null", archiveUnitRefId);
+
+        edges.put(fatherId, archiveUnitRefId);
     }
 
 }

@@ -143,8 +143,7 @@ public class BinaryGenerator {
         for (int i = 0; i < fileNumber; i++) {
             bar.update(i, fileNumber);
             // Generate AU + link with rootAU
-            final String auId =
-                atg.addArchiveUnit("Generated Archive Unit (" + i + ")", "Generated Archive Unit " + spellNumber(i));
+            final String auId = atg.addArchiveUnit("Generated Archive Unit (" + i + ")", "Generated Archive Unit " + spellNumber(i));
             atg.addArchiveUnit2ArchiveUnitReference(rootAuId, auId);
             // Generate GOT + link with AU
             String dataObjectGroupID = atg.getDataObjectGroupUsedMap().registerDataObjectGroup();
@@ -171,7 +170,7 @@ public class BinaryGenerator {
     /**
      * Convert an int into a literal string representation ; e.g. : 102 --> one zero two
      *
-     * @param i
+     * @param number
      * @return
      */
     private static String spellNumber(int number) {

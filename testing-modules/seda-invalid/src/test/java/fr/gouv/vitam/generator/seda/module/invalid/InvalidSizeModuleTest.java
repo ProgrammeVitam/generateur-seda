@@ -2,8 +2,8 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
- * This software is a computer program whose purpose is to implement a digital 
+ *
+ * This software is a computer program whose purpose is to implement a digital
  * archiving back-office system managing high volumetry securely and efficiently.
  *
  * This software is governed by the CeCILL 2.1 license under French law and
@@ -44,6 +44,7 @@ import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.FileInfoType;
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.seda.api.SedaModuleParameter;
 
 public class InvalidSizeModuleTest {
@@ -64,8 +65,8 @@ public class InvalidSizeModuleTest {
         pm.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         InvalidSizeModule ism = new InvalidSizeModule();
         try {
-            ParameterMap returnParameters = ism.execute(pm);
-            bdotr = (BinaryDataObjectTypeRoot) returnParameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+            TaskInfo taskInfo = ism.execute(pm);
+            bdotr = (BinaryDataObjectTypeRoot) taskInfo.getParameterMap().get(SedaModuleParameter.BINARYDATAOBJECT.getName());
             if (!bdotr.getSize().toString().equals(FALSESIZE)) {
                 fail("The size has not been changed ");
             }
@@ -89,8 +90,8 @@ public class InvalidSizeModuleTest {
         pm.put(SedaModuleParameter.BINARYDATAOBJECT.getName(), bdotr);
         InvalidSizeModule ism = new InvalidSizeModule();
         try {
-            ParameterMap returnParameters = ism.execute(pm);
-            bdotr = (BinaryDataObjectTypeRoot) returnParameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+            TaskInfo taskInfo = ism.execute(pm);
+            bdotr = (BinaryDataObjectTypeRoot) taskInfo.getParameterMap().get(SedaModuleParameter.BINARYDATAOBJECT.getName());
             if (bdotr.getSize().toString().equals(FALSESIZE)) {
                 fail("The size has been changed but the file is not matching the regex");
             }
@@ -98,8 +99,6 @@ public class InvalidSizeModuleTest {
         } catch (VitamException e) {
             fail(e.getMessage());
         }
-
     }
-
 
 }

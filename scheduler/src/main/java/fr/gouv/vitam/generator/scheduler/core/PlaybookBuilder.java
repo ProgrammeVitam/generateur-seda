@@ -2,8 +2,8 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
- * This software is a computer program whose purpose is to implement a digital 
+ *
+ * This software is a computer program whose purpose is to implement a digital
  * archiving back-office system managing high volumetry securely and efficiently.
  *
  * This software is governed by the CeCILL 2.1 license under French law and
@@ -61,13 +61,11 @@ public class PlaybookBuilder {
     public static Playbook getPlaybook(File jsonFile) throws VitamSchedulerException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Playbook playbook = null;
         try {
-            playbook = objectMapper.readValue(jsonFile, Playbook.class);
+            return objectMapper.readValue(jsonFile, Playbook.class);
         } catch (IOException e) {
             throw new VitamSchedulerException("Can't load the Playbook Definition", e);
         }
-        return playbook;
     }
 
     /**

@@ -1,5 +1,5 @@
 Fichiers de configuration
-==========================
+=========================
 
 Modules activables 
 ------------------
@@ -12,7 +12,7 @@ Le fichier `conf/playbook_BinaryDataObject.json`_ permet de gérer les modules q
 * si on désire rejeter les fichiers ayant une extension contenant un caractère "url-encoded", il suffit de passer le paramètre ignoreSpecialCharExtension à true dans la section relative aux paramètres du module binaryDataObjectConstructor
 
 Fichier de configuration des ArchiveTransfer
----------------------------------------------
+--------------------------------------------
 
 Ce fichier se nomme ArchiveTransferConfig.json et peut se trouver à 2 endroits  :
 

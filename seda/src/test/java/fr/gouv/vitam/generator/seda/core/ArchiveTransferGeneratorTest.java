@@ -2,8 +2,8 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
- * This software is a computer program whose purpose is to implement a digital 
+ *
+ * This software is a computer program whose purpose is to implement a digital
  * archiving back-office system managing high volumetry securely and efficiently.
  *
  * This software is governed by the CeCILL 2.1 license under French law and
@@ -34,11 +34,13 @@
  */
 package fr.gouv.vitam.generator.seda.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.stream.XMLStreamException;
@@ -47,6 +49,8 @@ import org.junit.Test;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.AccessRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.AppraisalRuleType;
+import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
+import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.ClassificationRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.CoverageType;
 import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentType;
@@ -78,10 +82,10 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 
 /**
- * 
+ *
  */
-public class ArchiveTransferGeneratorImplTest {
-    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGeneratorImplTest.class);
+public class ArchiveTransferGeneratorTest {
+    private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGeneratorTest.class);
 
     private static final String OUTPUT_FILE = "output.zip";
 
@@ -146,7 +150,6 @@ public class ArchiveTransferGeneratorImplTest {
             fail("Should not have an exception");
         }
     }
-
 
     @Test
     public void emptyFile() {
@@ -345,6 +348,38 @@ public class ArchiveTransferGeneratorImplTest {
             e.printStackTrace();
             fail();
         }
+    }
+
+    @Test
+    public void should_create_manifest_with_edge() throws Exception {
+        // Given
+        ClassLoader classLoader = getClass().getClassLoader();
+        ArchiveTransferConfig atc =
+            new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+
+        ArchiveTransferGenerator archiveTransferGenerator =
+            new ArchiveTransferGenerator(atc, "output.zip");
+        String father = archiveTransferGenerator.addArchiveUnit("father", "parent directory");
+        String child1 = archiveTransferGenerator.addArchiveUnit("child1", "directory 1");
+        String subChild1 =
+            archiveTransferGenerator.addArchiveUnit("subChild1", "child directory");
+
+        archiveTransferGenerator.addEdge(subChild1, child1);
+
+        // When
+        int numberOfArchiveUnit = archiveTransferGenerator.writeDescriptiveMetadata();
+
+        // Then
+        assertThat(numberOfArchiveUnit).isEqualTo(3);
+        Map<String, ArchiveUnitTypeRoot> mapArchiveUnit = archiveTransferGenerator.getMapArchiveUnit();
+        assertThat(mapArchiveUnit).containsKeys(subChild1);
+        ArchiveUnitTypeRoot archiveUnitTypeRoot = mapArchiveUnit.get(subChild1);
+        assertThat(archiveUnitTypeRoot).extracting("archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference")
+            .hasSize(1);
+        ArchiveUnitType archiveUnitType =
+            (ArchiveUnitType) archiveUnitTypeRoot.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()
+                .get(0);
+        assertThat(archiveUnitType.getArchiveUnitRefId()).isEqualTo(child1);
     }
 
     private ArchiveTransferGenerator addBinaryDataObject(ArchiveTransferGenerator atgi, String filename,

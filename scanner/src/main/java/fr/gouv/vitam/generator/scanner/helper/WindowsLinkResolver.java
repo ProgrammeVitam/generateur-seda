@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -24,38 +24,56 @@
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
  */
+package fr.gouv.vitam.generator.scanner.helper;
 
-package fr.gouv.vitam.generator.scheduler.api;
+import static java.lang.String.format;
 
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
-import fr.gouv.vitam.common.exception.VitamException;
-import fr.gouv.vitam.generator.scheduler.core.InputParameter;
+import com.google.common.base.Throwables;
+
+import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
+import mslinks.ShellLink;
+import mslinks.ShellLinkException;
 
 /**
- * High level interface for the Module of the Scheduler Engine 
- *
+ * Helper for windows link
  */
+public class WindowsLinkResolver {
 
-public interface ModuleInterface {
+    public static final String WINDOWS_SHORTCUT_EXTENSION = ".lnk";
 
-    /**
-     * Execute the module
-     * @param parameters (Entry parameter of the module)
-     * @return information of a task
-     * @throws VitamException
-     */
-    TaskInfo execute(ParameterMap parameters) throws VitamException;
+    public Path resolve(Path path) throws VitamBinaryDataObjectException {
+        return resolve(path, new HashSet<>());
+    }
 
-    /**
-     * Return the moduleID which is the reference of the module
-     * @return module
-     */
-    String getModuleId();
+    private Path resolve(Path path, Set<Path> pathAlreadyFollow) throws VitamBinaryDataObjectException {
+        try {
+            ShellLink shellLink = new ShellLink(path);
+            Path target = Paths.get(shellLink.resolveTarget());
 
-    /**
-     * Get the input signature of the module
-     * @return the input signature of the module
-     */
-    Map<String, InputParameter> getInputSignature();
+            if (pathAlreadyFollow.contains(target)) {
+                throw new VitamBinaryDataObjectException(format("link are circular, interruption: %s", target));
+            }
+
+            if (windowsLink(target)) {
+                pathAlreadyFollow.add(target);
+                return resolve(target, pathAlreadyFollow);
+            }
+
+            return target;
+
+        } catch (IOException | ShellLinkException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    public boolean windowsLink(Path path) {
+        return path.toString().endsWith(WINDOWS_SHORTCUT_EXTENSION);
+    }
+
 }

@@ -2,8 +2,8 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
- * This software is a computer program whose purpose is to implement a digital 
+ *
+ * This software is a computer program whose purpose is to implement a digital
  * archiving back-office system managing high volumetry securely and efficiently.
  *
  * This software is governed by the CeCILL 2.1 license under French law and
@@ -64,6 +64,15 @@ public class Task {
     @JsonProperty("registeredParameters")
     private ParameterMap registeredParameters;
 
+    public Task() {
+        parameters = new ParameterMap();
+        registeredParameters = new ParameterMap();
+    }
+
+    public Task(String module) {
+        this();
+        this.module = module;
+    }
 
     /**
      *
@@ -74,11 +83,29 @@ public class Task {
     }
 
     /**
+     * substitute template parameters
+     * @param valuesParameters : the values to valuate the template
+     * @return
+     */
+    public ParameterMap substituteParameters(ParameterMap valuesParameters) {
+        return parameters.substitute(valuesParameters);
+    }
+
+    /**
      *
      * @return the binding parameters
      */
     public ParameterMap getRegisteredParameters() {
         return registeredParameters;
+    }
+
+    /**
+     * substitute template registeredParameters
+     * @param valuesParameters : the values to valuate the template
+     * @return
+     */
+    public ParameterMap substituteRegisteredParameters(ParameterMap valuesParameters) {
+        return registeredParameters.substitute(valuesParameters);
     }
 
 

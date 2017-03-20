@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -38,16 +38,20 @@ import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
@@ -77,8 +81,10 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     private final ArchiveTransferGenerator atgi;
     // Contains IDs of current (First index) and parents(Others) directories if they are DataObjectGroup.
     // Contains null for an AU
-    private LinkedList<String> dataObjectGroupOfVisitedDirectories = new LinkedList<>();
+    private Deque<String> dataObjectGroupOfVisitedDirectories = new LinkedList<>();
     private final HashMap<String, String> mapArchiveUnitPath2Id;
+    private Multimap<String, String> windowsShortLinkById = ArrayListMultimap.create();
+
     private final SchedulerEngine schedulerEngine;
     private final Playbook playbookBinary;
     private final PrintStream errFileStream;
@@ -89,6 +95,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
 
     /**
      * Constructor for ScanFS
+     *
      * @param archiveTransferConfig : contains the aggregate configuration of the differents configurations sources
      * @param playbookFileBDO : Path of the file which contains the Playbook for Binary Data Object
      * @param outputFile : Path of the ZIP Seda File
@@ -159,7 +166,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
             // ArchiveUnit
         } else {
             dataObjectGroupOfVisitedDirectories.addFirst(null);
-            archiveUnitID = atgi.addArchiveUnit(dirName, dir.toString(),manifestPathName);
+            archiveUnitID = atgi.addArchiveUnit(dirName, dir.toString(), manifestPathName);
             mapArchiveUnitPath2Id.put(dir.toString(), archiveUnitID);
             if (mapArchiveUnitPath2Id.containsKey(dir.getParent().toString())) {
                 String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
@@ -177,8 +184,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      * a pseudo Archive Unit and a DataObjectGroup where will be attached the BinaryObjectGroup
      */
     @Override
-    public FileVisitResult visitFile(Path file,
-        BasicFileAttributes attr) {
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
         if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) ||
             file.getFileName().toString().equals(ARCHIVEUNITMETADATAFILE_NAME) ||
             file.getFileName().toString().equals(ARCHIVEUNITRAWCONTENTFILE_NAME) ||
@@ -206,7 +212,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         String fatherID;
 
         // Archive Unit : we create the DataObjectGroup
-        if (dataObjectGroupID == null){
+        if (dataObjectGroupID == null) {
             dataObjectGroupID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
         }
 
@@ -219,18 +225,25 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
             schedulerEngine.execute(playbookBinary, inputParameterMap);
             // Standard Directory
             if (dataObjectGroupOfVisitedDirectories.getFirst() == null) {
-                // Create the Pseudo ArchiveUnit
-                archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
-                    "Pseudo Archive Unit du fichier :" + file.toString());
                 // Get the ID of the parent ArchiveUnit
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
-                // Add the relation between father and son
-                atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
-                // Add the relation between son AU and DataObjectGroup
-                atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupID);
-                // Calculate TransactedDate,StartDate and EndDate
-                atgi.setTransactedDate(archiveUnitID, new Date(file.toFile().lastModified()));
-            // DataObjectGroup Directory
+
+                if (inputParameterMap.containsKey("windowsShortcut") &&
+                    inputParameterMap.get("windowsShortcut") != null) {
+                    String windowsShortcut = (String) inputParameterMap.get("windowsShortcut");
+                    windowsShortLinkById.put(fatherID, windowsShortcut);
+                } else {
+                    // Create the Pseudo ArchiveUnit
+                    archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
+                        "Pseudo Archive Unit du fichier :" + file.toString());
+                    // Add the relation between father and son
+                    atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
+                    // Add the relation between son AU and DataObjectGroup
+                    atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupID);
+                    // Calculate TransactedDate,StartDate and EndDate
+                    atgi.setTransactedDate(archiveUnitID, new Date(file.toFile().lastModified()));
+                }
+                // DataObjectGroup Directory
             } else {
                 // Get the ID of the DataObjectGroup Directory Archive Unit
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
@@ -254,12 +267,11 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      */
 
     @Override
-    public FileVisitResult postVisitDirectory(Path dir,
-        IOException exc) {
+    public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
         // When in the ArchiveUnit Standard mode (not DOG), the start and endDate have to be calculated recursively
         if (dataObjectGroupOfVisitedDirectories.getFirst() == null) {
-             String auid = mapArchiveUnitPath2Id.get(dir.toString());
-             atgi.addStartAndEndDate2ArchiveUnit(auid);
+            String auid = mapArchiveUnitPath2Id.get(dir.toString());
+            atgi.addStartAndEndDate2ArchiveUnit(auid);
         }
         dataObjectGroupOfVisitedDirectories.removeFirst();
         return FileVisitResult.CONTINUE;
@@ -292,6 +304,16 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                     " BinaryDataObjects (No BDO)");
         }
 
+        // resolve link
+        for (Map.Entry<String, String> fatherWithLinks : windowsShortLinkById.entries()) {
+            String value = fatherWithLinks.getValue();
+            if (mapArchiveUnitPath2Id.containsKey(value)) {
+                atgi.addEdge(fatherWithLinks.getKey(), mapArchiveUnitPath2Id.get(value));
+            } else {
+                errFileStream.printf("The file :%s is an invalid link%n", value);
+            }
+        }
+
         long beginDescriptiveMetadateTime = System.currentTimeMillis();
         int nbArchiveUnits = atgi.writeDescriptiveMetadata();
         long descriptiveMetadataTotalTime = System.currentTimeMillis() - beginDescriptiveMetadateTime;
@@ -306,6 +328,9 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
 
         atgi.writeManagementMetadata();
         atgi.closeDocument();
+
+        errFileStream.flush();
+        errFileStream.close();
         schedulerEngine.printStatistics();
     }
 

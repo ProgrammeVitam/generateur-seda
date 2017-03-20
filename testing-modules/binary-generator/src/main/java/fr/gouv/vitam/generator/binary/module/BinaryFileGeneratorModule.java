@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -28,6 +28,8 @@
 
 package fr.gouv.vitam.generator.binary.module;
 
+import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,6 +41,7 @@ import java.util.Map;
 
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
+import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
 import fr.gouv.vitam.generator.scheduler.core.AbstractModule;
 import fr.gouv.vitam.generator.scheduler.core.InputParameter;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
@@ -60,7 +63,7 @@ public class BinaryFileGeneratorModule extends AbstractModule implements PublicM
     private static final Map<String, InputParameter> INPUTSIGNATURE = new HashMap<>();
     private static final String SEPARATOR = "|";
 
-    {
+    static {
         INPUTSIGNATURE.put("file", new InputParameter().setObjectclass(String.class));
         INPUTSIGNATURE
             .put("size", new InputParameter().setObjectclass(Long.class).setMandatory(false).setDefaultValue(100));
@@ -78,7 +81,7 @@ public class BinaryFileGeneratorModule extends AbstractModule implements PublicM
     }
 
     @Override
-    protected ParameterMap realExecute(final ParameterMap parameters) throws VitamSedaException {
+    protected TaskInfo realExecute(final ParameterMap parameters) throws VitamSedaException {
         final File f = new File((String) parameters.get("file"));
         final Long length = (Long) parameters.get("size");
 
@@ -102,6 +105,6 @@ public class BinaryFileGeneratorModule extends AbstractModule implements PublicM
             throw new VitamBinaryDataObjectException(f.getPath() + "doesn't exist anymore", e);
         }
 
-        return new ParameterMap();
+        return new TaskInfo(CONTINUE, new ParameterMap());
     }
 }

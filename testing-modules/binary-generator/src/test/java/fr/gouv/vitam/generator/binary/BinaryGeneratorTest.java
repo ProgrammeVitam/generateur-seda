@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 /**
- * Created by kw on 03/02/2017.
+ * Test for binary generator
  */
 public class BinaryGeneratorTest {
 
