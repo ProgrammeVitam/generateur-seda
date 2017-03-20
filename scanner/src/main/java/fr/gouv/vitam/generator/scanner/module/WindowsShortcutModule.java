@@ -108,7 +108,7 @@ public class WindowsShortcutModule extends AbstractModule implements PublicModul
 
             Path target = windowsLinkResolver.resolve(path).toAbsolutePath();
             LOGGER.info("{} is resolved as a link, target is {}", path, target.toString());
-            if (!Files.exists(target)) {
+            if (!target.toFile().exists()) {
                 throw new VitamBinaryDataObjectException(
                     format("file %s doesn't exist, %sis an invalid link", target, path.toString()));
             }

@@ -39,19 +39,35 @@ package fr.gouv.vitam.generator.scheduler.api;
  */
 public class TaskInfo {
 
+    /**
+     * status of the task
+     */
     private TaskStatus status;
 
+    /**
+     * list of parameters returned by the task
+     */
     private ParameterMap parameterMap;
 
+    /**
+     * @param status status of the task
+     * @param parameterMap list of parameters returned by the task
+     */
     public TaskInfo(TaskStatus status, ParameterMap parameterMap) {
         this.status = status;
         this.parameterMap = parameterMap;
     }
 
+    /**
+     * @return status of the task
+     */
     public TaskStatus getStatus() {
         return status;
     }
 
+    /**
+     * @return a list of parameters returned by the task
+     */
     public ParameterMap getParameterMap() {
         return parameterMap;
     }
