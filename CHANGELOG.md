@@ -1,3 +1,7 @@
+## 0.16.0 
+
+* Manage the windows shortcut as a link between archive units
+
 ## 0.15.0
 
 * Parametrization of the global ManagementMetadata block 
