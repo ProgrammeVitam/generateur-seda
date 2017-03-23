@@ -39,7 +39,6 @@ import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
 import static fr.gouv.vitam.generator.seda.api.SedaModuleParameter.BINARYDATAOBJECT;
 import static java.lang.String.format;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -97,8 +96,7 @@ public class WindowsShortcutModule extends AbstractModule implements PublicModul
     @Override
     protected TaskInfo realExecute(ParameterMap parameters) throws VitamException {
         ParameterMap returnPM = new ParameterMap();
-        BinaryDataObjectTypeRoot bdotr =
-            (BinaryDataObjectTypeRoot) parameters.get(BINARYDATAOBJECT.getName());
+        BinaryDataObjectTypeRoot bdotr = (BinaryDataObjectTypeRoot) parameters.get(BINARYDATAOBJECT.getName());
 
         Path path = Paths.get(bdotr.getWorkingFilename());
 
