@@ -238,6 +238,8 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                         "Pseudo Archive Unit du fichier :" + file.toString());
                     // Add the relation between father and son
                     atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
+                    mapArchiveUnitPath2Id.put(file.toAbsolutePath().toString(), archiveUnitID);
+
                     // Add the relation between son AU and DataObjectGroup
                     atgi.addArchiveUnit2DataObjectGroupReference(archiveUnitID, dataObjectGroupID);
                     // Calculate TransactedDate,StartDate and EndDate
