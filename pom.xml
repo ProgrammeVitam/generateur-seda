@@ -93,6 +93,7 @@
                 <junit.system-rules.version>1.16.1</junit.system-rules.version>
                 <stax-api.version>3.1.2</stax-api.version>
                 <woodstox.version>4.4.1</woodstox.version>
+		<commons-csv.version>1.4</commons-csv.version>
 		<sonar.exclusions>file:**/generated-sources/**</sonar.exclusions>
 	</properties>
 
@@ -543,6 +544,11 @@
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>19.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-csv</artifactId>
+				<version>${commons-csv.version}</version>
 			</dependency>
 
 			<!-- ####################### Tests ####################### -->

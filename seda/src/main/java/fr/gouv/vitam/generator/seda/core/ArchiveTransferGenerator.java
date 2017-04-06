@@ -187,11 +187,9 @@ public class ArchiveTransferGenerator {
      */
 
     public String addArchiveUnit(String title, String description) {
-        ParametersChecker.checkParameter("title cannot be null", title);
-        ParametersChecker.checkParameter("description cannot be null", description);
         return addArchiveUnit(title, description, null);
     }
-
+    
     /**
      * efine an archive with 3 elements : title and description and a json metadata File
      *
@@ -202,13 +200,8 @@ public class ArchiveTransferGenerator {
      */
     public String addArchiveUnit(String title, String description, File metadataFile) {
         ParametersChecker.checkParameter("title cannot be null", title);
-        ParametersChecker.checkParameter("description cannot be null", description);
         String id = XMLWriterUtils.getNextID();
         ArchiveUnitTypeRoot autr = new ArchiveUnitTypeRoot();
-        TextType textTypeTitle = new TextType();
-        textTypeTitle.setValue(title);
-        TextType textTypeDescription = new TextType();
-        textTypeDescription.setValue(description);
         DescriptiveMetadataContentTypeRoot dmct = new DescriptiveMetadataContentTypeRoot();
         ManagementRoot management = new ManagementRoot();
         try {
@@ -247,9 +240,13 @@ public class ArchiveTransferGenerator {
             LOGGER.warn("File " + metadataFile + " is not a valid json File for Content or Management Metadata", e);
         }
         if (dmct.getTitle().isEmpty()) {
+            TextType textTypeTitle = new TextType();
+            textTypeTitle.setValue(title);
             dmct.getTitle().add(textTypeTitle);
         }
-        if (dmct.getDescription().isEmpty()) {
+        if (description != null && dmct.getDescription().isEmpty()) {
+            TextType textTypeDescription = new TextType();
+            textTypeDescription.setValue(description);
             dmct.getDescription().add(textTypeDescription);
         }
         if (dmct.getDescriptionLevel() == null) {
@@ -328,6 +325,29 @@ public class ArchiveTransferGenerator {
         autr.setEndDate(date);
     }
 
+    /**
+     * 
+     * @param id
+     * @param originatingAgencyArchiveUnitIdentifier
+     */
+    public void setOriginatingAgencyArchiveUnitIdentifier(String id,String originatingAgencyArchiveUnitIdentifier){
+        ParametersChecker.checkParameter("id cannot be null", id);
+        ParametersChecker.checkParameter("id must be a valid ArchiveUnit ID", mapArchiveUnit.get(id));
+        ArchiveUnitTypeRoot autr = mapArchiveUnit.get(id);
+        for (DescriptiveMetadataContentType dmct : autr.getContent()) {
+            dmct.setOriginatingAgencyArchiveUnitIdentifier(originatingAgencyArchiveUnitIdentifier);
+        }
+    }
+    
+    public void setDescriptionLevel(String id,LevelType level){
+        ParametersChecker.checkParameter("id cannot be null", id);
+        ParametersChecker.checkParameter("id must be a valid ArchiveUnit ID", mapArchiveUnit.get(id));
+        ArchiveUnitTypeRoot autr = mapArchiveUnit.get(id);
+        for (DescriptiveMetadataContentType dmct : autr.getContent()) {
+            dmct.setDescriptionLevel(level);
+        }
+    }
+    
     /**
      * Remove an ArchiveUnit from the collection .
      * It doesn't destroy the relation with other ArchiveUnits
