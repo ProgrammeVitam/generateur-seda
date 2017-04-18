@@ -34,6 +34,7 @@
  */
 package fr.gouv.vitam.generator.seda.core;
 
+import static fr.gouv.culture.archivesdefrance.seda.v2.LevelType.RECORD_GRP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -144,7 +145,12 @@ public class ArchiveTransferGeneratorTest {
             ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
             atgi.generateHeader();
             File f = new File(classLoader.getResource("ArchiveUnitMetadata.json").getFile());
-            atgi.addArchiveUnit("test", "test", f);
+            String id = atgi.addArchiveUnit("test", "test", f);
+
+            assertThat(atgi.getMapArchiveUnit().get(id)).isNotNull();
+            assertThat(atgi.getMapArchiveUnit().get(id).getContent().get(0).getTitle()).hasSize(2).extracting("value")
+                .containsExactly("Titre francais", "English title");
+            assertThat(atgi.getMapArchiveUnit().get(id).getContent().get(0).getDescriptionLevel()).isEqualTo(RECORD_GRP);
         } catch (Exception e) {
             LOGGER.error("Should not have an exception", e);
             fail("Should not have an exception");
