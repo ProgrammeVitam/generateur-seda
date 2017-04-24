@@ -66,11 +66,11 @@ Il y a 3 sections dans ce fichier :
 Rattachement à une unité archivistique existante
 ------------------------------------------------
 
-Le générateur seda permet également de générer un fichier AU FORMAT SEDA qui peut attacher une nouvelle unité archivistique à une unité archivistique éxistante (qu'il s'agisse d'une AU lié à un arbre, à un plan ou une AU classique).
+Le générateur seda permet également de générer un fichier AU FORMAT SEDA qui peut attacher une nouvelle unité archivistique à une unité archivistique existante (qu'il s'agisse d'une AU lié à un arbre, à un plan ou une AU classique).
 
 Pour celà, il faut renseigner dans l'unité archivistique fille l'identifiant unique de son parent (le GUID).
 
-Il faut aussi renseigner les champs `Title` et `DescriptionLevel` qui sont obligatoire dans la norme SEDA.
+Il faut aussi renseigner les champs `Title` et `DescriptionLevel` qui sont obligatoires dans la norme SEDA.
 
 Un exemple de configuration est donné dans le fichier `ArchiveUnitMetadata.json` (voir section précédente).
 
