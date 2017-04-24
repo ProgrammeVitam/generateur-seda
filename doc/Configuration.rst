@@ -43,7 +43,7 @@ Fichier d'enrichissement des métadonnées
 
 Le fichier `ArchiveUnitMetadata.json`_ présent dans ce répertoire donne un apercu du format json attendu. 
 
-Il y a 2 sections dans ce fichier : 
+Il y a 3 sections dans ce fichier :
 
 + Section Content (pour les métadonnées descriptives) : 
 
@@ -57,5 +57,21 @@ Il y a 2 sections dans ce fichier :
 
   * Les métadonnées suivantes seront écrasées par le mécanisme de calcul automatique des dates : TransactedDate, StartDate et EndDate
 + Section Management (pour les méta-données de gestion) : L'ensemble du SEDA est géré via le formalisme JSON en dehors des extensions (OtherManagementAbstract) 
+
++ Section VitamFather (pour le rattachement d'une unité archivistique à une unité existante)
+  * Le champ `id` contient l'identifiant de l'unité archivistique parente
+  * les balises `Title` et `DescriptionLevel` doivent reprendre les informations de l'unité archivistique parente.
+
+
+Rattachement à une unité archivistique existante
+------------------------------------------------
+
+Le générateur seda permet également de générer un fichier AU FORMAT SEDA qui peut attacher une nouvelle unité archivistique à une unité archivistique éxistante (qu'il s'agisse d'une AU lié à un arbre, à un plan ou une AU classique).
+
+Pour celà, il faut renseigner dans l'unité archivistique fille l'identifiant unique de son parent (le GUID).
+
+Il faut aussi renseigner les champs `Title` et `DescriptionLevel` qui sont obligatoire dans la norme SEDA.
+
+Un exemple de configuration est donné dans le fichier `ArchiveUnitMetadata.json` (voir section précédente).
 
 .. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)
