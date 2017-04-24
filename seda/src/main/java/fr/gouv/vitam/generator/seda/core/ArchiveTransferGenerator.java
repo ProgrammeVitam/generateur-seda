@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.StreamSupport;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -45,10 +46,14 @@ import javax.xml.stream.XMLStreamException;
 import org.codehaus.stax2.XMLOutputFactory2;
 import org.codehaus.stax2.XMLStreamWriter2;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -67,6 +72,7 @@ import fr.gouv.culture.archivesdefrance.seda.v2.ManagementRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.OrganizationWithIdType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TransferringAgencyTypeRoot;
+import fr.gouv.culture.archivesdefrance.seda.v2.UpdateOperationType;
 import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
@@ -77,6 +83,7 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaMissingFieldException;
 import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
 import fr.gouv.vitam.generator.seda.helper.ZipFileWriter;
+import fr.gouv.vitam.generator.seda.model.VitamFather;
 
 //import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
 
@@ -97,6 +104,8 @@ public class ArchiveTransferGenerator {
     private final FileOutputStream writerFOS;
     private final XMLStreamWriter2 writer;
     private final ArchiveTransferConfig archiveTransferConfig;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private Multimap<String, String> edges = ArrayListMultimap.create();
 
@@ -132,6 +141,7 @@ public class ArchiveTransferGenerator {
         } catch (IOException e) {
             throw new VitamSedaException("Can't create /Content directory in the zipFile", e);
         }
+        objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
     }
 
 
@@ -212,6 +222,26 @@ public class ArchiveTransferGenerator {
                     management.unmarshallFromJson();
                     autr.setManagement(management);
                 }
+                if (jn.has("VitamFather")) {
+                    ArrayNode fatherArray = (ArrayNode) jn.get("VitamFather");
+                    Iterable<JsonNode> iterable = fatherArray::iterator;
+
+                    StreamSupport.stream((iterable.spliterator()), false)
+                        .map((unit) -> {
+                            try {
+                                return objectMapper.treeToValue(unit, VitamFather.class);
+                            } catch (JsonProcessingException e) {
+                                throw Throwables.propagate(e);
+                            }
+                        }).forEach(vitamFather -> {
+                        String fatherId = XMLWriterUtils.getNextID();
+
+                        ArchiveUnitTypeRoot archiveUnitTypeRoot = buildFatherArchiveUnit(vitamFather, fatherId);
+
+                        mapArchiveUnit.put(fatherId, archiveUnitTypeRoot);
+                        edges.put(fatherId, id);
+                    });
+                }
             }
         } catch (InvalidParseOperationException e) {
             LOGGER.warn("File " + metadataFile + " is not a valid json File for Content or Management Metadata", e);
@@ -229,6 +259,27 @@ public class ArchiveTransferGenerator {
         autr.setId(id);
         mapArchiveUnit.put(id, autr);
         return id;
+    }
+
+    private ArchiveUnitTypeRoot buildFatherArchiveUnit(VitamFather vitamFather, String fatherId) {
+        ArchiveUnitTypeRoot archiveUnitTypeRoot = new ArchiveUnitTypeRoot();
+
+        ManagementRoot managementUpdateType = new ManagementRoot();
+
+        UpdateOperationType updateOperation = new UpdateOperationType();
+        managementUpdateType.setUpdateOperation(updateOperation);
+        archiveUnitTypeRoot.setManagement(managementUpdateType);
+
+        DescriptiveMetadataContentType descriptiveMetadataContentType =
+            new DescriptiveMetadataContentType();
+        descriptiveMetadataContentType.getTitle().addAll(vitamFather.getTitles());
+        descriptiveMetadataContentType.setDescriptionLevel(vitamFather.getDescriptionLevel());
+
+        archiveUnitTypeRoot.getContent().add(descriptiveMetadataContentType);
+
+        updateOperation.setSystemId(vitamFather.getId());
+        archiveUnitTypeRoot.setId(fatherId);
+        return archiveUnitTypeRoot;
     }
 
     /**
