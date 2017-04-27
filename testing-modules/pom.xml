@@ -16,6 +16,7 @@
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<modules>
+		<module>csv-generator</module>
 		<module>dag-generator</module>
 		<module>binary-generator</module>
 		<module>seda-invalid</module>

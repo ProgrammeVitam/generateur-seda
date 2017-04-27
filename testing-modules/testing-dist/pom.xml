@@ -46,6 +46,11 @@
 		</dependency>
 		<dependency>
 			<groupId>fr.gouv.vitam.generator</groupId>
+			<artifactId>csv-generator</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.gouv.vitam.generator</groupId>
 			<artifactId>binary-generator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
