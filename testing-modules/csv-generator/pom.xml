@@ -60,7 +60,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>fr.gouv.vitam.generator.scanner.main.SedaGenerator</mainClass>
+							<mainClass>fr.gouv.vitam.generator.csv.CSVGenerator</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
