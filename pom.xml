@@ -56,7 +56,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.common.version>0.16.0-SNAPSHOT</vitam.common.version>
+		<vitam.common.version>0.15.1</vitam.common.version>
 
 
 		<!-- Build environment Properties -->
@@ -389,6 +389,30 @@
 					<artifactId>sonar-maven-plugin</artifactId>
 					<version>3.0.1</version>
 				</plugin>
+				<!-- Get git versions information -->
+				<plugin>
+					<groupId>pl.project13.maven</groupId>
+					<artifactId>git-commit-id-plugin</artifactId>
+					<version>2.2.1</version>
+					<executions>
+						<execution>
+							<id>get-the-git-infos</id>
+							<goals>
+								<goal>revision</goal>
+							</goals>
+						</execution>
+					</executions>
+
+					<configuration>
+						<!--<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>-->
+						<dateFormat>yyyy-MM-dd'T'HH:mm:ssX</dateFormat>
+						<!--<injectAllReactorProjects>true</injectAllReactorProjects>
+                        <runOnlyOnce>true</runOnlyOnce>-->
+						<!--<failOnNoGitDirectory>false</failOnNoGitDirectory>-->
+						<!-- <failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo> -->
+						<!--<useNativeGit>false</useNativeGit>-->
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -396,6 +420,10 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
@@ -526,14 +554,13 @@
 			<dependency>
 				<groupId>org.codehaus.woodstox</groupId>
 				<artifactId>stax2-api</artifactId>
-				<version>${stax-api.version}</version>
+                                <version>${stax-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.woodstox</groupId>
 				<artifactId>woodstox-core-asl</artifactId>
 				<version>4.4.1</version>
 			</dependency>
-
 			<dependency>
 				<groupId>com.github.vatbub</groupId>
 				<artifactId>mslinks</artifactId>

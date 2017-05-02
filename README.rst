@@ -87,9 +87,6 @@ Fichiers de sortie
 Compilation & Packaging
 =======================
 
-Pour le packaging, il faut :
-
-* lancer la compilation des classes : ``mvn clean package``
-* se positionner dans le répertoire ``scripts`` et lancer ``sh generate_package.sh``. Le résultat est dans dans le répertoire ``scripts/build``
+La compilation et le packaging se font via maven : ``mvn clean package`` ; le résultat du packaging est un fichier zip présent dans le dossier ``dist/target/``.
 
 .. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)
