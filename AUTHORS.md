@@ -10,6 +10,10 @@
 * Etienne Carrière
 * Jean-Séverin Lair
 
+### Smile Development teams
+* Ludovic Blanchet
+* Jean-eudes Couignoux
+
 ### Thalès integration team
 
 * Kristopher Waltzer
