@@ -89,4 +89,9 @@ Compilation & Packaging
 
 La compilation et le packaging se font via maven : ``mvn clean package`` ; le résultat du packaging est un fichier zip présent dans le dossier ``dist/target/``.
 
+Problèmes connus
+=================
+
+A l'issue de la décompaction du packaging du générateur SEDA, le fichier ``sf.exe`` peut être reconnu par certains antivirus comme infecté. Il est alors supprimé du répertoire cible, par prévention de l'antivirus ; toutes les tâches liées aux appels Siegfried tomberont alors en erreur.
+
 .. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)
