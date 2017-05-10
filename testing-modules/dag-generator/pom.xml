@@ -3,7 +3,7 @@
   <parent>
     <groupId>fr.gouv.vitam.generator</groupId>
     <artifactId>testing-modules</artifactId>
-    <version>0.16.0</version>
+    <version>0.17.0-SNAPSHOT</version>
   </parent>
   <artifactId>dag-generator</artifactId>
   <dependencies>
