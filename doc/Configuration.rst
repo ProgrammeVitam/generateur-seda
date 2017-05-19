@@ -4,7 +4,7 @@ Fichiers de configuration
 Modules activables 
 ------------------
 
-Le fichier `conf/playbook_BinaryDataObject.json`_ permet de gérer les modules que l'on désire activer. On pourra noter les points suivants : 
+Le fichier ``conf/playbook_BinaryDataObject.json`` permet de gérer les modules que l'on désire activer. On pourra noter les points suivants : 
 
 * si on désire désactiver l'identification de format (via Siegfried), il suffit de supprimer la section json du module "siegfried"
 * si on désire rejeter du SIP les fichiers inconnus de Siegfried, il suffit de passer le paramètre ignoreUnknownFile à true dans la section relative aux paramètres du module siegfried (ex: ``"parameters" :{ "binarydataobject" : "@@binarydataobject@@" ,"siegfriedURL" : "http://localhost:5138" , "ignoreUnknownFile" : "true"}``)
@@ -30,7 +30,7 @@ Pour les champs liés au SEDA, on a :
 * Les champs "MessageIdentifier", "ArchivalAgency" , "TransferringAgency" sont obligatoires dans le SEDA et sont donc nécessaires pour le générateur SEDA
 * Il en est de même pour les clés "ReplyCodeListVersion", "MessageDigestAlgorithmCodeListVersion" et "MessageDigestAlgorithmCodeListVersion" du bloc "CodeListVersions"
 * Les champs "Comment" et "ArchivalAgreement" sont facultatifs (au sens SEDA et Vitam)
-* Le champ "ManagementMetadata" est facultatifs. Son formalisme est identique à celui de la section Management du fichier `ArchiveUnitMetadata.json`_ . 
+* Le champ "ManagementMetadata" est facultatifs. Son formalisme est identique à celui de la section Management du fichier `ArchiveUnitMetadata.json <ArchiveUnitMetadata.json>`_ . 
 * Les champs "ManagementMetadata.OriginatingAgencyIdentifier".et "ManagementMetadata.SubmissionAgencyIdentifier" sont des extensions du SEDA pour Vitam. Le premier est obligatoire pour Vitam.
 
 Pour les champs techniques, on a :

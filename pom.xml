@@ -24,8 +24,8 @@
 		<module>scanner</module>
 		<module>scheduler</module>
 		<module>seda</module>
-		<module>dist</module>
 		<module>testing-modules</module>
+		<module>generator-dist</module>
 	</modules>
 
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -90,9 +90,9 @@
 		<mockito.version>1.10.19</mockito.version>
 		<httpclient.version>4.5.2</httpclient.version>
 		<powermock.version>1.6.5</powermock.version>
-                <junit.system-rules.version>1.16.1</junit.system-rules.version>
-                <stax-api.version>3.1.2</stax-api.version>
-                <woodstox.version>4.4.1</woodstox.version>
+		<junit.system-rules.version>1.16.1</junit.system-rules.version>
+		<stax-api.version>3.1.2</stax-api.version>
+		<woodstox.version>4.4.1</woodstox.version>
 		<commons-csv.version>1.4</commons-csv.version>
 		<sonar.exclusions>file:**/generated-sources/**</sonar.exclusions>
 	</properties>
@@ -102,6 +102,18 @@
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<profiles>
+		<profile>
+			<!-- Profile used to build and package the documentation -->
+			<id>doc</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<modules>
+				<module>doc</module>
+			</modules>
+		</profile>
+		
 		<profile>
 			<!-- Profile to use for all Vitam internal developers -->
 			<id>vitam</id>

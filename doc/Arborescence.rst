@@ -4,7 +4,7 @@ Générateur de SEDA à partir d'une arborescence de fichiers
 Objectif de l'outil
 -------------------
 
-Dans le cadre du projet Vitam, il est nécessaire de générer des SIP contenant des bordereaux sous forme de fichiers XML, conformes au standard SEDA 2.0 (`http://www.archivesdefrance.culture.gouv.fr/seda/`_) de manière semi-automatique (au delà d'editeurs XML comme oxygen ou Eclipse) pour : 
+Dans le cadre du projet Vitam, il est nécessaire de générer des SIP contenant des bordereaux sous forme de fichiers XML, conformes au standard SEDA 2.0 (  `lien <http://www.archivesdefrance.culture.gouv.fr/seda/>`_ ) de manière semi-automatique (au-delà d'editeurs XML comme oxygen ou Eclipse) pour : 
 
 * tester les développements 
 * éventuellement faciliter l'intégration dans Vitam en fournissant des outils dans la toolbox Vitam
@@ -153,6 +153,6 @@ Dans le fichier SEDA, les champs suivants sont gérés :
   + TransactedDate : pour les archiveUnit de type Item (père d'un DataObjectGroup), il s'agit de la date du dernier BinaryMaster entré dans l'ArchiveUnit. Il s'agit d'un comportement non cible mais il reste à définir le comportement dans les différents cas de répertoires de type "DataObjectGroup" (avec ``__`` au début et à la fin du répertoire)
   + StartDate/EndDate : pour les ArchiveUnit de type RecordGrp, la StartDate est la TransactedDate la plus ancienne des fichiers du RecordGrp et la EndDate est la TransactedDate la plus récente des fichiers du RecordGrp
 
-Pour DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content et Metadata, il est possible de surcharger ces métadonnées via la mise en place d'un fichier ``ArchiveUnitMetadata.json`` dans le répertoire correspondant à l'archiveUnit. Voir le fichier `Configuration.rst`_ pour plus d'information.
+Pour DataObjectPackage.DescriptiveMetadata.ArchiveUnit.Content et Metadata, il est possible de surcharger ces métadonnées via la mise en place d'un fichier ``ArchiveUnitMetadata.json`` dans le répertoire correspondant à l'archiveUnit. Voir le fichier `de configuration <Configuration.rst>`_ pour plus d'information.
 
 .. Ce document est distribué sous les termes de la licence Creative Commons Attribution - Partage dans les Mêmes Conditions 3.0 France (CC BY-SA 3.0 FR)

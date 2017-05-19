@@ -32,18 +32,25 @@
       <outputDirectory>conf</outputDirectory>
     </fileSet>
     <!-- Add documentation -->
-    <fileSet>
+    <!-- <fileSet>
       <directory>../doc</directory>
       <outputDirectory>doc</outputDirectory>
-    </fileSet>
+    </fileSet> -->
   </fileSets>
   <dependencySets>
     <!-- Add java-based vitam-product rpm -->
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
       <unpack>false</unpack>
+      <excludes>
+        <exclude>fr.gouv.vitam.generator:doc:*</exclude>
+      </excludes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>doc</outputDirectory>
+      <unpack>true</unpack>
       <includes>
-        <include>*</include>
+        <include>fr.gouv.vitam.generator:doc:*</include>
       </includes>
     </dependencySet>
   </dependencySets>

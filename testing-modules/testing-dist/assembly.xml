@@ -36,8 +36,15 @@
       <outputDirectory>lib</outputDirectory>
       <unpack>false</unpack>
       <excludes>
-        <exclude>*:zip</exclude>
+        <exclude>fr.gouv.vitam.generator:doc:*</exclude>
       </excludes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>doc</outputDirectory>
+      <unpack>true</unpack>
+      <includes>
+        <include>fr.gouv.vitam.generator:doc:*</include>
+      </includes>
     </dependencySet>
   </dependencySets>
 </assembly>
