@@ -87,7 +87,18 @@ Fichiers de sortie
 Compilation & Packaging
 =======================
 
-La compilation et le packaging se font via maven : ``mvn clean package`` ; le résultat du packaging est un fichier zip présent dans le dossier ``dist/target/``.
+Les pré-requis de compilation sont les suivants :
+
+* maven (version 3.3.9 minimale) ;
+* pour la génération de la documentation :
+
+   - sphinx
+   - make
+
+La compilation et le packaging se font via maven : ``mvn clean package`` ; le résultat du packaging est un fichier zip présent dans le dossier ``generator-dist/target/``.
+
+.. note:: par défaut, la documentation est générée et incluse dans les packages de distribution. Pour ne pas la générer, il suffit de désactiver le profil maven `doc` (``mvn -P-doc [...]``).
+
 
 Problèmes connus
 =================

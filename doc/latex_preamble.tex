@@ -1,0 +1,38 @@
+\usepackage{textcomp}
+
+% https://stackoverflow.com/questions/28454217/how-to-avoid-the-too-deeply-nested-error-when-creating-pdfs-with-sphinx
+% https://stackoverflow.com/questions/1935952/maximum-nesting-level-of-lists-in-latex
+
+\usepackage{enumitem}
+\setlistdepth{99}
+
+\setlist[itemize,1]{label=$\bullet$}
+\setlist[itemize,2]{label=$\bullet$}
+\setlist[itemize,3]{label=$\bullet$}
+\setlist[itemize,4]{label=$\bullet$}
+\setlist[itemize,5]{label=$\bullet$}
+\setlist[itemize,6]{label=$\bullet$}
+\setlist[itemize,7]{label=$\bullet$}
+\setlist[itemize,8]{label=$\bullet$}
+\setlist[itemize,9]{label=$\bullet$}
+
+\renewlist{itemize}{itemize}{9}
+
+% set toc depth in latex
+
+\setcounter{tocdepth}{9}
+\setcounter{secnumdepth}{9}
+
+% Allow usage of 'H' specifier for figure placement
+\usepackage{float}
+
+% Disclaimer vitam
+\usepackage{color}
+\usepackage{xcolor}
+% \usepackage{draftwatermark}
+% \SetWatermarkAngle{45}
+% \SetWatermarkScale{0.5}
+% %\SetWatermarkColor{Lavender} %0.34,0.10,0.55
+% \SetWatermarkFontSize{6cm}
+% %\SetWatermarkLightness{0.7} %Only for a grey background
+% \SetWatermarkText{\shortstack{Pour usage \\ interne VITAM \\ uniquement }}
