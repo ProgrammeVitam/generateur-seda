@@ -43,6 +43,7 @@
             <xsd:group ref="EventGroup"/>
             <xsd:group ref="SignatureGroup"/>
             <xsd:group ref="GpsGroup"/>
+            <xsd:group ref="ExtensionGroup"/>
         </xsd:sequence>
     </xsd:group>
 
@@ -946,5 +947,17 @@
             </xsd:element>
         </xsd:sequence>
     </xsd:complexType>
+
+    <!-- General description -->
+    <xsd:group name="ExtensionGroup">
+        <xsd:sequence>
+            <xsd:element name="TextContent" type="TextType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Contenu textuel de l’ArchiveUnit. </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:group>
+
 
 </xsd:schema>
