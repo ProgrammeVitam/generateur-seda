@@ -951,6 +951,11 @@
     <!-- General description -->
     <xsd:group name="ExtensionGroup">
         <xsd:sequence>
+            <xsd:element name="OriginatingSystemIdReplyTo" type="NonEmptyTokenType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Identifiant du message à l'origine de cette réponse.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
             <xsd:element name="TextContent" type="TextType" minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>Contenu textuel de l’ArchiveUnit. </xsd:documentation>
@@ -958,6 +963,7 @@
             </xsd:element>
         </xsd:sequence>
     </xsd:group>
+
 
 
 </xsd:schema>
