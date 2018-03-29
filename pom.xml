@@ -34,16 +34,16 @@
 
 	<!-- Définition de l'url du gestionnaire de source à utiliser -->
 	<scm>
-		<connection>scm:git:https://dev.programmevitam.fr/gitlab/vitam/generateur-seda.git</connection>
-		<developerConnection>scm:git:https://dev.programmevitam.fr/gitlab/vitam/generateur-seda.git</developerConnection>
-		<url>https://dev.programmevitam.fr/gitlab/vitam/generateur-seda.git</url>
+		<connection>scm:git:https://gitlab.dev.programmevitam.fr/vitam/generateur-seda.git</connection>
+		<developerConnection>scm:git:https://gitlab.dev.programmevitam.fr/vitam/generateur-seda.git</developerConnection>
+		<url>https://gitlab.dev.programmevitam.fr/vitam/generateur-seda.git</url>
 		<tag>HEAD</tag>
 	</scm>
 
 	<!-- Définition de l'url de l'intégration continue du projet -->
 	<ciManagement>
 		<system>jenkins</system>
-		<url>https://dev.programmevitam.fr/jenkins/</url>
+		<url>https://jenkins.dev.programmevitam.fr/jenkins/</url>
 	</ciManagement>
 
 
@@ -56,7 +56,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.common.version>0.15.1</vitam.common.version>
+		<vitam.common.version>1.0.0</vitam.common.version>
 
 
 		<!-- Build environment Properties -->
@@ -122,18 +122,18 @@
 			<distributionManagement>
 				<repository>
 					<id>releases</id>
-					<url>https://dev.programmevitam.fr/nexus/content/repositories/releases/</url>
+					<url>https://nexus.dev.programmevitam.fr/nexus/content/repositories/releases/</url>
 				</repository>
 				<snapshotRepository>
 					<id>snapshots</id>
-					<url>https://dev.programmevitam.fr/nexus/content/repositories/snapshots/</url>
+					<url>https://nexus.dev.programmevitam.fr/nexus/content/repositories/snapshots/</url>
 				</snapshotRepository>
 			</distributionManagement>
 
 			<repositories>
 				<repository>
 					<id>vitam</id>
-					<url>https://dev.programmevitam.fr/nexus/content/groups/public/</url>
+					<url>https://nexus.dev.programmevitam.fr/nexus/content/groups/public/</url>
 				</repository>
 			</repositories>
 
@@ -141,7 +141,7 @@
 			<pluginRepositories>
 				<pluginRepository>
 					<id>vitam</id>
-					<url>https://dev.programmevitam.fr/nexus/content/groups/public/</url>
+					<url>https://nexus.dev.programmevitam.fr/nexus/content/groups/public/</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
