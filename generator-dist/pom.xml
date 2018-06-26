@@ -42,7 +42,7 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>https://github.com/richardlehane/siegfried/releases/download/v1.6.7/siegfried_1-6-7_win32.zip</url>
+							<url>${env.SERVICE_NEXUS_URL}/repository/maven-github/richardlehane/siegfried/releases/download/v1.6.7/siegfried_1-6-7_win32.zip</url>
 							<unpack>true</unpack>
 							<outputDirectory>${project.build.directory}/siegfried</outputDirectory>
 							<md5>2bb0e3517878a2c55165a2173ccae8fb</md5>
