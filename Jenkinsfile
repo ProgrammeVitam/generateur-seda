@@ -60,40 +60,25 @@ pipeline {
             }
         }
         
-        // mvn clean package -P vitam,doc -DskipTests
-        stage ("Execute unit tests") {
-         // when {
-        //     //     environment(name: 'CHANGED_VITAM', value: 'true')
+        // stage ("Execute unit tests") {
+        //     steps {
+        //         sh '$MVN_COMMAND -f pom.xml clean test'
+        //     }
+        //     // post {
+        //     //     always {
+        //     //         junit 'sources/**/target/surefire-reports/*.xml'
+        //     //     }
         //     // }
-            steps {
-                //dir('sources') {
-                    sh '$MVN_COMMAND -f pom.xml clean test'
-                    //sonar:sonar -Dsonar.branch=$GIT_BRANCH'
-                //}
-            }
-            // post {
-            //     always {
-            //         junit 'sources/**/target/surefire-reports/*.xml'
-            //     }
-            // }
-        }
+        // }
 
         stage("Build packages") {
-            // Separated for the -T 1C option (possible here, but not while executing the tests)
-            // Caution : it force us to recompile and rebuild the jar packages, but it doesn't cost that much (KWA TODO: To be verified)
-            // when {
-            //     environment(name: 'CHANGED_VITAM', value: 'true')
-            // }
             environment {
                 DEPLOY_GOAL = readFile("deploy_goal.txt")
             }
             steps {
                 sh '$MVN_COMMAND -f pom.xml -Dmaven.test.skip=true -DskipTests=true clean package $DEPLOY_GOAL'
                 // javadoc:aggregate-jar rpm:attached-rpm jdeb:jdeb
-                            // -T 1C // Doesn't work with the javadoc:aggregate-jar goal
             }        
         }
-
-        
     }
 }
