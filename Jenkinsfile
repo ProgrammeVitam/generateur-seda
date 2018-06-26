@@ -24,7 +24,7 @@ pipeline {
         // SERVICE_CHECKMARX_URL = credentials("service-checkmarx-url")
         // SERVICE_REPO_SSHURL = credentials("repository-connection-string")
         // SERVICE_GIT_URL = credentials("service-gitlab-url")
-        // SERVICE_PROXY_HOST = credentials("http-proxy-host")
+        SERVICE_PROXY_HOST = credentials("http-proxy-host")
         // SERVICE_PROXY_PORT = credentials("http-proxy-port")
     }
 
