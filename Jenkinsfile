@@ -24,7 +24,7 @@ pipeline {
         // SERVICE_CHECKMARX_URL = credentials("service-checkmarx-url")
         // SERVICE_REPO_SSHURL = credentials("repository-connection-string")
         // SERVICE_GIT_URL = credentials("service-gitlab-url")
-        SERVICE_PROXY_HOST = credentials("http-proxy-host")
+        //SERVICE_PROXY_HOST = credentials("http-proxy-host")
         // SERVICE_PROXY_PORT = credentials("http-proxy-port")
     }
 
@@ -65,16 +65,16 @@ pipeline {
         //         sh '$MVN_COMMAND -f pom.xml clean compile -P vitam,doc'
         //     }
         // }
-        stage ("Execute unit tests") {
-            steps {
-                sh '$MVN_COMMAND -f pom.xml clean test -P vitam -P-doc'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
-        }
+        // stage ("Execute unit tests") {
+        //     steps {
+        //         sh '$MVN_COMMAND -f pom.xml clean test -P vitam -P-doc'
+        //     }
+        //     post {
+        //         always {
+        //             junit '**/target/surefire-reports/*.xml'
+        //         }
+        //     }
+        // }
 
         stage("Build packages") {
             environment {
