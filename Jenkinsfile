@@ -60,21 +60,21 @@ pipeline {
             }
         }
         
-        stage ("Compile") {
-            steps {
-                sh '$MVN_COMMAND -f pom.xml clean compile -P vitam,doc'
-            }
-        }
-        stage ("Execute unit tests") {
-            steps {
-                sh '$MVN_COMMAND -f pom.xml clean test -P vitam'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
-        }
+        // stage ("Compile") {
+        //     steps {
+        //         sh '$MVN_COMMAND -f pom.xml clean compile -P vitam,doc'
+        //     }
+        // }
+        // stage ("Execute unit tests") {
+        //     steps {
+        //         sh '$MVN_COMMAND -f pom.xml clean test -P vitam'
+        //     }
+        //     post {
+        //         always {
+        //             junit '**/target/surefire-reports/*.xml'
+        //         }
+        //     }
+        // }
 
         stage("Build packages") {
             environment {
