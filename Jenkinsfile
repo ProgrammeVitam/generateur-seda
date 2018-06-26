@@ -16,7 +16,7 @@ pipeline {
 
     environment {
         MVN_BASE = "/usr/local/maven/bin/mvn --settings ${pwd()}/.ci/settings.xml"
-        MVN_COMMAND = "${MVN_BASE} --show-version --batch-mode --errors --fail-at-end -DinstallAtEnd=true -DdeployAtEnd=true -P vitam,doc"
+        MVN_COMMAND = "${MVN_BASE} --show-version --batch-mode --errors --fail-at-end -DinstallAtEnd=true -DdeployAtEnd=true"
         DEPLOY_GOAL = " " // Deploy goal used by maven ; typically "deploy" for master* branches & "" (nothing) for everything else (we don't deploy) ; keep a space so can work in other branches than develop
         CI = credentials("app-jenkins")
         SERVICE_SONAR_URL = credentials("service-sonar-url")
@@ -60,23 +60,23 @@ pipeline {
             }
         }
         
-        // stage ("Execute unit tests") {
-        //     steps {
-        //         sh '$MVN_COMMAND -f pom.xml clean test'
-        //     }
-        //     // post {
-        //     //     always {
-        //     //         junit 'sources/**/target/surefire-reports/*.xml'
-        //     //     }
-        //     // }
-        // }
+        stage ("Execute unit tests") {
+            steps {
+                sh '$MVN_COMMAND -f pom.xml clean test -P vitam'
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
 
         stage("Build packages") {
             environment {
                 DEPLOY_GOAL = readFile("deploy_goal.txt")
             }
             steps {
-                sh '$MVN_COMMAND -f pom.xml -Dmaven.test.skip=true -DskipTests=true clean package $DEPLOY_GOAL'
+                sh '$MVN_COMMAND -P vitam,doc -f pom.xml -Dmaven.test.skip=true -DskipTests=true clean package $DEPLOY_GOAL'
                 // javadoc:aggregate-jar rpm:attached-rpm jdeb:jdeb
             }        
         }
