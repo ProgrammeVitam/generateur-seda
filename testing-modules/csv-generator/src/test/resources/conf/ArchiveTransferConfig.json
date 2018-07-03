@@ -1,6 +1,6 @@
 {
 	"Comment" : "2eme SIP",
-	"MessageIdentifier" : "Test DAG fortement connecté 10 10",
+	"MessageIdentifier" : "MessageIdentifier0",
 	"ArchivalAgreement" : "ArchivalAgreement0",
 	"CodeListVersions" : {
 		"ReplyCodeListVersion" : "ReplyCodeListVersion0",
@@ -17,8 +17,7 @@
 		"ReuseRuleCodeListVersion" : "ReuseRuleCodeListVersion0",
 		"ClassificationRuleCodeListVersion" : "ClassificationRuleCodeListVersion0",
 		"AuthorizationReasonCodeListVersion" : "AuthorizationReasonCodeListVersion0",
-		"RelationshipCodeListVersion" : "RelationshipCodeListVersion0",
-		"UNKNOWN" : "RelationshipCodeListVersion0"
+		"RelationshipCodeListVersion" : "RelationshipCodeListVersion0"
 	},
 	"ArchivalAgency" : {
 		"Identifier" : "Identifier4"
@@ -26,5 +25,9 @@
 	"TransferringAgency" : {
 		"Identifier" : "Identifier5"
 	},
-	"ignore_patterns" : ["java*.jar"]
+	"ManagementMetadata.OriginatingAgencyIdentifier" : "Service_producteur",
+	"ManagementMetadata.SubmissionAgencyIdentifier" : "Service_versant",
+	"ManagementMetadata.LegalStatus" : "Public Archive",
+	"ManagementMetadata.AcquisitionInformation" : "Acquisition Information",
+	"ignore_patterns" : ["Thumbs.db","pagefile.sys"]
 }

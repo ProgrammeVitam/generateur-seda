@@ -1,4 +1,4 @@
-/**
+/*******************************************************************************
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
@@ -23,45 +23,35 @@
  *
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
- */
-package fr.gouv.culture.archivesdefrance.seda.v2;
+ *******************************************************************************/
+package fr.gouv.vitam.common.model.unit;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
- *
+ * Base for Common rule Interface in order to manage seda multi versions
  */
-
-@XmlRootElement(name = "Management")
-public class ManagementRoot extends ManagementType {
-
+public interface CommonRuleBase {
 
     /**
-     *  Postprocessing after the unmarshalling by Json of *Rule which is not correct for the reading by JaxB
+     * Gets the value of the ruleAndStartDate property.
+     * 
+     * @return the ruleAndStartDate property
      */
-    public void unmarshallFromJson() {
-        if (storageRule != null) {
-            JsonMarshallerHelper.transformRuleMap(storageRule.getRuleAndStartDate());
-        }
-        if (appraisalRule != null) {
-            JsonMarshallerHelper.transformRuleMap(appraisalRule.getRuleAndStartDate());
-        }
-        if (accessRule != null) {
-            JsonMarshallerHelper.transformRuleMap(accessRule.getRuleAndStartDate());
-        }
+    List<Object> getRuleAndStartDate();
 
-        if (disseminationRule != null) {
-            JsonMarshallerHelper.transformRuleMap(disseminationRule.getRuleAndStartDate());
+    /**
+     * Gets the value of the preventInheritance property.
+     * 
+     * @return the preventInheritance
+     */
+    Boolean isPreventInheritance();
 
-        }
-        if (reuseRule != null) {
-            JsonMarshallerHelper.transformRuleMap(reuseRule.getRuleAndStartDate());
-        }
-        if (classificationRule != null) {
-            JsonMarshallerHelper.transformRuleMap(classificationRule.getRuleAndStartDate());
-        }
-    }
-
+    /**
+     * Sets the value of the preventInheritance property.
+     * 
+     * @param value true or false
+     */
+    void setPreventInheritance(Boolean value);
 
 }

@@ -40,7 +40,9 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -54,7 +56,6 @@ import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitType;
 import fr.gouv.culture.archivesdefrance.seda.v2.ArchiveUnitTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.ClassificationRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.CoverageType;
-import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentType;
 import fr.gouv.culture.archivesdefrance.seda.v2.DescriptiveMetadataContentTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.DisseminationRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.EventType;
@@ -69,6 +70,7 @@ import fr.gouv.culture.archivesdefrance.seda.v2.ReuseRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.RuleIdType;
 import fr.gouv.culture.archivesdefrance.seda.v2.StorageRuleType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
+import fr.gouv.culture.archivesdefrance.seda.v2.DataObjectGroupTypeRoot;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.common.json.JsonHandler;
@@ -81,6 +83,7 @@ import fr.gouv.vitam.generator.scheduler.core.SchedulerEngine;
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 import fr.gouv.vitam.generator.seda.helper.XMLWriterUtils;
+import fr.gouv.vitam.common.model.unit.AgentTypeModel;
 
 /**
  *
@@ -121,9 +124,9 @@ public class ArchiveTransferGeneratorTest {
             atgi.addArchiveUnit2ArchiveUnitReference(archiveFatherID, archiveSonID4);
             atgi.addArchiveUnit2DataObjectGroupReference(archiveSonID1, dataObjectGroup1ID);
             atgi.addRawContentFile(archiveSonID4,
-                new File(classLoader.getResource("ArchiveUnitContent.xml").getFile()));
+                    new File(classLoader.getResource("ArchiveUnitContent.xml").getFile()));
             atgi.addRawManagementFile(archiveFatherID,
-                new File(classLoader.getResource("ArchiveUnitManagement.xml").getFile()));
+                    new File(classLoader.getResource("ArchiveUnitManagement.xml").getFile()));
             atgi.addStartAndEndDate2ArchiveUnit(archiveFatherID);
             atgi = addBinaryDataObject(atgi, headerPath, null);
             atgi.writeDescriptiveMetadata();
@@ -141,16 +144,16 @@ public class ArchiveTransferGeneratorTest {
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             ArchiveTransferConfig atc =
-                new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+                    new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
             ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
             atgi.generateHeader();
             File f = new File(classLoader.getResource("ArchiveUnitMetadata.json").getFile());
             String id = atgi.addArchiveUnit("test", "test", f);
 
             assertThat(atgi.getMapArchiveUnit().get(id)).isNotNull();
-            assertThat(atgi.getMapArchiveUnit().get(id).getContent().get(0).getTitle()).hasSize(2).extracting("value")
-                .containsExactly("Titre francais", "English title");
-            assertThat(atgi.getMapArchiveUnit().get(id).getContent().get(0).getDescriptionLevel()).isEqualTo(RECORD_GRP);
+            assertThat(atgi.getMapArchiveUnit().get(id).getContent().getTitle()).hasSize(2).extracting("value")
+                    .containsExactly("Titre francais", "English title");
+            assertThat(atgi.getMapArchiveUnit().get(id).getContent().getDescriptionLevel()).isEqualTo(RECORD_GRP);
         } catch (Exception e) {
             LOGGER.error("Should not have an exception", e);
             fail("Should not have an exception");
@@ -162,7 +165,7 @@ public class ArchiveTransferGeneratorTest {
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             ArchiveTransferConfig atc =
-                new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+                    new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
             ArchiveTransferGenerator atgi = new ArchiveTransferGenerator(atc, OUTPUT_FILE);
             atgi.generateHeader();
             addBinaryDataObject(atgi, classLoader.getResource("empty").getFile(), null);
@@ -265,12 +268,12 @@ public class ArchiveTransferGeneratorTest {
         title_en.setValue("English title");
         title_en.setLang("en");
         dmct.getTitle().add(title_en);
-        dmct.setFilePlanPosition("Valeur de filePlanPosition");
-        dmct.setSystemId("Valeur de SystemID)");
-        dmct.setOriginatingSystemId("Valeur de OriginatingSystemId");
-        dmct.setArchivalAgencyArchiveUnitIdentifier("Valeur de archivalAgencyArchiveUnitIdentifier");
-        dmct.setOriginatingAgencyArchiveUnitIdentifier("Valeur de originatingAgencyArchiveUnitIdentifier");
-        dmct.setTransferringAgencyArchiveUnitIdentifier("Valeur de transferringAgencyArchiveUnitIdentifier");
+        dmct.getFilePlanPosition().add("Valeur de filePlanPosition");
+        dmct.getSystemId().add("Valeur de SystemID)");
+        dmct.getOriginatingSystemId().add("Valeur de OriginatingSystemId");
+        dmct.getArchivalAgencyArchiveUnitIdentifier().add("Valeur de archivalAgencyArchiveUnitIdentifier");
+        dmct.getOriginatingAgencyArchiveUnitIdentifier().add("Valeur de originatingAgencyArchiveUnitIdentifier");
+        dmct.getTransferringAgencyArchiveUnitIdentifier().add("Valeur de transferringAgencyArchiveUnitIdentifier");
         TextType descriptionFR = new TextType();
         descriptionFR.setValue("Description francaise");
         descriptionFR.setLang("fr");
@@ -288,7 +291,7 @@ public class ArchiveTransferGeneratorTest {
         documentType.setValue("Valeur du document");
         documentType.setValue("fr");
         dmct.setDocumentType(documentType);
-        dmct.setLanguage("FR");
+        dmct.getLanguage().add("FR");
         dmct.setDescriptionLanguage("FR");
         dmct.setStatus("Valeur de Status");
         dmct.setVersion("Valeur de version");
@@ -319,12 +322,13 @@ public class ArchiveTransferGeneratorTest {
         OrganizationType ot2 = new OrganizationType();
         ot2.setIdentifier(it2);
         dmct.setSubmissionAgency(ot2);
-        DescriptiveMetadataContentType.Writer wr = new DescriptiveMetadataContentType.Writer();
+        AgentTypeModel wr = new AgentTypeModel();
         wr.setGivenName("Valeur de GivenName");
         wr.setFirstName("Valeur de FirstName");
         wr.setBirthName("Valeur de BirthName");
-        wr.setBirthDate(xgc);
-        wr.setDeathDate(xgc);
+        // TODO: 26/06/18 SM revoir le format des dates
+        wr.setBirthDate(xgc.toString());
+        wr.setDeathDate(xgc.toString());
         dmct.getWriter().add(wr);
         dmct.setSource("Valeur de Source");
         // Related Object Reference non implémenté
@@ -338,7 +342,7 @@ public class ArchiveTransferGeneratorTest {
         EventType et = new EventType();
         et.setEventIdentifier("Identifiant de l'évenement");
         et.setEventType("Type de l'évenement");
-        et.setEventDateTime(xgc);
+        et.setEventDateTime(xgc.toString());
         dmct.getEvent().add(et);
         // Signature non implémenté
         GpsType gps = new GpsType();
@@ -346,8 +350,6 @@ public class ArchiveTransferGeneratorTest {
         gps.setGpsLongitude("Longitude :  string sans formatage imposé par le SEDA");
         gps.setGpsAltitude(new BigInteger("8848"));
         dmct.setGps(gps);
-        dmct.setRestrictionValue("Valeur de restrictionValue");
-        dmct.setRestrictionEndDate(xgc);
         try {
             System.out.println(JsonHandler.writeAsString(dmct));
         } catch (InvalidParseOperationException e) {
@@ -361,14 +363,14 @@ public class ArchiveTransferGeneratorTest {
         // Given
         ClassLoader classLoader = getClass().getClassLoader();
         ArchiveTransferConfig atc =
-            new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
+                new ArchiveTransferConfig("/", classLoader.getResource("conf/ArchiveTransferConfig.json").getPath());
 
         ArchiveTransferGenerator archiveTransferGenerator =
-            new ArchiveTransferGenerator(atc, "output.zip");
+                new ArchiveTransferGenerator(atc, "output.zip");
         String father = archiveTransferGenerator.addArchiveUnit("father", "parent directory");
         String child1 = archiveTransferGenerator.addArchiveUnit("child1", "directory 1");
         String subChild1 =
-            archiveTransferGenerator.addArchiveUnit("subChild1", "child directory");
+                archiveTransferGenerator.addArchiveUnit("subChild1", "child directory");
 
         archiveTransferGenerator.addEdge(subChild1, child1);
 
@@ -380,16 +382,15 @@ public class ArchiveTransferGeneratorTest {
         Map<String, ArchiveUnitTypeRoot> mapArchiveUnit = archiveTransferGenerator.getMapArchiveUnit();
         assertThat(mapArchiveUnit).containsKeys(subChild1);
         ArchiveUnitTypeRoot archiveUnitTypeRoot = mapArchiveUnit.get(subChild1);
-        assertThat(archiveUnitTypeRoot).extracting("archiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference")
-            .hasSize(1);
+        assertThat(archiveUnitTypeRoot).extracting("archiveUnitOrDataObjectReferenceOrDataObjectGroup")
+                .hasSize(1);
         ArchiveUnitType archiveUnitType =
-            (ArchiveUnitType) archiveUnitTypeRoot.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()
-                .get(0);
+                (ArchiveUnitType) archiveUnitTypeRoot.getArchiveUnitOrDataObjectReferenceOrDataObjectGroup().get(0);
         assertThat(archiveUnitType.getArchiveUnitRefId()).isEqualTo(child1);
     }
 
     private ArchiveTransferGenerator addBinaryDataObject(ArchiveTransferGenerator atgi, String filename,
-        String dataObjectGroupID) throws VitamException {
+                                                         String dataObjectGroupID) throws VitamException {
         ParameterMap pm = new ParameterMap();
         pm.put("file", filename);
         pm.put("dataobjectgroupID", dataObjectGroupID);
@@ -397,6 +398,8 @@ public class ArchiveTransferGeneratorTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String jsonFile = classLoader.getResource("playbook_BinaryDataObject.json").getFile();
         Playbook pb = PlaybookBuilder.getPlaybook(jsonFile);
+        final List<DataObjectGroupTypeRoot> dataObjectGroupList =  new ArrayList<DataObjectGroupTypeRoot>();
+        pm.put("dataObjectGroupList", dataObjectGroupList);
         SchedulerEngine se = new SchedulerEngine();
         se.execute(pb, pm);
         return atgi;

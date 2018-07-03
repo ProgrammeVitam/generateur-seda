@@ -37,10 +37,13 @@ package fr.gouv.vitam.generator.binary;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
+import fr.gouv.culture.archivesdefrance.seda.v2.DataObjectGroupTypeRoot;
 import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
@@ -154,6 +157,8 @@ public class BinaryGenerator {
             inputParameterMap.put("size", fileSize);
             inputParameterMap.put("dataobjectgroupID", dataObjectGroupID);
             inputParameterMap.put("archivetransfergenerator", atg);
+            List<DataObjectGroupTypeRoot> dataObjectGroupList = new ArrayList<DataObjectGroupTypeRoot>();
+            inputParameterMap.put("dataObjectGroupList", dataObjectGroupList);
             schedulerEngine.execute(playbookBinary, inputParameterMap);
             atg.setTransactedDate(auId, new Date());
         }

@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,6 +55,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import fr.gouv.culture.archivesdefrance.seda.v2.DataObjectGroupTypeRoot;
 import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.VitamException;
@@ -84,6 +87,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     private Deque<String> dataObjectGroupOfVisitedDirectories = new LinkedList<>();
     private final HashMap<String, String> mapArchiveUnitPath2Id;
     private Multimap<String, String> windowsShortLinkById = ArrayListMultimap.create();
+    public static final List<DataObjectGroupTypeRoot> dataObjectGroupList =  new ArrayList<DataObjectGroupTypeRoot>();
 
     private final SchedulerEngine schedulerEngine;
     private final Playbook playbookBinary;
@@ -103,7 +107,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
      * @throws VitamException
      */
     public ScanFS(ArchiveTransferConfig archiveTransferConfig, String playbookFileBDO, String outputFile,
-        String errFile) throws VitamException {
+                  String errFile) throws VitamException {
         super();
         ParametersChecker.checkParameter("ConfigObject cannot be null", archiveTransferConfig);
         ParametersChecker.checkParameter("playbookBinaryFile cannot be null", playbookFileBDO);
@@ -132,12 +136,12 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
 
     private void setExcludedFileList() {
         if (archiveTransferConfig.has(IGNORE_PATTERNS_JSON_KEY) &&
-            archiveTransferConfig.get(IGNORE_PATTERNS_JSON_KEY).isArray()) {
+                archiveTransferConfig.get(IGNORE_PATTERNS_JSON_KEY).isArray()) {
             ArrayNode ignorePatterns = (ArrayNode) archiveTransferConfig.get(IGNORE_PATTERNS_JSON_KEY);
             Iterator<JsonNode> itr = ignorePatterns.elements();
             while (itr.hasNext()) {
                 excludeFileSet.add(FileSystems.getDefault().getPathMatcher("glob:**/" + itr.next()
-                    .textValue()));//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
+                        .textValue()));//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
             }
         }
     }
@@ -158,7 +162,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         if (dirName.startsWith("__") && dirName.endsWith("__")) {
             dataObjectGroupOfVisitedDirectories.addFirst(atgi.getDataObjectGroupUsedMap().registerDataObjectGroup());
             archiveUnitID =
-                atgi.addArchiveUnit(dirName.substring(2, dirName.length() - 2), dir.toString(), manifestPathName);
+                    atgi.addArchiveUnit(dirName.substring(2, dirName.length() - 2), dir.toString(), manifestPathName);
             mapArchiveUnitPath2Id.put(dir.toString(), archiveUnitID);
             String fatherID = mapArchiveUnitPath2Id.get(dir.getParent().toString());
             atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
@@ -186,16 +190,16 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
         if (file.getFileName().toString().equals(ArchiveTransferConfig.CONFIG_NAME) ||
-            file.getFileName().toString().equals(ARCHIVEUNITMETADATAFILE_NAME) ||
-            file.getFileName().toString().equals(ARCHIVEUNITRAWCONTENTFILE_NAME) ||
-            file.getFileName().toString().equals(ARCHIVEUNITRAWMANAGEMENTFILE_NAME)
-            ) {
+                file.getFileName().toString().equals(ARCHIVEUNITMETADATAFILE_NAME) ||
+                file.getFileName().toString().equals(ARCHIVEUNITRAWCONTENTFILE_NAME) ||
+                file.getFileName().toString().equals(ARCHIVEUNITRAWMANAGEMENTFILE_NAME)
+                ) {
             return FileVisitResult.CONTINUE;
         }
         for (PathMatcher pm : excludeFileSet) {
             if (pm.matches(file)) {
                 errFileStream.println("The file :" + file +
-                    " has been rejected as matching a pattern in ArchiveTransferConfig.json file");
+                        " has been rejected as matching a pattern in ArchiveTransferConfig.json file");
                 return FileVisitResult.CONTINUE;
             }
         }
@@ -214,6 +218,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         // Archive Unit : we create the DataObjectGroup
         if (dataObjectGroupID == null) {
             dataObjectGroupID = atgi.getDataObjectGroupUsedMap().registerDataObjectGroup();
+
         }
 
         // Prepare the parameters
@@ -221,6 +226,7 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         inputParameterMap.put("file", file.toUri().getPath());
         inputParameterMap.put("dataobjectgroupID", dataObjectGroupID);
         inputParameterMap.put("archivetransfergenerator", atgi);
+        inputParameterMap.put("dataObjectGroupList", dataObjectGroupList);
         try {
             schedulerEngine.execute(playbookBinary, inputParameterMap);
             // Standard Directory
@@ -229,13 +235,13 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
                 fatherID = mapArchiveUnitPath2Id.get(file.getParent().toString());
 
                 if (inputParameterMap.containsKey("windowsShortcut") &&
-                    inputParameterMap.get("windowsShortcut") != null) {
+                        inputParameterMap.get("windowsShortcut") != null) {
                     String windowsShortcut = (String) inputParameterMap.get("windowsShortcut");
                     windowsShortLinkById.put(fatherID, windowsShortcut);
                 } else {
                     // Create the Pseudo ArchiveUnit
                     archiveUnitID = atgi.addArchiveUnit(file.getFileName().toString(),
-                        "Pseudo Archive Unit du fichier :" + file.toString());
+                            "Pseudo Archive Unit du fichier :" + file.toString());
                     // Add the relation between father and son
                     atgi.addArchiveUnit2ArchiveUnitReference(fatherID, archiveUnitID);
                     mapArchiveUnitPath2Id.put(file.toAbsolutePath().toString(), archiveUnitID);
@@ -297,13 +303,13 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
         long binaryDataObjecttotalTime = System.currentTimeMillis() - beginTimeMS;
         if (numberBinaryDataObject != 0) {
             LOGGER.info(
-                "Managing BinaryDataObjects : " + binaryDataObjecttotalTime + " ms for " + numberBinaryDataObject +
-                    " BinaryDataObjects (time per BDO : " + binaryDataObjecttotalTime / numberBinaryDataObject +
-                    " ms)");
+                    "Managing BinaryDataObjects : " + binaryDataObjecttotalTime + " ms for " + numberBinaryDataObject +
+                            " BinaryDataObjects (time per BDO : " + binaryDataObjecttotalTime / numberBinaryDataObject +
+                            " ms)");
         } else {
             LOGGER.info(
-                "Managing BinaryDataObjects : " + binaryDataObjecttotalTime + " ms for " + numberBinaryDataObject +
-                    " BinaryDataObjects (No BDO)");
+                    "Managing BinaryDataObjects : " + binaryDataObjecttotalTime + " ms for " + numberBinaryDataObject +
+                            " BinaryDataObjects (No BDO)");
         }
 
         // resolve link
@@ -316,16 +322,21 @@ public class ScanFS extends SimpleFileVisitor<Path> implements AutoCloseable {
             }
         }
 
+        // write DataObjectGroup
+        for(DataObjectGroupTypeRoot dataObjectRefTypeRoot : dataObjectGroupList) {
+            atgi.writeXMLFragment(dataObjectRefTypeRoot);
+        }
+
         long beginDescriptiveMetadateTime = System.currentTimeMillis();
         int nbArchiveUnits = atgi.writeDescriptiveMetadata();
         long descriptiveMetadataTotalTime = System.currentTimeMillis() - beginDescriptiveMetadateTime;
 
         if (nbArchiveUnits != 0) {
             LOGGER.info("Writing ArchiveUnits : " + descriptiveMetadataTotalTime + " ms for " + nbArchiveUnits +
-                " ArchiveUnits (time per AU : " + descriptiveMetadataTotalTime / nbArchiveUnits + " ms)");
+                    " ArchiveUnits (time per AU : " + descriptiveMetadataTotalTime / nbArchiveUnits + " ms)");
         } else {
             LOGGER.info("Writing ArchiveUnits : " + descriptiveMetadataTotalTime + " ms for " + nbArchiveUnits +
-                " ArchiveUnits (no AU)");
+                    " ArchiveUnits (no AU)");
         }
 
         atgi.writeManagementMetadata();

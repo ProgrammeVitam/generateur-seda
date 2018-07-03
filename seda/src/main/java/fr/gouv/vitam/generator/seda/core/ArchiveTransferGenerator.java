@@ -73,6 +73,7 @@ import fr.gouv.culture.archivesdefrance.seda.v2.OrganizationWithIdType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TextType;
 import fr.gouv.culture.archivesdefrance.seda.v2.TransferringAgencyTypeRoot;
 import fr.gouv.culture.archivesdefrance.seda.v2.UpdateOperationType;
+import fr.gouv.culture.archivesdefrance.seda.v2.LegalStatusType;
 import fr.gouv.vitam.common.CharsetUtils;
 import fr.gouv.vitam.common.ParametersChecker;
 import fr.gouv.vitam.common.exception.InvalidParseOperationException;
@@ -94,7 +95,7 @@ import fr.gouv.vitam.generator.seda.model.VitamFather;
 public class ArchiveTransferGenerator {
 
     private static final VitamLogger LOGGER = VitamLoggerFactory.getInstance(ArchiveTransferGenerator.class);
-    private static final String SEDA_NAMESPACE = "fr:gouv:culture:archivesdefrance:seda:v2.0";
+    private static final String SEDA_NAMESPACE = "fr:gouv:culture:archivesdefrance:seda:v2.1";
     private static final String ENCODING = CharsetUtils.UTF_8;
     private static final String SEDA_FILENAME = "manifest.xml";
     private final String temporarySedaFilePath;
@@ -117,7 +118,7 @@ public class ArchiveTransferGenerator {
      * TODO pour chaque méthode utilisant checkParameter: ajouter dans la JavaDoc @throws IllegalArgumentException et les noms des arguments vérifiés
      */
     public ArchiveTransferGenerator(ArchiveTransferConfig archiveTransferConfig, String zipFileName)
-        throws VitamSedaException {
+            throws VitamSedaException {
         ParametersChecker.checkParameter("archiveTransferConfig cannot be null", archiveTransferConfig);
         ParametersChecker.checkParameter("xmlname cannot be null", zipFileName);
         XMLOutputFactory2 output = (XMLOutputFactory2) XMLOutputFactory2.newInstance();
@@ -126,7 +127,7 @@ public class ArchiveTransferGenerator {
         this.archiveTransferConfig = archiveTransferConfig;
         try {
             temporarySedaFilePath =
-                System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator() + SEDA_FILENAME;
+                    System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator() + SEDA_FILENAME;
             writerFOS = new FileOutputStream(temporarySedaFilePath);
             this.writer = (XMLStreamWriter2) output.createXMLStreamWriter(writerFOS, ENCODING);
         } catch (IOException | XMLStreamException e) {
@@ -161,7 +162,7 @@ public class ArchiveTransferGenerator {
         writer.writeDefaultNamespace(SEDA_NAMESPACE);
         writer.writeNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         writer.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation",
-            SEDA_NAMESPACE + " seda-2.0-main.xsd");
+                SEDA_NAMESPACE + " seda-2.1-main.xsd");
         XMLWriterUtils.setID(writer);
         getJSONArgument2XML("Comment", false);
         XMLWriterUtils.writeAttributeValue(writer, "Date", XMLWriterUtils.getDate());
@@ -189,7 +190,7 @@ public class ArchiveTransferGenerator {
     public String addArchiveUnit(String title, String description) {
         return addArchiveUnit(title, description, null);
     }
-    
+
     /**
      * efine an archive with 3 elements : title and description and a json metadata File
      *
@@ -220,13 +221,13 @@ public class ArchiveTransferGenerator {
                     Iterable<JsonNode> iterable = fatherArray::iterator;
 
                     StreamSupport.stream((iterable.spliterator()), false)
-                        .map((unit) -> {
-                            try {
-                                return objectMapper.treeToValue(unit, VitamFather.class);
-                            } catch (JsonProcessingException e) {
-                                throw Throwables.propagate(e);
-                            }
-                        }).forEach(vitamFather -> {
+                            .map((unit) -> {
+                                try {
+                                    return objectMapper.treeToValue(unit, VitamFather.class);
+                                } catch (JsonProcessingException e) {
+                                    throw Throwables.propagate(e);
+                                }
+                            }).forEach(vitamFather -> {
                         String fatherId = XMLWriterUtils.getNextID();
 
                         ArchiveUnitTypeRoot archiveUnitTypeRoot = buildFatherArchiveUnit(vitamFather, fatherId);
@@ -252,7 +253,8 @@ public class ArchiveTransferGenerator {
         if (dmct.getDescriptionLevel() == null) {
             dmct.setDescriptionLevel(LevelType.RECORD_GRP);
         }
-        autr.getContent().add(dmct);
+
+        autr.setContent(dmct);
         autr.setId(id);
         mapArchiveUnit.put(id, autr);
         return id;
@@ -268,11 +270,11 @@ public class ArchiveTransferGenerator {
         archiveUnitTypeRoot.setManagement(managementUpdateType);
 
         DescriptiveMetadataContentType descriptiveMetadataContentType =
-            new DescriptiveMetadataContentType();
+                new DescriptiveMetadataContentType();
         descriptiveMetadataContentType.getTitle().addAll(vitamFather.getTitles());
         descriptiveMetadataContentType.setDescriptionLevel(vitamFather.getDescriptionLevel());
 
-        archiveUnitTypeRoot.getContent().add(descriptiveMetadataContentType);
+        archiveUnitTypeRoot.setContent(descriptiveMetadataContentType);
 
         updateOperation.setSystemId(vitamFather.getId());
         archiveUnitTypeRoot.setId(fatherId);
@@ -316,38 +318,30 @@ public class ArchiveTransferGenerator {
         ParametersChecker.checkParameter("id cannot be null", id);
         ParametersChecker.checkParameter("id must be a valid ArchiveUnit ID", mapArchiveUnit.get(id));
         ArchiveUnitTypeRoot autr = mapArchiveUnit.get(id);
-        for (DescriptiveMetadataContentType dmct : autr.getContent()) {
-            autr.getContent().remove(dmct);
-            dmct.setTransactedDate(XMLWriterUtils.getDate(date));
-            autr.getContent().add(dmct);
-        }
+        autr.getContent().setTransactedDate(XMLWriterUtils.getDate(date));
         autr.setStartDate(date);
         autr.setEndDate(date);
     }
 
     /**
-     * 
+     *
      * @param id
      * @param originatingAgencyArchiveUnitIdentifier
      */
-    public void setOriginatingAgencyArchiveUnitIdentifier(String id,String originatingAgencyArchiveUnitIdentifier){
+    public void setOriginatingAgencyArchiveUnitIdentifier(String id, String originatingAgencyArchiveUnitIdentifier) {
         ParametersChecker.checkParameter("id cannot be null", id);
         ParametersChecker.checkParameter("id must be a valid ArchiveUnit ID", mapArchiveUnit.get(id));
         ArchiveUnitTypeRoot autr = mapArchiveUnit.get(id);
-        for (DescriptiveMetadataContentType dmct : autr.getContent()) {
-            dmct.setOriginatingAgencyArchiveUnitIdentifier(originatingAgencyArchiveUnitIdentifier);
-        }
+        autr.getContent().getOriginatingAgencyArchiveUnitIdentifier().add(originatingAgencyArchiveUnitIdentifier);
     }
-    
-    public void setDescriptionLevel(String id,LevelType level){
+
+    public void setDescriptionLevel(String id, LevelType level) {
         ParametersChecker.checkParameter("id cannot be null", id);
         ParametersChecker.checkParameter("id must be a valid ArchiveUnit ID", mapArchiveUnit.get(id));
         ArchiveUnitTypeRoot autr = mapArchiveUnit.get(id);
-        for (DescriptiveMetadataContentType dmct : autr.getContent()) {
-            dmct.setDescriptionLevel(level);
-        }
+        autr.getContent().setDescriptionLevel(level);
     }
-    
+
     /**
      * Remove an ArchiveUnit from the collection .
      * It doesn't destroy the relation with other ArchiveUnits
@@ -374,7 +368,7 @@ public class ArchiveTransferGenerator {
         ArchiveUnitType autSon = new ArchiveUnitType();
         autSon.setId(XMLWriterUtils.getNextID());
         autSon.setArchiveUnitRefId(archiveUnitSonID);
-        autrFather.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference().add(autSon);
+        autrFather.getArchiveUnitOrDataObjectReferenceOrDataObjectGroup().add(autSon);
     }
 
     /**
@@ -391,13 +385,9 @@ public class ArchiveTransferGenerator {
         DataObjectRefTypeRoot dort = new DataObjectRefTypeRoot();
         //        dort.setId(XMLWriterUtils.getNextID());
         dort.setDataObjectGroupReferenceId(dataobjectGroupSonID);
-        autrFather.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference().add(dort);
+        autrFather.getArchiveUnitOrDataObjectReferenceOrDataObjectGroup().add(dort);
         // When an ArchiveUnit has a DataObjectGroup, it is at the Level FILE
-        for (DescriptiveMetadataContentType dmct : autrFather.getContent()) {
-            autrFather.getContent().remove(dmct);
-            dmct.setDescriptionLevel(LevelType.ITEM);
-            autrFather.getContent().add(dmct);
-        }
+        autrFather.getContent().setDescriptionLevel(LevelType.ITEM);
     }
 
     /**
@@ -425,9 +415,7 @@ public class ArchiveTransferGenerator {
                         String id = XMLWriterUtils.getNextID();
                         archiveUnitArc.setId(id);
                         archiveUnitArc.setArchiveUnitRefId(reference);
-
-                        autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()
-                            .add(archiveUnitArc);
+                        autr.getArchiveUnitOrDataObjectReferenceOrDataObjectGroup().add(archiveUnitArc);
                     }
                 }
                 autr.marshall(writer);
@@ -455,14 +443,18 @@ public class ArchiveTransferGenerator {
                 mmtr.unmarshallFromJson();
             } catch (InvalidParseOperationException e) {
                 LOGGER.warn(
-                    "ManagementMetadataKey in the config file is not a valid json File for ManagementMetadata Section",
-                    e);
+                        "ManagementMetadataKey in the config file is not a valid json File for ManagementMetadata Section",
+                        e);
             }
         }
-        mmtr.setOriginatingAgencyIdentifier(
-            archiveTransferConfig.getString("ManagementMetadata.OriginatingAgencyIdentifier"));
-        mmtr.setSubmissionAgencyIdentifier(
-            archiveTransferConfig.getString("ManagementMetadata.SubmissionAgencyIdentifier"));
+        IdentifierType it1 = new IdentifierType();
+        it1.setValue(archiveTransferConfig.getString("ManagementMetadata.OriginatingAgencyIdentifier"));
+        mmtr.setOriginatingAgencyIdentifier(it1);
+        IdentifierType it2 = new IdentifierType();
+        it2.setValue(archiveTransferConfig.getString("ManagementMetadata.SubmissionAgencyIdentifier"));
+        mmtr.setSubmissionAgencyIdentifier(it2);
+        mmtr.setLegalStatus(LegalStatusType.fromValue(archiveTransferConfig.getString("ManagementMetadata.LegalStatus")));
+        mmtr.setAcquisitionInformation(archiveTransferConfig.getString("ManagementMetadata.AcquisitionInformation"));
         try {
             writeXMLFragment(mmtr);
         } catch (VitamSedaException e) {
@@ -515,7 +507,6 @@ public class ArchiveTransferGenerator {
     }
 
 
-
     /**
      * Parse the node CodeListVersion of the json header file and do the binding with the pojo
      *
@@ -542,31 +533,31 @@ public class ArchiveTransferGenerator {
             }
         }
         if ((clvt.getReplyCodeListVersion() == null) ||
-            (clvt.getMessageDigestAlgorithmCodeListVersion() == null) ||
-            (clvt.getFileFormatCodeListVersion() == null)) {
+                (clvt.getMessageDigestAlgorithmCodeListVersion() == null) ||
+                (clvt.getFileFormatCodeListVersion() == null)) {
             throw new VitamSedaMissingFieldException(
-                "In the CodeListVersion, one of the 3 mandatory element (ReplyCodeListVersion, MessageDigestAlgorithmCodeListVersion, FileFormatCodeListVersion)  is missing");
+                    "In the CodeListVersion, one of the 3 mandatory element (ReplyCodeListVersion, MessageDigestAlgorithmCodeListVersion, FileFormatCodeListVersion)  is missing");
         }
         return clvt;
     }
 
     private void getJSONArgument2XML(String key, boolean required) throws XMLStreamException {
         if (archiveTransferConfig.has(key) &&
-            archiveTransferConfig.get(key).getNodeType().equals(JsonNodeType.STRING)) {
+                archiveTransferConfig.get(key).getNodeType().equals(JsonNodeType.STRING)) {
             XMLWriterUtils.writeAttributeValue(writer, key, archiveTransferConfig.get(key).textValue());
         } else if (required) {
             throw new VitamSedaMissingFieldException(
-                key + " is mandatory in the SEDA. Add this parameter to configuration file ");
+                    key + " is mandatory in the SEDA. Add this parameter to configuration file ");
         }
     }
 
     private void getJSONArgument2XML(String key, OrganizationWithIdType owit, boolean required)
-        throws VitamSedaException {
+            throws VitamSedaException {
         if (archiveTransferConfig.has(key)) {
             JsonNode jsonSonNode = archiveTransferConfig.get(key);
             String identifierKey = "Identifier";
             if (jsonSonNode.has(identifierKey) &&
-                jsonSonNode.get(identifierKey).getNodeType().equals(JsonNodeType.STRING)) {
+                    jsonSonNode.get(identifierKey).getNodeType().equals(JsonNodeType.STRING)) {
                 IdentifierType it = new IdentifierType();
                 it.setValue(jsonSonNode.get(identifierKey).asText());
                 owit.setIdentifier(it);
@@ -578,7 +569,7 @@ public class ArchiveTransferGenerator {
             }
         } else if (required) {
             throw new VitamSedaMissingFieldException(
-                key + "is mandatory in the SEDA. Add this parameter to configuration file ");
+                    key + "is mandatory in the SEDA. Add this parameter to configuration file ");
         }
     }
 
@@ -592,7 +583,8 @@ public class ArchiveTransferGenerator {
         ArchiveUnitTypeRoot autr = mapArchiveUnit.get(archiveUnitID);
         Date startDate = null;
         Date endDate = null;
-        for (Object aut : autr.getArchiveUnitOrArchiveUnitReferenceAbstractOrDataObjectReference()) {
+
+        for (Object aut : autr.getArchiveUnitOrDataObjectReferenceOrDataObjectGroup()) {
             if (aut instanceof DataObjectRefTypeRoot) {
                 // Do Nothing: No dates in DOG
                 continue;
@@ -604,7 +596,7 @@ public class ArchiveTransferGenerator {
                 // Initialize the start and endDate
                 // Take the minimum date of the sons
                 if (sonautr.getStartDate() != null &&
-                    (startDate == null || sonautr.getStartDate().compareTo(startDate) < 0)) {
+                        (startDate == null || sonautr.getStartDate().compareTo(startDate) < 0)) {
                     startDate = sonautr.getStartDate();
                 }
                 // Take the maximum date of the sons
@@ -616,12 +608,9 @@ public class ArchiveTransferGenerator {
                 LOGGER.info(archiveUnitID + " is an unknown Archive Unit ID");
             }
         }
-        for (DescriptiveMetadataContentType dmct : autr.getContent()) {
-            autr.getContent().remove(dmct);
-            dmct.setStartDate(XMLWriterUtils.getDate(startDate));
-            dmct.setEndDate(XMLWriterUtils.getDate(endDate));
-            autr.getContent().add(dmct);
-        }
+
+        autr.getContent().setStartDate(XMLWriterUtils.getDate(startDate));
+        autr.getContent().setEndDate(XMLWriterUtils.getDate(endDate));
         autr.setStartDate(startDate);
         autr.setEndDate(endDate);
     }

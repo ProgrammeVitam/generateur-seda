@@ -25,16 +25,16 @@
 			<groupId>fr.gouv.vitam</groupId>
 			<artifactId>common-public</artifactId>
 		</dependency>
-			<dependency>
+		<dependency>
 			<groupId>com.github.stefanbirkner</groupId>
 			<artifactId>system-rules</artifactId>
 			<version>${junit.system-rules.version}</version>
 			<scope>test</scope>
 		</dependency>
-	  <dependency>
-		  <groupId>org.assertj</groupId>
-		  <artifactId>assertj-core</artifactId>
-	  </dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -71,6 +71,6 @@
 			</plugin>
 
 		</plugins>
-	</build>	
+	</build>
 
 </project>

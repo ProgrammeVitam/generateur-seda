@@ -1,4 +1,4 @@
-/**
+/*******************************************************************************
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
@@ -23,45 +23,20 @@
  *
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
- */
-package fr.gouv.culture.archivesdefrance.seda.v2;
+ *******************************************************************************/
+package fr.gouv.vitam.common.model.unit;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+
+import static fr.gouv.vitam.common.SedaConstants.NAMESPACE_URI;
 
 /**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
- *
+ * Model for AgentType defined in seda.xsd
  */
-
-@XmlRootElement(name = "Management")
-public class ManagementRoot extends ManagementType {
-
-
-    /**
-     *  Postprocessing after the unmarshalling by Json of *Rule which is not correct for the reading by JaxB
-     */
-    public void unmarshallFromJson() {
-        if (storageRule != null) {
-            JsonMarshallerHelper.transformRuleMap(storageRule.getRuleAndStartDate());
-        }
-        if (appraisalRule != null) {
-            JsonMarshallerHelper.transformRuleMap(appraisalRule.getRuleAndStartDate());
-        }
-        if (accessRule != null) {
-            JsonMarshallerHelper.transformRuleMap(accessRule.getRuleAndStartDate());
-        }
-
-        if (disseminationRule != null) {
-            JsonMarshallerHelper.transformRuleMap(disseminationRule.getRuleAndStartDate());
-
-        }
-        if (reuseRule != null) {
-            JsonMarshallerHelper.transformRuleMap(reuseRule.getRuleAndStartDate());
-        }
-        if (classificationRule != null) {
-            JsonMarshallerHelper.transformRuleMap(classificationRule.getRuleAndStartDate());
-        }
-    }
-
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "AgentType", namespace = NAMESPACE_URI)
+public class AgentTypeModel extends PersonOrEntityAndBusinessType {
 
 }

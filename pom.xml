@@ -6,7 +6,7 @@
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>generator-parent</name>
-	<description>Generateur de SIP au format SEDA 2.0</description>
+	<description>Generateur de SIP au format SEDA 2.1</description>
 
 	<organization>
 		<name>Vitam</name>
@@ -56,7 +56,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Project Version -->
-		<vitam.common.version>1.0.0</vitam.common.version>
+		<vitam.common.version>1.7.0</vitam.common.version>
 
 
 		<!-- Build environment Properties -->
@@ -77,11 +77,10 @@
 		<!-- Dependencies versions -->
 		<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 		<jacoco-maven-plugin.version>0.7.6.201602180812</jacoco-maven-plugin.version>
-		<slf4j.version>1.7.20</slf4j.version>
-		<logback.version>1.1.7</logback.version>
-		<apache.logging.version>2.5</apache.logging.version>
-		<jackson.version>2.7.3</jackson.version>
-		<log4j.version>1.2.17</log4j.version>
+		<slf4j.version>1.7.25</slf4j.version>
+		<logback.version>1.2.3</logback.version>
+		<jackson.version>2.8.7</jackson.version>
+		<log4j2.version>2.9.1</log4j2.version>
 		<commons-logging.version>1.2</commons-logging.version>
 		<easymock.version>3.4</easymock.version>
 		<assertj.version>2.4.0</assertj.version>
@@ -520,20 +519,22 @@
 				<version>${httpclient.version}</version>
 			</dependency>
 			<!-- ########################## Logger ########################## -->
-
 			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>${log4j.version}</version>
-				<optional>true</optional>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${logback.version}</version>
+				<!--<scope>provided</scope> -->
 			</dependency>
 			<dependency>
-				<groupId>commons-logging</groupId>
-				<artifactId>commons-logging</artifactId>
-				<version>${commons-logging.version}</version>
-				<optional>true</optional>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-access</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
@@ -548,67 +549,42 @@
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
-				<artifactId>log4j-over-slf4j</artifactId>
-				<version>${slf4j.version}</version>
-				<!--<scope>provided</scope> -->
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>${apache.logging.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${apache.logging.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-1.2-api</artifactId>
-				<version>${apache.logging.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-simple</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
 				<artifactId>jul-to-slf4j</artifactId>
 				<version>${slf4j.version}</version>
 				<!--<scope>provided</scope> -->
 			</dependency>
+
+			<!-- ####################### Extra Logger ####################### -->
 			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-core</artifactId>
-				<version>${logback.version}</version>
-				<!--<scope>provided</scope> -->
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j2.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.flipkart.zjsonpatch</groupId>
+				<artifactId>zjsonpatch</artifactId>
+				<version>${zjsonpatch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-to-slf4j</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.codehaus.woodstox</groupId>
 				<artifactId>stax2-api</artifactId>
-                                <version>${stax-api.version}</version>
+				<version>${stax-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.woodstox</groupId>
 				<artifactId>woodstox-core-asl</artifactId>
 				<version>4.4.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.github.vatbub</groupId>
-				<artifactId>mslinks</artifactId>
-				<version>1.0.3.1</version>
 			</dependency>
 
 			<dependency>
@@ -649,11 +625,18 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-		        	<groupId>com.github.stefanbirkner</groupId>
-			        <artifactId>system-rules</artifactId>
+				<groupId>com.github.stefanbirkner</groupId>
+				<artifactId>system-rules</artifactId>
 				<version>${junit.system-rules.version}</version>
 				<scope>test</scope>
-        		</dependency>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>fr.gouv.vitam</groupId>
+			<artifactId>common-public</artifactId>
+			<version>${vitam.common.version}</version>
+		</dependency>
+	</dependencies>
 </project>

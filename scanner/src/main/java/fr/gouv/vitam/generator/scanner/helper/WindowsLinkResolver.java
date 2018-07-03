@@ -28,17 +28,18 @@ package fr.gouv.vitam.generator.scanner.helper;
 
 import static java.lang.String.format;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.google.common.base.Throwables;
 
 import fr.gouv.vitam.generator.seda.exception.VitamBinaryDataObjectException;
-import mslinks.ShellLink;
-import mslinks.ShellLinkException;
+import fr.gouv.vitam.generator.seda.helper.WindowsShortcut;
 
 /**
  * Helper for windows link
@@ -53,8 +54,9 @@ public class WindowsLinkResolver {
 
     private Path resolve(Path path, Set<Path> pathAlreadyFollow) throws VitamBinaryDataObjectException {
         try {
-            ShellLink shellLink = new ShellLink(path);
-            Path target = Paths.get(shellLink.resolveTarget());
+            File file = new File(path.toString());
+            WindowsShortcut windowsShortcut = new WindowsShortcut(file);
+            Path target = Paths.get(windowsShortcut.getRealFilename());
 
             if (pathAlreadyFollow.contains(target)) {
                 throw new VitamBinaryDataObjectException(format("link are circular, interruption: %s", target));
@@ -67,7 +69,7 @@ public class WindowsLinkResolver {
 
             return target;
 
-        } catch (IOException | ShellLinkException e) {
+        } catch (IOException | ParseException e) {
             throw Throwables.propagate(e);
         }
     }

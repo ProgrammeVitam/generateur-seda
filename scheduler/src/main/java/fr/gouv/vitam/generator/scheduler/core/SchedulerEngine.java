@@ -113,6 +113,9 @@ public class SchedulerEngine {
         if (modulesList.containsKey(moduleID)) {
             long start = System.currentTimeMillis();
             ParameterMap sentParameters = task.substituteParameters(globalParameters);
+            if(globalParameters.get("dataObjectGroupList") != null) {
+                sentParameters.put("dataObjectGroupList", globalParameters.get("dataObjectGroupList"));
+            }
             LOGGER.debug("Launch Task " + moduleID + " sent parameters :  " + sentParameters);
             TaskInfo taskInfo = modulesList.get(moduleID).execute(sentParameters);
             LOGGER.debug("Launch Task " + moduleID + " return parameters :  " + taskInfo);
