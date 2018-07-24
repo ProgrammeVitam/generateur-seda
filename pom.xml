@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.gouv.vitam.generator</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.17.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>generator-parent</name>
 	<description>Generateur de SIP au format SEDA 2.0</description>
@@ -113,7 +113,7 @@
 				<module>doc</module>
 			</modules>
 		</profile>
-		
+
 		<profile>
 			<!-- Profile to use for all Vitam internal developers -->
 			<id>vitam</id>
@@ -208,7 +208,7 @@
 					</plugin>
 				</plugins>
 			</build>
-			
+
 		</profile>
 	</profiles>
 
@@ -225,7 +225,7 @@
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-				<!-- Core plugins : Plugins corresponding to default core phases (ie. 
+				<!-- Core plugins : Plugins corresponding to default core phases (ie.
 					clean, compile). They may have muliple goals as well. -->
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 				<plugin>
@@ -259,7 +259,7 @@
 					<version>2.5.2</version>
 				</plugin>
 				<plugin>
-					<!-- Copy the resources to the output directory for including in the 
+					<!-- Copy the resources to the output directory for including in the
 						JAR. -->
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>2.7</version>
@@ -305,14 +305,14 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<!-- Useful for integration tests - verifies the existence of certain 
+					<!-- Useful for integration tests - verifies the existence of certain
 						conditions. -->
 					<artifactId>maven-verifier-plugin</artifactId>
 					<version>1.1</version>
 				</plugin>
 
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-				<!-- Packaging types / tools : These plugins relate to packaging respective 
+				<!-- Packaging types / tools : These plugins relate to packaging respective
 					artifact types. -->
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 				<plugin>
@@ -333,11 +333,11 @@
 				</plugin>
 
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-				<!-- Reporting plugins : Plugins which generate reports, are configured 
+				<!-- Reporting plugins : Plugins which generate reports, are configured
 					as reports in the POM and run under the site generation lifecycle. -->
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 				<plugin>
-					<!-- The Javadoc Plugin uses the Javadoc tool to generate javadocs for 
+					<!-- The Javadoc Plugin uses the Javadoc tool to generate javadocs for
 						the specified project. -->
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.10.3</version>
@@ -346,15 +346,15 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<!-- The Surefire Report Plugin parses the generated TEST-*.xml files 
-						under ${basedir}/target/surefire-reports and renders them to DOXIA which 
+					<!-- The Surefire Report Plugin parses the generated TEST-*.xml files
+						under ${basedir}/target/surefire-reports and renders them to DOXIA which
 						creates the web interface version of the test results. -->
 					<artifactId>maven-surefire-report-plugin</artifactId>
 					<version>2.19.1</version>
 				</plugin>
 
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-				<!-- Tools : These are miscellaneous tools available through Maven by 
+				<!-- Tools : These are miscellaneous tools available through Maven by
 					default. -->
 				<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 				<plugin>
@@ -368,7 +368,7 @@
 					<version>2.10</version>
 				</plugin>
 				<plugin>
-					<!-- Environmental constraint checking (Maven Version, JDK etc), User 
+					<!-- Environmental constraint checking (Maven Version, JDK etc), User
 						Custom Rule Execution. -->
 					<artifactId>maven-enforcer-plugin</artifactId>
 					<version>1.4.1</version>
@@ -406,7 +406,7 @@
 						<!--<forceUniqueArtifactVersion>true</forceUniqueArtifactVersion> -->
 						<!-- Don't ask if you want to resolve snapshots, do it -->
 						<!-- <alwaysResolveSnapshots>true</alwaysResolveSnapshots> -->
-						<!-- Don't ask which dependencies to resolve ( 0:All 1:Project Dependencies 
+						<!-- Don't ask which dependencies to resolve ( 0:All 1:Project Dependencies
 							2:Plugins 3:Reports 4:Extensions ) -->
 						<!--<alwaysResolveDependencyType>1</alwaysResolveDependencyType> -->
 						<providerImplementations>
@@ -422,7 +422,7 @@
 					</dependencies>
 				</plugin>
 				<plugin>
-					<!-- Build a JAR of sources for use in IDEs and distribution to the 
+					<!-- Build a JAR of sources for use in IDEs and distribution to the
 						repository. -->
 					<artifactId>maven-source-plugin</artifactId>
 					<version>3.0.0</version>
