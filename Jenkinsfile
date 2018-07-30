@@ -87,7 +87,15 @@ pipeline {
             steps {
                 sh '$MVN_COMMAND -P vitam,doc -f pom.xml -Dmaven.test.skip=true -DskipTests=true clean package $DEPLOY_GOAL'
                 // javadoc:aggregate-jar rpm:attached-rpm jdeb:jdeb
-            }        
+            }
+            post {
+                success {
+                    archiveArtifacts {
+                        artifacts: 'generator-dist/target/generator-dist-1.0.0.zip',
+                        fingerprint: true
+                    }
+                }
+            }       
         }
     }
 }
