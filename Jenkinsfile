@@ -59,15 +59,19 @@ pipeline {
                 echo "We are on master branch (${env.GIT_BRANCH}) ; deploy goal is \"${env.DEPLOY_GOAL}\""
             }
         }
-        
-        // stage ("Compile") {
-        //     steps {
-        //         sh '$MVN_COMMAND -f pom.xml clean compile -P vitam,doc'
-        //     }
-        // }
+        // OMA: FIXME : when updating pom, needs first to be uploaded to Nexus before tests...
+        stage ("Compile") {
+            environment {
+                DEPLOY_GOAL = readFile("deploy_goal.txt")
+            }
+            steps {
+                sh '$MVN_COMMAND -P vitam,doc -f pom.xml -Dmaven.test.skip=true -DskipTests=true clean package $DEPLOY_GOAL'
+            }
+        }
+
         stage ("Execute unit tests") {
             steps {
-                sh '$MVN_COMMAND -f pom.xml clean test -P vitam -P-doc'
+                sh '$MVN_COMMAND -f pom.xml clean test -P vitam,doc'
             }
             post {
                 always {
