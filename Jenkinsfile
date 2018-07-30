@@ -90,10 +90,10 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts {
+                    archiveArtifacts (
                         artifacts: 'generator-dist/target/generator-dist-1.0.0.zip',
                         fingerprint: true
-                    }
+                    )
                 }
             }       
         }
