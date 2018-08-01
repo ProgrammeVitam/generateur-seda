@@ -60,12 +60,12 @@ pipeline {
             }
         }
         // OMA: FIXME : when updating pom, needs first to be uploaded to Nexus before tests...
-        stage ("Compile") {
+        stage ("Compile doc") {
             environment {
                 DEPLOY_GOAL = readFile("deploy_goal.txt")
             }
             steps {
-                sh '$MVN_COMMAND -P vitam,doc -f pom.xml -Dmaven.test.skip=true -DskipTests=true clean package $DEPLOY_GOAL'
+                sh '$MVN_COMMAND -P doc -f pom.xml -Dmaven.test.skip=true -DskipTests=true clean install'
             }
         }
 
