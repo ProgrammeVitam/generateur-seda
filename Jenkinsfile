@@ -21,21 +21,20 @@ pipeline {
         CI = credentials("app-jenkins")
         SERVICE_SONAR_URL = credentials("service-sonar-url")
         SERVICE_NEXUS_URL = credentials("service-nexus-url")
-        // SERVICE_CHECKMARX_URL = credentials("service-checkmarx-url")
-        // SERVICE_REPO_SSHURL = credentials("repository-connection-string")
-        // SERVICE_GIT_URL = credentials("service-gitlab-url")
-        //SERVICE_PROXY_HOST = credentials("http-proxy-host")
-        // SERVICE_PROXY_PORT = credentials("http-proxy-port")
     }
 
    stages {
 
-       stage("Tools configuration") {
-           steps {
-               echo "Workspace location : ${env.WORKSPACE}"
-               echo "Branch : ${env.GIT_BRANCH}"
-           }
-       }
+        stage("Tools configuration") {
+            steps {
+                echo "Workspace location : ${env.WORKSPACE}"
+                echo "Branch : ${env.GIT_BRANCH}"
+                script {
+                    // needed when not on a master branch
+                    writeFile file: 'deploy_goal.txt', text: "${env.DEPLOY_GOAL}"
+                 }
+            }
+        }
 
         // Override the default maven deploy target when on master (publish on nexus)
         stage("Computing maven target") {
@@ -61,9 +60,6 @@ pipeline {
         }
         // OMA: FIXME : when updating pom, needs first to be uploaded to Nexus before tests...
         stage ("Compile doc") {
-            environment {
-                DEPLOY_GOAL = readFile("deploy_goal.txt")
-            }
             steps {
                 sh '$MVN_COMMAND -P doc -f pom.xml -Dmaven.test.skip=true -DskipTests=true clean install'
             }
