@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -38,12 +38,12 @@ import java.util.Properties;
 
 import javax.xml.stream.XMLStreamException;
 
-import fr.gouv.vitam.common.PropertiesUtils;
-import fr.gouv.vitam.common.exception.VitamException;
-import fr.gouv.vitam.common.logging.VitamLogger;
 import fr.gouv.vitam.common.logging.VitamLoggerFactory;
+import fr.gouv.vitam.common.logging.VitamLogger;
+import fr.gouv.vitam.common.exception.VitamException;
 import fr.gouv.vitam.generator.scanner.core.ScanFS;
 import fr.gouv.vitam.generator.seda.core.ArchiveTransferConfig;
+import fr.gouv.vitam.common.PropertiesUtils;
 import fr.gouv.vitam.generator.seda.exception.VitamSedaMissingFieldException;
 
 /**
@@ -80,7 +80,7 @@ public class SedaGenerator {
         File f = new File(scanDir);
         if (!(f.exists() && f.isDirectory())) {
             System.err
-                .println("The given path must be a directory (not a single file): " + scanDir);//NOSONAR : error message
+                    .println("The given path must be a directory (not a single file): " + scanDir);//NOSONAR : error message
             System.exit(2);
         }
         try {
@@ -100,7 +100,7 @@ public class SedaGenerator {
             System.exit(3);
         }
         LOGGER.info("Generateur SEDA : End of scan of directory " + scanDir + " in " +
-            (System.currentTimeMillis() - beginTimeMS) + " ms");
+                (System.currentTimeMillis() - beginTimeMS) + " ms");
     }
 
     /**
@@ -124,10 +124,10 @@ public class SedaGenerator {
      * @throws VitamException
      */
     public static void scan(String scanDir, ArchiveTransferConfig archiveTransferConfig, String playbookFileBDO,
-        String outputFile, String errFile) throws IOException, XMLStreamException, VitamException {
+                            String outputFile, String errFile) throws IOException, XMLStreamException, VitamException {
         try (ScanFS sfs = new ScanFS(archiveTransferConfig, playbookFileBDO, outputFile, errFile)) {
             Path p = FileSystems.getDefault().getPath(
-                scanDir);//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
+                    scanDir);//NOSONAR : The default FileSystem must not be closed : https://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#close%28%29
             Files.walkFileTree(p.toRealPath(), sfs);
         }
     }

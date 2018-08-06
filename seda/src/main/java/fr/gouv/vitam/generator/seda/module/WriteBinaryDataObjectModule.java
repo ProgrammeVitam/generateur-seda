@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -31,9 +31,11 @@ import static fr.gouv.vitam.generator.scheduler.api.TaskStatus.CONTINUE;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import fr.gouv.culture.archivesdefrance.seda.v2.BinaryDataObjectTypeRoot;
+import fr.gouv.culture.archivesdefrance.seda.v2.DataObjectGroupTypeRoot;
 import fr.gouv.vitam.generator.scheduler.api.ParameterMap;
 import fr.gouv.vitam.generator.scheduler.api.PublicModuleInterface;
 import fr.gouv.vitam.generator.scheduler.api.TaskInfo;
@@ -47,7 +49,7 @@ import fr.gouv.vitam.generator.seda.exception.VitamSedaException;
 /**
  * Write the binaryDataObject structure to XML and the binaryfile to the ZIP file<br>
  * Input: <br>
- * - binarydataobject (BinaryDataObjectTypeRoot) : the ready to write binaryDataObject Jaxb POJO<br> 
+ * - binarydataobject (BinaryDataObjectTypeRoot) : the ready to write binaryDataObject Jaxb POJO<br>
  * - dataobjectgroupID (String) : the dataobjectgroupID to which the binaryDataObject belongs<br>
  * - archivetransfergenerator (ArchiveTransferGenerator) : the object which has the pointer to XML and ZIP file<br>
  * Output:<br>
@@ -61,9 +63,9 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
 
     static {
         INPUTSIGNATURE.put(SedaModuleParameter.BINARYDATAOBJECT.getName(),
-            new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
+                new InputParameter().setObjectclass(BinaryDataObjectTypeRoot.class));
         INPUTSIGNATURE
-            .put("archivetransfergenerator", new InputParameter().setObjectclass(ArchiveTransferGenerator.class));
+                .put("archivetransfergenerator", new InputParameter().setObjectclass(ArchiveTransferGenerator.class));
         INPUTSIGNATURE.put("dataobjectgroupID", new InputParameter().setObjectclass(String.class).setNullable(true));
     }
 
@@ -81,7 +83,7 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
     @Override
     protected TaskInfo realExecute(ParameterMap parameters) throws VitamSedaException {
         BinaryDataObjectTypeRoot bdotr =
-            (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
+                (BinaryDataObjectTypeRoot) parameters.get(SedaModuleParameter.BINARYDATAOBJECT.getName());
         ParameterMap returnPM = new ParameterMap();
         String dataObjectGroupID = (String) parameters.get("dataobjectgroupID");
         ArchiveTransferGenerator atgi = (ArchiveTransferGenerator) parameters.get("archivetransfergenerator");
@@ -90,20 +92,29 @@ public class WriteBinaryDataObjectModule extends AbstractModule implements Publi
         DataObjectGroupUsedMap dogum = atgi.getDataObjectGroupUsedMap();
 
         if (dataObjectGroupID == null || (!dogum.existsDataObjectGroup(dataObjectGroupID))) {
-            String newID = dogum.registerDataObjectGroup();
-            bdotr.setDataObjectGroupId(newID);
-            dogum.setUsedDataObjectGroup(newID);
+            dataObjectGroupID = dogum.registerDataObjectGroup();
+            dogum.setUsedDataObjectGroup(dataObjectGroupID);
             // The given dogID has already be used
-        } else if (dogum.isDataObjectGroupUsed(dataObjectGroupID)) {
-            bdotr.setDataObjectGroupReferenceId(dataObjectGroupID);
-            // It is a new dogID
         } else {
-            bdotr.setDataObjectGroupId(dataObjectGroupID);
             dogum.setUsedDataObjectGroup(dataObjectGroupID);
         }
+        boolean existingGroup = false;
+        List<DataObjectGroupTypeRoot> dataObjectGroupList = (List<DataObjectGroupTypeRoot>)parameters.get("dataObjectGroupList");
+        for(int i=dataObjectGroupList.size()-1; i>=0; i--) {
+            if(dataObjectGroupList.get(i).getId().equals(dataObjectGroupID)) {
+                dataObjectGroupList.get(i).getBinaryDataObjectOrPhysicalDataObject().add(bdotr);
+                existingGroup = true;
+                break;
+            }
+        }
 
-        // Write BinaryDataObject
-        atgi.writeXMLFragment(bdotr);
+        if(!existingGroup) {
+            DataObjectGroupTypeRoot dataObjectGroupTypeRoot = new DataObjectGroupTypeRoot();
+            dataObjectGroupTypeRoot.setId(dataObjectGroupID);
+            dataObjectGroupTypeRoot.getBinaryDataObjectOrPhysicalDataObject().add(bdotr);
+            dataObjectGroupList.add(dataObjectGroupTypeRoot);
+        }
+
         try {
             atgi.getZipFile().addFile(bdotr.getUri(), bdotr.getWorkingFilename());
         } catch (IOException e) {

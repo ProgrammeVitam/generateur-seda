@@ -29,132 +29,44 @@
       "DescriptionLevel": "RecordGrp"
     }
   ],
-  "Content": {
-    "DescriptionLevel": "RECORD_GRP",
-    "Title": [
-      {
-        "Value": "Titre francais",
-        "Lang": "fr"
-      },
-      {
-        "Value": "English title",
-        "Lang": "en"
-      }
-    ],
-    "FilePlanPosition": "Valeur de filePlanPosition",
-    "SystemId": "Valeur de SystemID)",
-    "OriginatingSystemId": "Valeur de OriginatingSystemId",
-    "ArchivalAgencyArchiveUnitIdentifier": "Valeur de archivalAgencyArchiveUnitIdentifier",
-    "OriginatingAgencyArchiveUnitIdentifier": "Valeur de originatingAgencyArchiveUnitIdentifier",
-    "TransferringAgencyArchiveUnitIdentifier": "Valeur de transferringAgencyArchiveUnitIdentifier",
-    "Description": [
-      {
-        "Value": "Description francaise",
-        "Lang": "fr"
-      },
-      {
-        "Value": "English Description",
-        "Lang": "en"
-      }
-    ],
-    "Type": {
-      "Value": "Valeur du type",
-      "Lang": "fr"
-    },
-    "DocumentType": {
-      "Value": "fr"
-    },
-    "Language": "FR",
-    "DescriptionLanguage": "FR",
-    "Status": "Valeur de Status",
-    "Version": "Valeur de version",
-    "Tag": [
-      "XML Tag 1 (de type xml:token)",
-      "XML Tag 2 (de type xml:token)"
-    ],
-    "Coverage": {
-      "Spatial": [
-        {
-          "Value": "Valeur de Spatial",
-          "Lang": "fr"
-        }
-      ],
-      "Temporal": [
-        {
-          "Value": "Valeur de temporal",
-          "Lang": "fr"
-        }
-      ],
-      "Juridictional": [
-        {
-          "Value": "Valeur de juridictional",
-          "Lang": "fr"
-        }
-      ]
-    },
-    "OriginatingAgency": {
-      "Identifier": {
-        "Value": "Identifiant de l'OriginatingAgency"
-      }
-    },
-    "SubmissionAgency": {
-      "Identifier": {
-        "Value": "Identifiant de l'OriginatingAgency"
-      }
-    },
-    "Writer": [
-      {
-        "FirstName": "Valeur de FirstName",
-        "BirthName": "Valeur de BirthName",
-        "GivenName": "Valeur de GivenName",
-        "BirthDate": "2016-09-26T13:34:08.284+0000",
-        "DeathDate": "2016-09-26T13:34:08.284+0000"
-      }
-    ],
-    "Source": "Valeur de Source",
-    "CreatedDate": "2016-09-26T15:34:08.284+02:00",
-    "TransactedDate": "2016-09-26T15:34:08.284+02:00",
-    "AcquiredDate": "2016-09-26T15:34:08.284+02:00",
-    "SentDate": "2016-09-26T15:34:08.284+02:00",
-    "ReceivedDate": "2016-09-26T15:34:08.284+02:00",
-    "Event": [
-      {
-        "EventIdentifier": "Identifiant de l'évenement",
-        "EventType": "Type de l'évenement",
-        "EventDateTime": "2016-09-26T13:34:08.284+0000"
-      }
-    ],
-    "Gps": {
-      "GpsAltitude": 8848,
-      "GpsLatitude": "Latitude : string sans formatage imposé par le SEDA",
-      "GpsLongitude": "Longitude :  string sans formatage imposé par le SEDA"
-    },
-    "RestrictionValue": "Valeur de restrictionValue",
-    "RestrictionEndDate": "2016-09-26T13:34:08.284+0000"
+  "ArchiveUnitRefId": "ArchiveUnitRefId",
+  "ArchiveUnitProfile": {
+    "value": "value",
+    "schemeID": "schemeID",
+    "schemeName": "schemeName",
+    "schemeAgencyID": "schemeAgencyID",
+    "schemeAgencyName": "schemeAgencyName",
+    "schemeVersionID": "schemeVersionID",
+    "schemeDataURI": "schemeDataURI",
+    "schemeURI": "schemeURI"
   },
   "Management": {
     "StorageRule": {
       "RuleAndStartDate": [
+        {"Rule" :
         {
-          "Value": "STO_01",
-          "Id": "43"
+          "value": "STO_01",
+          "id": "43"
         },
-        "2017-02-15T08:05:21.705+0000"
+          "StartDate": "2017-02-15T08:05:21.705+0000"
+        }
       ],
       "PreventInheritance": true,
       "RefNonRuleId": [
         {
-          "Value": "STO_01",
-          "Id": "43"
+          "value": "STO_01",
+          "id": "43"
         }
       ],
       "FinalAction": "TRANSFER"
     },
     "AppraisalRule": {
       "RuleAndStartDate": [
-        "2017-02-15T08:05:21.705+0000",
         {
-          "Value": "APR_01"
+          "Rule": {
+            "Value": "APR_01"
+          },
+          "StartDate": "2017-02-15T08:05:21.705+0000"
         }
       ],
       "PreventInheritance": false,
@@ -168,9 +80,11 @@
     "AccessRule": {
       "RuleAndStartDate": [
         {
-          "Value": "ACC_01"
-        },
-        "2017-02-15T08:05:21.705+0000"
+          "Rule": {
+            "Value": "ACC_01"
+          },
+          "StartDate": "2017-02-15T08:05:21.705+0000"
+        }
       ],
       "RefNonRuleId": [
         {
@@ -181,9 +95,11 @@
     "DisseminationRule": {
       "RuleAndStartDate": [
         {
-          "Value": "DIS_01"
-        },
-        "2017-02-15T08:05:21.705+0000"
+          "Rule": {
+            "Value": "DIS_01"
+          },
+          "StartDate": "2017-02-15T08:05:21.705+0000"
+        }
       ],
       "RefNonRuleId": [
         {
@@ -194,9 +110,11 @@
     "ReuseRule": {
       "RuleAndStartDate": [
         {
-          "Value": "REU_01"
-        },
-        "2017-02-15T08:05:21.705+0000"
+          "Rule": {
+            "Value": "REU_01"
+          },
+          "StartDate": "2017-02-15T08:05:21.705+0000"
+        }
       ],
       "PreventInheritance": true,
       "RefNonRuleId": [
@@ -208,16 +126,488 @@
     "ClassificationRule": {
       "RuleAndStartDate": [
         {
-          "Value": "CLA_01"
-        },
-        "2017-02-15T08:05:21.705+0000"
+          "Rule": {
+            "Value": "CLA_01"
+          },
+          "StartDate": "2017-02-15T08:05:21.705+0000"
+        }
       ],
+      "ClassificationAudience": "ClassificationAudience",
       "RefNonRuleId": [
         {
           "Value": "CLA_01"
         }
+      ],
+      "ClassificationLevel": "ClassificationLevel",
+      "ClassificationOwner": "ClassificationOwner",
+      "ClassificationReassessingDate": "2017-02-15T08:05:21.705+0000",
+      "NeedReassessingAuthorization": true
+    },
+    "LogBook": [
+      {
+        "EventIdentifier": "EventIdentifier",
+        "EventTypeCode": "EventIdentifier",
+        "EventType": "EventIdentifier",
+        "EventDateTime": "EventIdentifier",
+        "EventDetail": {
+          "value": "value",
+          "lang": "fr"
+        },
+        "Outcome": "EventIdentifier",
+        "OutcomeDetail": "EventIdentifier",
+        "OutcomeDetailMessage": "EventIdentifier",
+        "EventDetailData": "EventIdentifier",
+        "EventAbstract": [
+          {
+            "value": "value",
+            "lang": "fr"
+          }
+        ]
+      }
+    ],
+    "NeedAuthorization": true
+  },
+  "Content": {
+    "DescriptionLevel": "RECORD_GRP",
+    "Title": [
+      {
+        "value": "Titre francais",
+        "lang": "fr"
+      },
+      {
+        "value": "English title",
+        "lang": "en"
+      }
+    ],
+    "FilePlanPosition": ["Valeur de filePlanPosition"],
+    "SystemId": ["Valeur de SystemID"],
+    "OriginatingSystemId": ["Valeur de OriginatingSystemId"],
+    "ArchivalAgencyArchiveUnitIdentifier": ["Valeur de archivalAgencyArchiveUnitIdentifier"],
+    "OriginatingAgencyArchiveUnitIdentifier": ["Valeur de originatingAgencyArchiveUnitIdentifier"],
+    "TransferringAgencyArchiveUnitIdentifier": ["Valeur de transferringAgencyArchiveUnitIdentifier"],
+    "Description": [
+      {
+        "value": "Description francaise",
+        "lang": "fr"
+      },
+      {
+        "value": "English Description",
+        "lang": "en"
+      }
+    ],
+    "Type": {
+      "value": "Valeur du type",
+      "lang": "fr"
+    },
+    "DocumentType": {
+      "value": "fr"
+    },
+    "Language": ["FR"],
+    "DescriptionLanguage": "FR",
+    "Status": "Valeur de Status",
+    "Version": "Valeur de version",
+    "Tag": [
+      "XML Tag 1 (de type xml:token)",
+      "XML Tag 2 (de type xml:token)"
+    ],
+    "Keyword": [
+      {
+        "KeywordContent": {
+          "value": "toto"
+        },
+        "KeywordReference": {
+          "value": "tata"
+        },
+        "KeywordType": {
+          "value": "tata"
+        },
+        "id": "id"
+      }
+    ],
+    "Coverage": {
+      "Spatial": [
+        {
+          "value": "Valeur de Spatial",
+          "lang": "fr"
+        }
+      ],
+      "Temporal": [
+        {
+          "value": "Valeur de temporal",
+          "lang": "fr"
+        }
+      ],
+      "Juridictional": [
+        {
+          "value": "Valeur de juridictional",
+          "lang": "fr"
+        }
       ]
     },
-    "NeedAuthorization": true
-  }
+    "OriginatingAgency": {
+      "Identifier": {
+        "Value": "Identifiant de l'OriginatingAgency"
+      },
+      "OrganizationDescriptiveMetadata": {
+        "any": ["eeeee"]
+      }
+    },
+    "SubmissionAgency": {
+      "Identifier": {
+        "Value": "Identifiant de l'OriginatingAgency"
+      },
+      "OrganizationDescriptiveMetadata": {
+        "any": ["eeeee"]
+      }
+    },
+    "AgentAbstract": [
+      {
+        "FirstName": "Valeur de FirstName",
+        "BirthName": "Valeur de BirthName",
+        "FullName": "eeeeeeeee",
+        "GivenName": "Valeur de GivenName",
+        "Gender": "Gender",
+        "BirthDate": "2016-09-26T13:34:08.284+0000",
+        "BirthPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "DeathDate": "2016-09-26T13:34:08.284+0000",
+        "DeathPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "Nationality": ["Nationality"],
+        "Corpname" : "Corpname",
+        "Identifier": ["Identifier"],
+        "Function": ["Function"],
+        "Activity": ["Activity"],
+        "Position": ["Position"],
+        "Role": ["Role"],
+        "Mandate" : ["Mandate"]
+      }
+    ],
+    "AuthorizedAgent": [
+      {
+        "FirstName": "Valeur de FirstName",
+        "BirthName": "Valeur de BirthName",
+        "FullName": "eeeeeeeee",
+        "GivenName": "Valeur de GivenName",
+        "Gender": "Gender",
+        "BirthDate": "2016-09-26T13:34:08.284+0000",
+        "BirthPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "DeathDate": "2016-09-26T13:34:08.284+0000",
+        "DeathPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "Nationality": ["Nationality"],
+        "Corpname" : "Corpname",
+        "Identifier": ["Identifier"],
+        "Function": ["Function"],
+        "Activity": ["Activity"],
+        "Position": ["Position"],
+        "Role": ["Role"],
+        "Mandate" : ["Mandate"]
+      }
+    ],
+    "Writer": [
+      {
+        "FirstName": "Valeur de FirstName",
+        "BirthName": "Valeur de BirthName",
+        "FullName": "eeeeeeeee",
+        "GivenName": "Valeur de GivenName",
+        "Gender": "Gender",
+        "BirthDate": "2016-09-26T13:34:08.284+0000",
+        "BirthPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "DeathDate": "2016-09-26T13:34:08.284+0000",
+        "DeathPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "Nationality": ["Nationality"],
+        "Corpname" : "Corpname",
+        "Identifier": ["Identifier"],
+        "Function": ["Function"],
+        "Activity": ["Activity"],
+        "Position": ["Position"],
+        "Role": ["Role"],
+        "Mandate" : ["Mandate"]
+      }
+    ],
+    "Addressee" :  [
+      {
+        "FirstName": "Valeur de FirstName",
+        "BirthName": "Valeur de BirthName",
+        "FullName": "eeeeeeeee",
+        "GivenName": "Valeur de GivenName",
+        "Gender": "Gender",
+        "BirthDate": "2016-09-26T13:34:08.284+0000",
+        "BirthPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "DeathDate": "2016-09-26T13:34:08.284+0000",
+        "DeathPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "Nationality": ["Nationality"],
+        "Corpname" : "Corpname",
+        "Identifier": ["Identifier"],
+        "Function": ["Function"],
+        "Activity": ["Activity"],
+        "Position": ["Position"],
+        "Role": ["Role"],
+        "Mandate" : ["Mandate"]
+      }
+    ],
+    "Recipient": [
+      {
+        "FirstName": "Valeur de FirstName",
+        "BirthName": "Valeur de BirthName",
+        "FullName": "eeeeeeeee",
+        "GivenName": "Valeur de GivenName",
+        "Gender": "Gender",
+        "BirthDate": "2016-09-26T13:34:08.284+0000",
+        "BirthPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "DeathDate": "2016-09-26T13:34:08.284+0000",
+        "DeathPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "Nationality": ["Nationality"],
+        "Corpname" : "Corpname",
+        "Identifier": ["Identifier"],
+        "Function": ["Function"],
+        "Activity": ["Activity"],
+        "Position": ["Position"],
+        "Role": ["Role"],
+        "Mandate" : ["Mandate"]
+      }
+    ],
+    "Transmitter": [
+      {
+        "FirstName": "Valeur de FirstName",
+        "BirthName": "Valeur de BirthName",
+        "FullName": "eeeeeeeee",
+        "GivenName": "Valeur de GivenName",
+        "Gender": "Gender",
+        "BirthDate": "2016-09-26T13:34:08.284+0000",
+        "BirthPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "DeathDate": "2016-09-26T13:34:08.284+0000",
+        "DeathPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "Nationality": ["Nationality"],
+        "Corpname" : "Corpname",
+        "Identifier": ["Identifier"],
+        "Function": ["Function"],
+        "Activity": ["Activity"],
+        "Position": ["Position"],
+        "Role": ["Role"],
+        "Mandate" : ["Mandate"]
+      }
+    ],
+    "Sender": [
+      {
+        "FirstName": "Valeur de FirstName",
+        "BirthName": "Valeur de BirthName",
+        "FullName": "eeeeeeeee",
+        "GivenName": "Valeur de GivenName",
+        "Gender": "Gender",
+        "BirthDate": "2016-09-26T13:34:08.284+0000",
+        "BirthPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "DeathDate": "2016-09-26T13:34:08.284+0000",
+        "DeathPlace": {
+          "Geogname": "Geogname",
+          "Address": "Address",
+          "PostalCode": "PostalCode",
+          "City": "City",
+          "Region": "Region",
+          "Country": "Country"
+        },
+        "Nationality": ["Nationality"],
+        "Corpname" : "Corpname",
+        "Identifier": ["Identifier"],
+        "Function": ["Function"],
+        "Activity": ["Activity"],
+        "Position": ["Position"],
+        "Role": ["Role"],
+        "Mandate" : ["Mandate"]
+      }
+    ],
+    "Source": "Valeur de Source",
+    "CreatedDate": "2016-09-26T15:34:08.284+02:00",
+    "TransactedDate": "2016-09-26T15:34:08.284+02:00",
+    "AcquiredDate": "2016-09-26T15:34:08.284+02:00",
+    "SentDate": "2016-09-26T15:34:08.284+02:00",
+    "ReceivedDate": "2016-09-26T15:34:08.284+02:00",
+    "RegisteredDate": "2016-09-26T15:34:08.284+02:00",
+    "StartDate": "2016-09-26T15:34:08.284+02:00",
+    "EndDate": "2016-09-26T15:34:08.284+02:00",
+    "Signature": [
+      {
+        "Signer": [{
+          "FirstName": "FirstName",
+          "BirthName": "BirthName",
+          "FullName": "FullName",
+          "GivenName": "GivenName",
+          "Gender": "Gender",
+          "BirthDate": "BirthDate",
+          "BirthPlace": {
+            "Geogname": "Geogname",
+            "Address": "Address",
+            "PostalCode": "PostalCode",
+            "City": "City",
+            "Region": "Region",
+            "Country": "Country"
+          },
+          "DeathDate": "DeathDate",
+          "DeathPlace": {
+            "Geogname": "Geogname",
+            "Address": "Address",
+            "PostalCode": "PostalCode",
+            "City": "City",
+            "Region": "Region",
+            "Country": "Country"
+          },
+          "Nationalities": ["Nationalities"],
+          "Corpname": "Corpname",
+          "Identifiers": ["Identifiers"],
+          "SigningTime": "SigningTime",
+          "ValidationTime": "ValidationTime",
+          "Function": ["Function"],
+          "Activity": ["Activity"],
+          "Position": ["Position"],
+          "Role": ["Role"],
+          "Mandate": ["Mandate"]
+        }],
+        "Validator": {
+          "FirstName": "FirstName",
+          "BirthName": "BirthName",
+          "FullName": "FullName",
+          "GivenName": "GivenName",
+          "Gender": "Gender",
+          "BirthDate": "BirthDate",
+          "BirthPlace": {
+            "Geogname": "Geogname",
+            "Address": "Address",
+            "PostalCode": "PostalCode",
+            "City": "City",
+            "Region": "Region",
+            "Country": "Country"
+          },
+          "DeathDate": "DeathDate",
+          "DeathPlace": {
+            "Geogname": "Geogname",
+            "Address": "Address",
+            "PostalCode": "PostalCode",
+            "City": "City",
+            "Region": "Region",
+            "Country": "Country"
+          },
+          "Nationalities": ["Nationalities"],
+          "Corpname": "Corpname",
+          "Identifiers": ["Identifiers"],
+          "SigningTime": "SigningTime",
+          "ValidationTime": "ValidationTime",
+          "Function": ["Function"],
+          "Activity": ["Activity"],
+          "Position": ["Position"],
+          "Role": ["Role"],
+          "Mandate": ["Mandate"]
+        },
+        "Masterdata": {
+          "value": "value"
+        },
+        "ReferencedObject": {
+          "SignedObjectId": "SignedObjectId",
+          "SignedObjectDigest": {
+            "value": "SignedObjectDigest"
+          }
+        }
+      }
+    ],
+    "Gps": {
+      "GpsVersionID": "gpsVersionID",
+      "GpsAltitude": 8848,
+      "GpsAltitudeRef": "gpsAltitudeRef",
+      "GpsLatitude": "Latitude : string sans formatage imposé par le SEDA",
+      "GpsLatitudeRef": "gpsLatitudeRef",
+      "GpsLongitude": "Longitude :  string sans formatage imposé par le SEDA",
+      "GpsLongitudeRef": "Longitude :  string sans formatage imposé par le SEDA",
+      "GpsDateStamp": "gpsDateStamp"
+
+    }
+  },
+  "id": "ID"
 }

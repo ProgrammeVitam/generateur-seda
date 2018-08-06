@@ -2,7 +2,7 @@
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
- * 
+ *
  * This software is a computer program whose purpose is to implement a digital archiving back-office system managing
  * high volumetry securely and efficiently.
  *
@@ -34,45 +34,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ManagementMetadata")
 public class ManagementMetadataTypeRoot extends ManagementMetadataType {
-    @XmlElement(name = "OriginatingAgencyIdentifier")
-    protected String originatingAgencyIdentifier;
-
-    @XmlElement(name = "SubmissionAgencyIdentifier")
-    protected String submissionAgencyIdentifier;
-
-    /**
-     * @return the originatingAgencyIdentifier
-     */
-    public String getOriginatingAgencyIdentifier() {
-        return originatingAgencyIdentifier;
-    }
-
-    /**
-     * @param originatingAgencyIdentifier the originatingAgencyIdentifier to set
-     *
-     * @return this
-     */
-    public ManagementMetadataTypeRoot setOriginatingAgencyIdentifier(String originatingAgencyIdentifier) {
-        this.originatingAgencyIdentifier = originatingAgencyIdentifier;
-        return this;
-    }
-
-    /**
-     * @return the submissionAgencyIdentifier
-     */
-    public String getSubmissionAgencyIdentifier() {
-        return submissionAgencyIdentifier;
-    }
-
-    /**
-     * @param submissionAgencyIdentifier the submissionAgencyIdentifier to set
-     *
-     * @return this
-     */
-    public ManagementMetadataTypeRoot setSubmissionAgencyIdentifier(String submissionAgencyIdentifier) {
-        this.submissionAgencyIdentifier = submissionAgencyIdentifier;
-        return this;
-    }
 
     /**
      *  Postprocessing after the unmarshalling by Json of *Rule which is not correct for the reading by JaxB

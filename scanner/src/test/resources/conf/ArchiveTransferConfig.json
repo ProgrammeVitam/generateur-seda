@@ -26,5 +26,7 @@
 	"TransferringAgency" : {
 		"Identifier" : "Identifier5"
 	},
+	"ManagementMetadata.LegalStatus" : "Public Archive",
+	"ManagementMetadata.AcquisitionInformation" : "Acquisition Information",
 	"ignore_patterns" : ["java*.jar"]
 }

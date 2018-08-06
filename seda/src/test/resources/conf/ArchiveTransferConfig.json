@@ -17,8 +17,7 @@
 		"ReuseRuleCodeListVersion" : "ReuseRuleCodeListVersion0",
 		"ClassificationRuleCodeListVersion" : "ClassificationRuleCodeListVersion0",
 		"AuthorizationReasonCodeListVersion" : "AuthorizationReasonCodeListVersion0",
-		"RelationshipCodeListVersion" : "RelationshipCodeListVersion0",
-		"UNKNOWN" : "RelationshipCodeListVersion0"
+		"RelationshipCodeListVersion" : "RelationshipCodeListVersion0"
 	},
 	"ArchivalAgency" : {
 		"Identifier" : "Identifier4"
@@ -26,24 +25,9 @@
 	"TransferringAgency" : {
 		"Identifier" : "Identifier5"
 	},
-"ManagementMetadata" : {
-		"StorageRule": {
-		  "RuleAndStartDate": [
-			{
-			  "Value": "STO_01",
-			  "Id": "43"
-			},
-			"STO_02",
-			"2017-02-15T08:05:21.705+0000"
-		  ],
-		  "PreventInheritance": true,
-		  "RefNonRuleId": [
-			{
-			  "Value": "STO_04",
-			  "Id": "48"
-			}
-		  ],
-		  "FinalAction": "TRANSFER"
-		}
-	}
+	"ManagementMetadata.OriginatingAgencyIdentifier" : "Service_producteur",
+	"ManagementMetadata.SubmissionAgencyIdentifier" : "Service_versant",
+	"ManagementMetadata.LegalStatus" : "Public Archive",
+	"ManagementMetadata.AcquisitionInformation" : "Acquisition Information",
+	"ignore_patterns" : ["Thumbs.db","pagefile.sys"]
 }

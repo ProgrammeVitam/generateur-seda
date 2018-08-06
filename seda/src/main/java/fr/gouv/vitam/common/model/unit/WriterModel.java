@@ -1,4 +1,4 @@
-/**
+/*******************************************************************************
  * Copyright French Prime minister Office/SGMAP/DINSIC/Vitam Program (2015-2019)
  *
  * contact.vitam@culture.gouv.fr
@@ -23,45 +23,18 @@
  *
  * The fact that you are presently reading this means that you have had knowledge of the CeCILL 2.1 license and that you
  * accept its terms.
- */
-package fr.gouv.culture.archivesdefrance.seda.v2;
-
-import javax.xml.bind.annotation.XmlRootElement;
+ *******************************************************************************/
+package fr.gouv.vitam.common.model.unit;
 
 /**
- * The override of the generated pojo is needed to describe it as a root element to generate the XML Stream
- *
+ * Custom Class for DescriptiveMetadataContentType.Writer (Seda 2.1)
+ * Problem (with merge of two choice elements) :  getting JAXB "catch-all" property (one content property generated of type List<JAXBElement<?>>)
+ *   because of the following reason :
+ * The field name "Identifier" is used by two different parts of a schema in choice element.
+ * N.B : xjc:simple resolve the problem but impact lot of class properties names
+ * @author afraoucene
  */
 
-@XmlRootElement(name = "Management")
-public class ManagementRoot extends ManagementType {
-
-
-    /**
-     *  Postprocessing after the unmarshalling by Json of *Rule which is not correct for the reading by JaxB
-     */
-    public void unmarshallFromJson() {
-        if (storageRule != null) {
-            JsonMarshallerHelper.transformRuleMap(storageRule.getRuleAndStartDate());
-        }
-        if (appraisalRule != null) {
-            JsonMarshallerHelper.transformRuleMap(appraisalRule.getRuleAndStartDate());
-        }
-        if (accessRule != null) {
-            JsonMarshallerHelper.transformRuleMap(accessRule.getRuleAndStartDate());
-        }
-
-        if (disseminationRule != null) {
-            JsonMarshallerHelper.transformRuleMap(disseminationRule.getRuleAndStartDate());
-
-        }
-        if (reuseRule != null) {
-            JsonMarshallerHelper.transformRuleMap(reuseRule.getRuleAndStartDate());
-        }
-        if (classificationRule != null) {
-            JsonMarshallerHelper.transformRuleMap(classificationRule.getRuleAndStartDate());
-        }
-    }
-
+public class WriterModel extends AgentTypeModel {
 
 }

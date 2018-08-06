@@ -35,11 +35,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.vatbub</groupId>
-            <artifactId>mslinks</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
@@ -61,31 +56,41 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <configuration>
-                    <catalog>src/main/resources/seda.cat</catalog>
-                    <!--			<args>
-                                    <arg>-Xannotate</arg>
-                                </args>-->
-                    <plugins>
-                        <plugin>
-                            <groupId>org.jvnet.jaxb2_commons</groupId>
-                            <artifactId>jaxb2-basics-annotate</artifactId>
-                            <version>1.0.2</version>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.jvnet.jaxb2_commons</groupId>
-                            <artifactId>jaxb2-annotate-plugin-test-annox-annotations</artifactId>
-                            <version>1.0.0</version>
-                        </plugin>
-                    </plugins>
-                </configuration>
+                <version>0.13.1</version>
                 <executions>
                     <execution>
+                        <configuration>
+                            <catalog>src/main/resources/seda-vitam/seda-vitam.cat</catalog>
+                            <args>
+                                <arg>-Xinheritance</arg>
+                                <arg>-Xannotate</arg>
+                            </args>
+
+                            <strict>false</strict>
+                            <schemaDirectory>src/main/resources</schemaDirectory>
+                            <schemaIncludes>
+                                <include>seda-vitam/seda-vitam-2.1-main.xsd</include>
+                            </schemaIncludes>
+                            <plugins>
+                                <plugin>
+                                    <groupId>org.jvnet.jaxb2_commons</groupId>
+                                    <artifactId>jaxb2-basics-annotate</artifactId>
+                                    <version>1.0.2</version>
+                                </plugin>
+                            </plugins>
+                        </configuration>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jvnet.jaxb2_commons</groupId>
+                        <artifactId>jaxb2-basics</artifactId>
+                        <version>0.6.5</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

@@ -27,5 +27,7 @@
 	},
 	"ManagementMetadata.OriginatingAgencyIdentifier" : "Service_producteur",
 	"ManagementMetadata.SubmissionAgencyIdentifier" : "Service_versant",
+	"ManagementMetadata.LegalStatus" : "Public Archive",
+	"ManagementMetadata.AcquisitionInformation" : "Acquisition Information",
 	"ignore_patterns" : ["Thumbs.db","pagefile.sys"]
 }
