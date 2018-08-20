@@ -87,7 +87,7 @@ pipeline {
             post {
                 success {
                     archiveArtifacts (
-                        artifacts: 'generator-dist/target/generator-dist-1.0.0.zip',
+                        artifacts: 'generator-dist/target/*.zip',
                         fingerprint: true
                     )
                 }
