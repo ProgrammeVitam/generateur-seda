@@ -12,7 +12,7 @@ Le générateur SEDA est constitué des différents modules suivants :
   + ``scheduler`` : ce module est un ordonnanceur générique de tâches
   + ``seda`` : ce module contient :
 
-    - la définition du schéma XML du SEDA 2.0
+    - la définition du schéma XML du SEDA 2.1
     - les régles de gestions des objets composant le SEDA
     - les modules pour le scheduler nécessaires à la gestion des BinaryDataObject
 

@@ -3,7 +3,7 @@ Générateur SEDA
 
 .. section-numbering::
 
-Cet outil permet de générer des SIP contenant des bordereaux sous forme de fichiers XML, conformes au standard SEDA 2.0 (`http://www.archivesdefrance.culture.gouv.fr/seda/`_) de manière semi-automatique (au delà d'editeurs XML comme oxygen ou Eclipse) à partir d'une arborescence normalisée de fichiers.
+Cet outil permet de générer des SIP contenant des bordereaux sous forme de fichiers XML, conformes au standard SEDA 2.1 (`http://www.archivesdefrance.culture.gouv.fr/seda/`_) de manière semi-automatique (au delà d'editeurs XML comme oxygen ou Eclipse) à partir d'une arborescence normalisée de fichiers.
 
 
 -------------------------------------------------------------
@@ -78,7 +78,7 @@ Fichiers de sortie
 
 * Un fichier horodaté ZIP (pkZIP) avec les fichiers suivants (``SIP-yyyyMMddHHmmss.zip``) : 
 
-   - Un fichier SEDA généré qui est valide par rapport au schéma SEDA 2.0 (MEDONA) : l'affichage des ArchiveUnit est dans l'ordre du parcours en profondeur de l'arborescence
+   - Un fichier SEDA généré qui est valide par rapport au schéma SEDA 2.1 (MEDONA) : l'affichage des ArchiveUnit est dans l'ordre du parcours en profondeur de l'arborescence
    - Un répertoire Content qui contient l'ensemble des BinaryDataObject décrits dans le fichier SEDA. Chaque fichier a pour nom son ID dans le bordereau Seda
 
 * Un fichier avec la liste des fichiers rejetés (``SIP-yyyyMMddHHmmss.rejected``) 

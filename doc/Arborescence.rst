@@ -4,7 +4,7 @@ Générateur de SEDA à partir d'une arborescence de fichiers
 Objectif de l'outil
 -------------------
 
-Dans le cadre du projet Vitam, il est nécessaire de générer des SIP contenant des bordereaux sous forme de fichiers XML, conformes au standard SEDA 2.0 (  `lien <http://www.archivesdefrance.culture.gouv.fr/seda/>`_ ) de manière semi-automatique (au-delà d'editeurs XML comme oxygen ou Eclipse) pour : 
+Dans le cadre du projet Vitam, il est nécessaire de générer des SIP contenant des bordereaux sous forme de fichiers XML, conformes au standard SEDA 2.1 (  `lien <http://www.archivesdefrance.culture.gouv.fr/seda/>`_ ) de manière semi-automatique (au-delà d'editeurs XML comme oxygen ou Eclipse) pour :
 
 * tester les développements 
 * éventuellement faciliter l'intégration dans Vitam en fournissant des outils dans la toolbox Vitam
@@ -14,7 +14,7 @@ Arborescence d'entrée
 
 Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suivant :
 
-* L'arborescence des répertoires représente les relations entre les ArchiveUnit et les DataObjectGroup au sens du standard SEDA 2.0.
+* L'arborescence des répertoires représente les relations entre les ArchiveUnit et les DataObjectGroup au sens du standard SEDA 2.1.
  
   + Du fait de la réprésentation arborescente des systèmes d'exploitation, on se limitera à un arbre (et non un DAG dans le cadre général) pour les relations entre ArchiveUnit et DataObjectGroup
 
@@ -22,7 +22,7 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
 
   + Répertoire dont le nom commence par ``__`` et termine par ``__`` , il s'agit d'un DataObjectGroup qui est rattaché à un ArchiveUnit virtuel de même nom :
   
-    - Ce répertoire ne doit contenir que des fichiers ou des dossiers définissant d'autres DOG (commencant et terminnant par ``__``).
+    - Ce répertoire ne doit contenir que des fichiers ou des dossiers définissant d'autres DOG (commencant et terminant par ``__``).
     - En cas de présence d'un répertoire standard, [[Comportement à définir: Erreur bloquante, Autre ??]]
     - Les fichiers dans ce répertoire doivent avoir la forme suivante : ``__<Usage du SIP>_<Version du SIP>_<nom du fichier>``
 
@@ -49,7 +49,7 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
 	+ L'ArchiveUnit Virtuel a pour valeur du champ TransactedDate la date de dernière modification du fichier (Modification time du fichier)
 	+ Un fichier vide est ignoré en logguant la présence de ce fichier vide mais il ne s'agit que d'un warning (non bloquant) 
   
-    - Un fichier caché (au sens attribut Windows) est ignoré (Non implémenté a ce jour)
+    - Un fichier caché (au sens attribut Windows) est ignoré (Non implémenté à ce jour)
     - Dans le binaryDataObject, la valeur du champ DataObjectVersion est par défaut "BinaryMaster". Si le fichier est de la forme ``__<Lettres minuscules ou majuscule>_<Chiffres>_.*``, le champ DataObjectVersion vaut ``<Lettres minuscules ou majuscule>_<Chiffres>`` . Si le fichier est de la forme ``__<Lettres minuscules ou majuscule>_.*``, le champ DataObjectVersion vaut ``<Lettres minuscules ou majuscule>_<Chiffres>``.
 
 * Dans l'arborescence, cas particuliers : 
@@ -60,18 +60,20 @@ Sous Windows, l'archiviste a préparé une arborescence avec le formalisme suiva
     - Le fichier ``ArchiveUnitMetadata.json`` sur chaque répertoire. Ce fichier contient les métadonnées de gestion et les méta-données descriptives pour l'ArchiveUnit correspondant au répertoire auquel il appartient
     - Le fichier ``ArchiveUnitContent.xml`` sur chaque répertoire. Le contenu de ce fichier est importé sans contrôle à la place de la balise <Content> (Ce fichier doit contenir <Content>.*</Content>) pour l'archiveUnit correspondant au répertoire auquel il appartient. 
     - Le fichier ``ArchiveUnitManagement.xml`` sur chaque répertoire. Le contenu de ce fichier est importé sans contrôle à la place de la balise <Management> (Ce fichier doit contenir <Management>.*</Management>) pour l'archiveUnit correspondant au répertoire auquel il appartient.
-    - les fichiers ``*.lnk`` définissent des liens entre deux unités archivistiques (fonctionne uniquement sous windows).
+    - Les fichiers ``*.lnk`` définissent des liens entre deux unités archivistiques (fonctionne uniquement sous windows).
   
   + En cas de présence d'un fichier ``ArchiveUnitMetadata.xml`` et d'un fichier ``ArchiveUnitMetadata.json`` dans le même répertoire
 
 * Cas particulier au niveau de la gestion des liens
 
-  + Si le lien pointe vers un raccourci Windows, on continue de manière récursive jusqu'à aboutissement de la châine ou bouclage (un algorithme de vérification de cycle doit éviter les boucles)
-  + Le lien est rejeté (mis dans le fichier rejeté avec une erreur)
+  + Si le lien pointe vers un raccourci Windows, on continue de manière récursive jusqu'à aboutissement de la chaîne ou bouclage (un algorithme de vérification de cycle doit éviter les boucles)
+  + Le lien est rejeté (mis dans le fichier rejeté avec une erreur) :
+
     - Si le path pointé par le raccourci est incorrect (le lien pointe dans le vide)
     - Si le path pointé existe , que le path pointé n'est pas un raccourci Windows et pointe en dehors de l'arborescence du SIP
     - Si le path pointé existe , que le path pointé n'est pas un raccourci Windows et est un fichier rejeté pour différentes raisons par le SIP (y compris pour les fichiers de "configuration" du générateur SEDA)
     - Si le path pointé existe , que le path pointé est un fichier dans un répertoire de type DOG
+
   + Si le raccourci pointe vers un répertoire de l'arboresence du SIP => création d'un lien entre l'AU du répertoire contenant le lien et l'AU du répertoire pointé
   + Si le raccourci pointe vers un fichier d'un répertoire non DOG => création d'un lien entre l'AU du répertoire contenant et la pseudo-AU du fichier pointé
 
@@ -85,9 +87,9 @@ Arborescence sources
   Répertoire : /A
   Fichier    : /A/a1
   Fichier    : /A/a2
-  Fichier    : /A/ArchiveTransferConfig.json (ignoré car fichier de paramètre)
+  Fichier    : /A/ArchiveTransferConfig.json (ignoré car fichier de paramétrage)
   Répertoire : /A/B
-  Répertoire : /A/B/ArchiveUnitMetadata.json (ignoré dans le SEDA cible car fichier de paramètre)
+  Répertoire : /A/B/ArchiveUnitMetadata.json (ignoré dans le SEDA cible car fichier de paramétrage)
   Fichier    : /A/B/b1
   Répertoire : /A/__C__
   Fichier    : /A/__C__/__BinaryMaster_1_c1
@@ -127,7 +129,7 @@ Couverture du SEDA
 
 Dans le fichier SEDA, les champs suivants sont gérés : 
 
-* ArchiveTransfer : les champs Comment, MessageIdentifier, ArchivalAgreement, CodeListVersions, ArchivalAgencyIdentifier, TransferringAgencyIdentifier sont configurables (via le fichier ArchiveTransferConfig.json) . Voir le fichier doc/Configuration.rst pour plus d'informations 
+* ArchiveTransfer : les champs Comment, MessageIdentifier, ArchivalAgreement, CodeListVersions, ArchivalAgencyIdentifier, TransferringAgencyIdentifier,  sont configurables (via le fichier ArchiveTransferConfig.json) . Voir le fichier doc/Configuration.rst pour plus d'informations
 * DataObjectPackage.BinaryDataObject 
  
   + DataObjectGroupId : généré programmatiquement
