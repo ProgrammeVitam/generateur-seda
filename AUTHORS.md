@@ -1,4 +1,4 @@
-# Authors of a generator of SEDA format 2.0 (part of the Vitam project)
+# Authors of a generator of SEDA format 2.1 (part of the Vitam project)
 
 ## Release 3 active development team (03/2017)
 

@@ -30,8 +30,8 @@ Pour les champs liés au SEDA, on a :
 * Les champs "MessageIdentifier", "ArchivalAgency" , "TransferringAgency" sont obligatoires dans le SEDA et sont donc nécessaires pour le générateur SEDA
 * Il en est de même pour les clés "ReplyCodeListVersion", "MessageDigestAlgorithmCodeListVersion" et "MessageDigestAlgorithmCodeListVersion" du bloc "CodeListVersions"
 * Les champs "Comment" et "ArchivalAgreement" sont facultatifs (au sens SEDA et Vitam)
-* Le champ "ManagementMetadata" est facultatifs. Son formalisme est identique à celui de la section Management du fichier `ArchiveUnitMetadata.json <ArchiveUnitMetadata.json>`_ . 
-* Les champs "ManagementMetadata.OriginatingAgencyIdentifier".et "ManagementMetadata.SubmissionAgencyIdentifier" sont des extensions du SEDA pour Vitam. Le premier est obligatoire pour Vitam.
+* Le champ "ManagementMetadata" a un formalisme identique à celui de la section Management du fichier `ArchiveUnitMetadata.json <ArchiveUnitMetadata.json>`_ .
+* Le champ "ManagementMetadata.OriginatingAgencyIdentifier" est obligatoire et "ManagementMetadata.SubmissionAgencyIdentifier" est facultatif.
 
 Pour les champs techniques, on a :
 
